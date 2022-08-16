@@ -40,12 +40,16 @@ func NewAuthRepository(c *ARConfig) authRepository {
 func (a *authRepository) Register(user *models.User) (*models.User, error) {
 	hash, _ := hashPassword(user.Password)
 	user.Password = hash
+	user.EligibleMerchandise = false
+	user.ReferralNumber = rand.Intn(99999-9999) + 9999
 	res := db.Get().Create(&user)
 	a.db.Model(&user).Update("code", nil)
 
 	w := &models.Wallet{
-		UserID:       user.Id,
-		WalletNumber: 100000 + user.Id,
+		UserID:        user.Id,
+		WalletNumber:  100000 + user.Id,
+		SavingsNumber: 200000 + user.Id,
+		DepositNumber: 300000 + user.Id,
 	}
 	_ = db.Get().Create(&w)
 	return user, res.Error

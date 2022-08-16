@@ -12,7 +12,7 @@ import (
 )
 
 type AuthService interface {
-	Register(req *dto.AuthReq) (*dto.RegRes, error)
+	Register(req *dto.RegReq) (*dto.RegRes, error)
 	SignIn(req *dto.AuthReq) (*dto.TokenRes, error)
 	GetCode(email *dto.CodeReq) (*dto.CodeRes, error)
 	ChangePassword(data *dto.ChangePReq) (*dto.ChangePRes, error)
@@ -69,11 +69,12 @@ func (a *authService) generateJWTToken(user *models.User) (*dto.TokenRes, error)
 	return res, nil
 }
 
-func (a *authService) Register(req *dto.AuthReq) (*dto.RegRes, error) {
+func (a *authService) Register(req *dto.RegReq) (*dto.RegRes, error) {
 
 	u := &models.User{
 		Email:    req.Email,
 		Password: req.Password,
+		Contact:  req.Contact,
 	}
 
 	_, err := a.authRepository.Register(u)

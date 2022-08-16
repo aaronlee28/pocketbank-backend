@@ -24,7 +24,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	router.NoRoute(middlewares.WrongEndpoint())
 	router.GET("/getcode", middlewares.RequestValidator(&dto.CodeReq{}), h.GetCode)
 	router.PATCH("/changepassword", middlewares.RequestValidator(&dto.ChangePReq{}), h.ChangePassword)
-	router.POST("/register", middlewares.RequestValidator(&dto.AuthReq{}), h.Register)
+	router.POST("/register", middlewares.RequestValidator(&dto.RegReq{}), h.Register)
 	router.POST("/signin", middlewares.RequestValidator(&dto.AuthReq{}), h.SignIn)
 	router.Use(middlewares.AuthorizeJWT)
 	router.POST("/topup", middlewares.RequestValidator(&dto.TopupReq{}), h.Topup)

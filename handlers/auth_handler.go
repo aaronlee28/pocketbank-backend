@@ -9,7 +9,7 @@ import (
 
 func (a *Handler) Register(c *gin.Context) {
 	payload, _ := c.Get("payload")
-	param, _ := payload.(*dto.AuthReq)
+	param, _ := payload.(*dto.RegReq)
 	result, err := a.authService.Register(param)
 
 	if err != nil {
