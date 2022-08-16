@@ -2,10 +2,9 @@ package server
 
 import (
 	"fmt"
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/assignment-05-golang-backend/config"
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/assignment-05-golang-backend/db"
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/assignment-05-golang-backend/repositories"
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/assignment-05-golang-backend/services"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/services"
 )
 
 func Init() {
@@ -14,8 +13,8 @@ func Init() {
 		AuthRepository: &authRepository,
 		AppConfig:      config.Config,
 	})
-	//walletRepository := repositories.NewWalletRepository(&repositories.WRConfig{DB: db.Get()})
-	//walletService := services.NewWalletServices(&services.WSConfig{WalletRepository: &walletRepository})
+	walletRepository := repositories.NewWalletRepository(&repositories.WRConfig{DB: db.Get()})
+	walletService := services.NewWalletServices(&services.WSConfig{WalletRepository: &walletRepository})
 	router := NewRouter(&RouterConfig{AuthService: authService, WalletService: walletService})
 	err := router.Run()
 	if err != nil {

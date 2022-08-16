@@ -1,6 +1,9 @@
 package server
 
 import (
+	dto "git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto/auth"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/handlers"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/middlewares"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/services"
 	"github.com/gin-gonic/gin"
 )
@@ -19,15 +22,15 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	})
 	router.Static("/docs", "swaggerui")
 	router.NoRoute(middlewares.WrongEndpoint())
-	//router.GET("/getcode", middlewares.RequestValidator(&dto.CodeReq{}), h.GetCode)
-	//router.PATCH("/changepassword", middlewares.RequestValidator(&dto.ChangePReq{}), h.ChangePassword)
-	//router.POST("/register", middlewares.RequestValidator(&dto.AuthReq{}), h.Register)
-	//router.POST("/signin", middlewares.RequestValidator(&dto.AuthReq{}), h.SignIn)
-	//router.Use(middlewares.AuthorizeJWT)
-	//router.POST("/topup", middlewares.RequestValidator(&dto.TopupReq{}), h.Topup)
-	//router.GET("/transaction", h.Transaction)
-	//router.POST("/transfer", middlewares.RequestValidator(&dto.TransferReq{}), h.Transfer)
-	//router.GET("/userdetails", middlewares.RequestValidator(&dto.UserDetailsRes{}), h.UserDetails)
+	router.GET("/getcode", middlewares.RequestValidator(&dto.CodeReq{}), h.GetCode)
+	router.PATCH("/changepassword", middlewares.RequestValidator(&dto.ChangePReq{}), h.ChangePassword)
+	router.POST("/register", middlewares.RequestValidator(&dto.AuthReq{}), h.Register)
+	router.POST("/signin", middlewares.RequestValidator(&dto.AuthReq{}), h.SignIn)
+	router.Use(middlewares.AuthorizeJWT)
+	router.POST("/topup", middlewares.RequestValidator(&dto.TopupReq{}), h.Topup)
+	router.GET("/transaction", h.Transaction)
+	router.POST("/transfer", middlewares.RequestValidator(&dto.TransferReq{}), h.Transfer)
+	router.GET("/userdetails", middlewares.RequestValidator(&dto.UserDetailsRes{}), h.UserDetails)
 
 	return router
 }
