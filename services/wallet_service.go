@@ -1,5 +1,12 @@
 package services
 
+import (
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httperror"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
+)
+
 type WalletService interface {
 	Topup(req *dto.TopupReq, id int) (*dto.TopupRes, error)
 	Transaction(q *repositories.Query, id int) (*[]dto.TransRes, error)

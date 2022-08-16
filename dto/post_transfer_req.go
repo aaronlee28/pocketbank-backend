@@ -1,4 +1,4 @@
-package transfer
+package dto
 
 type TransferReq struct {
 	ReceiverWalletNumber int    `json:"receiver_wallet_number" binding:"required"`
