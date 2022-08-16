@@ -40,9 +40,12 @@ func NewAuthRepository(c *ARConfig) authRepository {
 func (a *authRepository) Register(user *models.User, cr int) (*models.User, error) {
 	var checkUser *models.User
 	var referralBonus *models.Savings
-	err := a.db.Where("referral_number = ?", cr).First(&checkUser).Error
-	if err != nil {
-		return nil, err
+
+	if cr != 0 {
+		err := a.db.Where("referral_number = ?", cr).First(&checkUser).Error
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	hash, _ := hashPassword(user.Password)
@@ -63,11 +66,14 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 	s := &models.Savings{
 		UserID: user.Id,
 	}
-	db.Get().Create(&s)
 
-	a.db.Where("user_id = ?", checkUser.Id).First(&referralBonus)
-	referralPrice := referralBonus.Balance + 20000
-	a.db.Model(&referralBonus).Update("balance", referralPrice)
+	db.Get().Create(&s)
+	//has to be last because referral code might be there but failed to create the account for other reasons
+	if cr != 0 {
+		a.db.Where("user_id = ?", checkUser.Id).First(&referralBonus)
+		referralPrice := referralBonus.Balance + 20000
+		a.db.Model(&referralBonus).Update("balance", referralPrice)
+	}
 
 	return user, res.Error
 }
