@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/assignment-05-golang-backend/models"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"time"
 )
 

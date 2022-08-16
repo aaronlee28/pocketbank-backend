@@ -2,9 +2,12 @@ package middlewares
 
 import (
 	"fmt"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/config"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httperror"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"github.com/gin-gonic/gin"
 	"github.com/goccy/go-json"
+	"github.com/golang-jwt/jwt/v4"
 	"strings"
 )
 

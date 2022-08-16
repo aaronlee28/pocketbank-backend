@@ -2,9 +2,9 @@ package repositories
 
 import (
 	"fmt"
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/assignment-05-golang-backend/db"
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/assignment-05-golang-backend/dto"
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/assignment-05-golang-backend/models"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"gorm.io/gorm"
 	"strconv"
 )

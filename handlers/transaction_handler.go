@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/assignment-05-golang-backend/dto"
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/assignment-05-golang-backend/models"
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/assignment-05-golang-backend/repositories"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
