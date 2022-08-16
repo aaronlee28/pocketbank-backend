@@ -12,7 +12,7 @@ import (
 
 type AuthRepository interface {
 	MatchingCredential(email, password string) (*models.User, error)
-	Register(user *models.User) (*models.User, error)
+	Register(user *models.User, cr int) (*models.User, error)
 	GetCode(email string) (*models.User, int, error)
 	ChangePassword(data *dto.ChangePReq) int
 }
@@ -37,7 +37,14 @@ func NewAuthRepository(c *ARConfig) authRepository {
 	return authRepository{db: c.DB}
 }
 
-func (a *authRepository) Register(user *models.User) (*models.User, error) {
+func (a *authRepository) Register(user *models.User, cr int) (*models.User, error) {
+	var checkUser *models.User
+	var referralBonus *models.Savings
+	err := a.db.Where("referral_number = ?", cr).First(&checkUser).Error
+	if err != nil {
+		return nil, err
+	}
+
 	hash, _ := hashPassword(user.Password)
 	user.Password = hash
 	user.EligibleMerchandise = false
@@ -47,11 +54,21 @@ func (a *authRepository) Register(user *models.User) (*models.User, error) {
 
 	w := &models.Wallet{
 		UserID:        user.Id,
-		WalletNumber:  100000 + user.Id,
+		WalletNumber:  1 + rand.Intn(99999-10000) + 10000 + user.Id,
 		SavingsNumber: 200000 + user.Id,
 		DepositNumber: 300000 + user.Id,
 	}
-	_ = db.Get().Create(&w)
+	db.Get().Create(&w)
+
+	s := &models.Savings{
+		UserID: user.Id,
+	}
+	db.Get().Create(&s)
+
+	a.db.Where("user_id = ?", checkUser.Id).First(&referralBonus)
+	referralPrice := referralBonus.Balance + 20000
+	a.db.Model(&referralBonus).Update("balance", referralPrice)
+
 	return user, res.Error
 }
 func (a *authRepository) MatchingCredential(email, password string) (*models.User, error) {
