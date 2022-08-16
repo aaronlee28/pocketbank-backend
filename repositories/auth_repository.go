@@ -41,6 +41,8 @@ func (a *authRepository) Register(user *models.User) (*models.User, error) {
 	hash, _ := hashPassword(user.Password)
 	user.Password = hash
 	res := db.Get().Create(&user)
+	a.db.Model(&user).Update("code", nil)
+
 	w := &models.Wallet{
 		UserID:       user.Id,
 		WalletNumber: 100000 + user.Id,
