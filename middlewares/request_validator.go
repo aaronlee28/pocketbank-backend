@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/assignment-05-golang-backend/httperror"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httperror"
 	"github.com/gin-gonic/gin"
 	"reflect"
 )
