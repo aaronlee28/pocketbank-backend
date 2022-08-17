@@ -31,6 +31,5 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	router.GET("/transaction", h.Transaction)
 	router.POST("/transfer", middlewares.RequestValidator(&dto.TransferReq{}), h.Transfer)
 	router.GET("/userdetails", h.UserDetails)
-
 	return router
 }

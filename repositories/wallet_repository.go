@@ -14,6 +14,8 @@ type WalletRepository interface {
 	Transaction(q *Query, id int) (*[]models.Transaction, error)
 	Transfer(trans *models.Transaction, id int) (*models.Transaction, error, error, error)
 	UserDetails(id int) (*dto.UserDetailsRes, error)
+	updateAllUsers()
+	runCronJobs()
 }
 
 type walletRepository struct {
@@ -46,7 +48,6 @@ func (w *walletRepository) Topup(trans *models.Transaction, id int) (*models.Tra
 		ReceiverWalletNumber: wallet.WalletNumber,
 		Amount:               trans.Amount,
 		Description:          trans.Description,
-		SourceOfFundID:       trans.SourceOfFundID,
 	}
 	err1 := db.Get().Create(&addTransaction)
 
@@ -90,7 +91,6 @@ func (w *walletRepository) Transfer(trans *models.Transaction, id int) (*models.
 		ReceiverWalletNumber: receiverWallet.WalletNumber,
 		Amount:               trans.Amount,
 		Description:          trans.Description,
-		SourceOfFundID:       trans.SourceOfFundID,
 	}
 	_ = db.Get().Create(&addTransaction)
 
@@ -112,3 +112,26 @@ func (w *walletRepository) UserDetails(id int) (*dto.UserDetailsRes, error) {
 
 	return ret, err
 }
+
+//
+//func (w *walletRepository) updateAllUsers() {
+//	var svs *[]models.Savings
+//	//var sv *models.Savings
+//	w.db.Find(&svs)
+//	for _, s := range svs {
+//		if s.Balance > 0 {
+//			addInterest := (s.Balance * s.Interest) / (12 * 30)
+//
+//		}
+//	}
+//}
+//
+//func (w *walletRepository) runCronJobs() {
+//	s := gocron.NewScheduler(time.UTC)
+//
+//	s.Every(1).Day().At("10:30;08:00").Do(func() {
+//		updateAllUsers()
+//	})
+//
+//	s.StartBlocking()
+//}

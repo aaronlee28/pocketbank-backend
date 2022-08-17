@@ -47,9 +47,8 @@ func (a *walletService) Topup(req *dto.TopupReq, id int) (*dto.TopupRes, error) 
 		return nil, error(httperror.BadRequestError("Maximum Amount is Rp.50000000", "401"))
 	}
 	t := &models.Transaction{
-		Amount:         req.Amount,
-		SourceOfFundID: req.SourceOfFundsID,
-		Description:    desc,
+		Amount:      req.Amount,
+		Description: desc,
 	}
 
 	transaction, err1, err2 := a.walletRepository.Topup(t, id)
@@ -103,7 +102,6 @@ func (a *walletService) Transfer(req *dto.TransferReq, id int) (*dto.TransferRes
 		ReceiverWalletNumber: req.ReceiverWalletNumber,
 		Amount:               req.Amount,
 		Description:          req.Description,
-		SourceOfFundID:       1,
 	}
 
 	transaction, err1, err2, err3 := a.walletRepository.Transfer(t, id)
