@@ -1,7 +1,7 @@
 package dto
 
 type TransferRes struct {
-	ReceiverWalletNumber int    `json:"receiver_wallet_number"`
-	Amount               int    `json:"amount"`
-	Description          string `json:"description"`
+	ReceiverWalletNumber int     `json:"receiver_wallet_number"`
+	Amount               float32 `json:"amount"`
+	Description          string  `json:"description"`
 }

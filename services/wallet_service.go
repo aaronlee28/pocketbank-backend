@@ -12,6 +12,7 @@ type WalletService interface {
 	Transaction(q *repositories.Query, id int) (*[]dto.TransRes, error)
 	Transfer(req *dto.TransferReq, id int) (*dto.TransferRes, error)
 	UserDetails(id int) (*dto.UserDetailsRes, error)
+	UpdateInterestAndTax()
 }
 
 type walletService struct {
@@ -131,4 +132,10 @@ func (a *walletService) UserDetails(id int) (*dto.UserDetailsRes, error) {
 	}
 
 	return ret, err
+}
+
+func (a *walletService) UpdateInterestAndTax() {
+
+	a.walletRepository.UpdateInterestAndTax()
+
 }

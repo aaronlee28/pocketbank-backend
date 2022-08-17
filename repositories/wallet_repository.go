@@ -14,7 +14,7 @@ type WalletRepository interface {
 	Transaction(q *Query, id int) (*[]models.Transaction, error)
 	Transfer(trans *models.Transaction, id int) (*models.Transaction, error, error, error)
 	UserDetails(id int) (*dto.UserDetailsRes, error)
-	updateAllUsers()
+	UpdateInterestAndTax()
 	runCronJobs()
 }
 
@@ -70,8 +70,8 @@ func (w *walletRepository) Transaction(q *Query, id int) (*[]models.Transaction,
 func (w *walletRepository) Transfer(trans *models.Transaction, id int) (*models.Transaction, error, error, error) {
 	var senderWallet *models.Wallet
 	var receiverWallet *models.Wallet
-	var checkBalance int
-	var addBalance int
+	var checkBalance float32
+	var addBalance float32
 	err := fmt.Errorf("")
 	_ = w.db.Where("user_id = ?", id).First(&senderWallet)
 	checkBalance = senderWallet.Balance - trans.Amount

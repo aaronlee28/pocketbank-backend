@@ -26,6 +26,7 @@ func AuthorizeJWT(c *gin.Context) {
 		fmt.Println("disable JWT authorization on dev env")
 		return
 	}
+	
 	authHeader := c.GetHeader("Authorization")
 
 	s := strings.Split(authHeader, "Bearer ")

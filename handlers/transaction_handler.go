@@ -90,3 +90,11 @@ func (a *Handler) UserDetails(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 
 }
+
+func (a *Handler) UpdateInterestAndTax(c *gin.Context) {
+
+	a.walletService.UpdateInterestAndTax()
+
+	c.JSON(http.StatusOK, nil)
+
+}

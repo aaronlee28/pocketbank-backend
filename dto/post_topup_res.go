@@ -1,6 +1,6 @@
 package dto
 
 type TopupRes struct {
-	Amount      int    `json:"amount"`
-	Description string `json:"description"`
+	Amount      float32 `json:"amount"`
+	Description string  `json:"description"`
 }
