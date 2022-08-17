@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"errors"
-	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
@@ -71,11 +70,8 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 	db.Get().Create(&s)
 	//has to be last because referral code might be there but failed to create the account for other reasons
 	if cr != 0 {
-		fmt.Println("on line 74")
 		a.db.Where("user_id = ?", checkUser.Id).First(&referralBonus)
-		fmt.Println("on line 76")
 		referralPrice := referralBonus.Balance + 20000
-		fmt.Println("on line 78")
 		a.db.Model(&referralBonus).Update("balance", referralPrice)
 
 		addTransaction := &models.Transaction{

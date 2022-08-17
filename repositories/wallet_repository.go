@@ -113,24 +113,45 @@ func (w *walletRepository) UserDetails(id int) (*dto.UserDetailsRes, error) {
 	return ret, err
 }
 
-//
-//func (w *walletRepository) updateAllUsers() {
-//	var svs *[]models.Savings
-//	//var sv *models.Savings
-//	w.db.Find(&svs)
-//	for _, s := range svs {
-//		if s.Balance > 0 {
-//			addInterest := (s.Balance * s.Interest) / (12 * 30)
-//
-//		}
-//	}
-//}
+func (w *walletRepository) UpdateInterestAndTax() {
+	var svs *[]models.Savings
+	w.db.Find(&svs)
+	for _, s := range *svs {
+		if s.Balance > 0 {
+			interest := (s.Balance * s.Interest) / (12 * 30)
+			addInterest := s.Balance + interest
+			w.db.Model(&s).Update("balance", addInterest)
+			taxonInterest := interest * s.Tax
+			payTax := s.Balance - taxonInterest
+			w.db.Model(&s).Update("balance", payTax)
+
+			addInterestTransaction := &models.Transaction{
+				SenderWalletNumber:   1,
+				ReceiverWalletNumber: s.SavingsNumber,
+				Amount:               addInterest,
+				Description:          "Interest",
+			}
+			db.Get().Create(&addInterestTransaction)
+
+			addTaxTransaction := &models.Transaction{
+				SenderWalletNumber:   s.SavingsNumber,
+				ReceiverWalletNumber: 2,
+				Amount:               addInterest,
+				Description:          "Interest",
+			}
+			db.Get().Create(&addTaxTransaction)
+
+		}
+
+	}
+}
+
 //
 //func (w *walletRepository) runCronJobs() {
 //	s := gocron.NewScheduler(time.UTC)
 //
 //	s.Every(1).Day().At("10:30;08:00").Do(func() {
-//		updateAllUsers()
+//		UpdateInterestAndTax()
 //	})
 //
 //	s.StartBlocking()
