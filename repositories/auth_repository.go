@@ -58,13 +58,13 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 	w := &models.Wallet{
 		UserID:        user.Id,
 		WalletNumber:  1 + rand.Intn(99999-10000) + 10000 + user.Id,
-		SavingsNumber: 200000 + user.Id,
-		DepositNumber: 300000 + user.Id,
+		DepositNumber: 200000 + user.Id,
 	}
 	db.Get().Create(&w)
 
 	s := &models.Savings{
-		UserID: user.Id,
+		UserID:        user.Id,
+		SavingsNumber: w.WalletNumber,
 	}
 
 	db.Get().Create(&s)
@@ -73,6 +73,14 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 		a.db.Where("user_id = ?", checkUser.Id).First(&referralBonus)
 		referralPrice := referralBonus.Balance + 20000
 		a.db.Model(&referralBonus).Update("balance", referralPrice)
+
+		addTransaction := &models.Transaction{
+			SenderWalletNumber:   3,
+			ReceiverWalletNumber: referralBonus.SavingsNumber,
+			Amount:               20000,
+			Description:          "Referral Payments",
+		}
+		_ = db.Get().Create(&addTransaction)
 	}
 
 	return user, res.Error
