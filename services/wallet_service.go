@@ -81,15 +81,6 @@ func (a *walletService) Transaction(q *repositories.Query, id int) (*[]dto.Trans
 	}
 	for _, transaction := range *t {
 		tr := new(dto.TransRes).FromTransaction(&transaction)
-		if transaction.SourceOfFundID == 1 {
-			tr.SourceOfFund = "Bank Transfer"
-		}
-		if transaction.SourceOfFundID == 2 {
-			tr.SourceOfFund = "Credit Card"
-		}
-		if transaction.SourceOfFundID == 3 {
-			tr.SourceOfFund = "Cash"
-		}
 
 		result = append(result, *tr)
 	}

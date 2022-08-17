@@ -80,7 +80,7 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 			Amount:               20000,
 			Description:          "Referral Payments",
 		}
-		_ = db.Get().Create(&addTransaction)
+		db.Get().Create(&addTransaction)
 	}
 
 	return user, res.Error
