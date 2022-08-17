@@ -98,3 +98,11 @@ func (a *Handler) UpdateInterestAndTax(c *gin.Context) {
 	c.JSON(http.StatusOK, nil)
 
 }
+
+func (a *Handler) RunCronJobs(c *gin.Context) {
+
+	a.walletService.RunCronJobs()
+
+	c.JSON(http.StatusOK, nil)
+
+}

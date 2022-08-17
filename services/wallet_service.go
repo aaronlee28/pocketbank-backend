@@ -13,6 +13,7 @@ type WalletService interface {
 	Transfer(req *dto.TransferReq, id int) (*dto.TransferRes, error)
 	UserDetails(id int) (*dto.UserDetailsRes, error)
 	UpdateInterestAndTax()
+	RunCronJobs()
 }
 
 type walletService struct {
@@ -137,5 +138,11 @@ func (a *walletService) UserDetails(id int) (*dto.UserDetailsRes, error) {
 func (a *walletService) UpdateInterestAndTax() {
 
 	a.walletRepository.UpdateInterestAndTax()
+
+}
+
+func (a *walletService) RunCronJobs() {
+
+	a.walletRepository.RunCronJobs()
 
 }

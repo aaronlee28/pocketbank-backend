@@ -8,7 +8,7 @@ import (
 type TransRes struct {
 	SenderWalletNumber   int       `json:"from"`
 	ReceiverWalletNumber int       `json:"to"`
-	Amount               int       `json:"amount"`
+	Amount               float32   `json:"amount"`
 	Description          string    `json:"description"`
 	SourceOfFund         string    `json:"source_of_fund"`
 	CreatedAt            time.Time `json:"date"`

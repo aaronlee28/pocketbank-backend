@@ -5,6 +5,7 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
+	"github.com/robfig/cron/v3"
 	"gorm.io/gorm"
 	"strconv"
 )
@@ -15,7 +16,7 @@ type WalletRepository interface {
 	Transfer(trans *models.Transaction, id int) (*models.Transaction, error, error, error)
 	UserDetails(id int) (*dto.UserDetailsRes, error)
 	UpdateInterestAndTax()
-	runCronJobs()
+	RunCronJobs()
 }
 
 type walletRepository struct {
@@ -137,22 +138,19 @@ func (w *walletRepository) UpdateInterestAndTax() {
 				SenderWalletNumber:   s.SavingsNumber,
 				ReceiverWalletNumber: 2,
 				Amount:               addInterest,
-				Description:          "Interest",
+				Description:          "Tax on Interest",
 			}
 			db.Get().Create(&addTaxTransaction)
-
+			fmt.Println("im here yay")
 		}
 
 	}
 }
 
 //
-//func (w *walletRepository) runCronJobs() {
-//	s := gocron.NewScheduler(time.UTC)
-//
-//	s.Every(1).Day().At("10:30;08:00").Do(func() {
-//		UpdateInterestAndTax()
-//	})
-//
-//	s.StartBlocking()
-//}
+func (w *walletRepository) RunCronJobs() {
+	c := cron.New()
+	c.AddFunc("@every 2s", func() { fmt.Println("every 2s") })
+	c.Start()
+
+}
