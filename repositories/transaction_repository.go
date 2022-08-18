@@ -18,7 +18,7 @@ type TransactionRepository interface {
 	UpdateInterestAndTax()
 	RunCronJobs()
 
-	TopupDeposit(trans *models.Transaction, id int) (*models.Transaction, error)
+	TopupDeposit(trans *models.Transaction, id int) (*models.Transaction, error, error)
 }
 
 type transactionRepository struct {
@@ -120,7 +120,7 @@ func (w *transactionRepository) RunCronJobs() {
 
 }
 
-func (w *transactionRepository) TopupDeposit(trans *models.Transaction, id int) (*models.Transaction, error) {
+func (w *transactionRepository) TopupDeposit(trans *models.Transaction, id int) (*models.Transaction, error, error) {
 	var sv *models.Savings
 	w.db.Where("user_id = ?", id).First(&sv)
 
@@ -135,6 +135,8 @@ func (w *transactionRepository) TopupDeposit(trans *models.Transaction, id int) 
 	} else {
 		addDeposit.Interest = 0.08
 	}
+	err2 := db.Get().Create(&addDeposit)
+
 	newBalance := sv.Balance - trans.Amount
 	w.db.Model(&sv).Update("balance", newBalance)
 
@@ -142,8 +144,9 @@ func (w *transactionRepository) TopupDeposit(trans *models.Transaction, id int) 
 		SenderWalletNumber:   sv.SavingsNumber,
 		ReceiverWalletNumber: addDeposit.DepositNumber,
 		Amount:               trans.Amount,
+		Description:          "Deposit",
 	}
 	err1 := db.Get().Create(&addTransaction)
 
-	return addTransaction, err1.Error
+	return addTransaction, err1.Error, err2.Error
 }
