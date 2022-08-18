@@ -8,6 +8,7 @@ import (
 	"github.com/robfig/cron/v3"
 	"gorm.io/gorm"
 	"strconv"
+	"time"
 )
 
 type WalletRepository interface {
@@ -141,7 +142,7 @@ func (w *walletRepository) UpdateInterestAndTax() {
 				Description:          "Tax on Interest",
 			}
 			db.Get().Create(&addTaxTransaction)
-			fmt.Println("im here yay")
+
 		}
 
 	}
@@ -149,8 +150,9 @@ func (w *walletRepository) UpdateInterestAndTax() {
 
 //
 func (w *walletRepository) RunCronJobs() {
-	c := cron.New()
-	c.AddFunc("@every 2s", func() { fmt.Println("every 2s") })
+	loc, _ := time.LoadLocation("Asia/Jakarta")
+	c := cron.New(cron.WithLocation(loc))
+	c.AddFunc("@every 2s", func() { w.UpdateInterestAndTax() })
 	c.Start()
 
 }

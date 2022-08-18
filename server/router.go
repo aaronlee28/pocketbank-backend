@@ -20,7 +20,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		AuthService:   c.AuthService,
 		WalletService: c.WalletService,
 	})
-
 	router.Static("/docs", "swaggerui")
 	router.NoRoute(middlewares.WrongEndpoint())
 	router.Use(h.RunCronJobs)

@@ -91,13 +91,13 @@ func (a *Handler) UserDetails(c *gin.Context) {
 
 }
 
-func (a *Handler) UpdateInterestAndTax(c *gin.Context) {
-
-	a.walletService.UpdateInterestAndTax()
-
-	c.JSON(http.StatusOK, nil)
-
-}
+//func (a *Handler) UpdateInterestAndTax(c *gin.Context) {
+//
+//	a.walletService.UpdateInterestAndTax()
+//
+//	c.JSON(http.StatusOK, nil)
+//
+//}
 
 func (a *Handler) RunCronJobs(c *gin.Context) {
 
