@@ -14,9 +14,11 @@ func Init() {
 		AuthRepository: &authRepository,
 		AppConfig:      config.Config,
 	})
-	transactionRepository := repositories.NewTransactionRepository(&repositories.WRConfig{DB: db.Get()})
-	transactionService := services.NewTransactionServices(&services.TSConfig{TransactionRepository: &transactionRepository})
-	router := NewRouter(&RouterConfig{AuthService: authService, TransactionService: transactionService})
+
+	walletRepository := repositories.NewTransactionRepository(&repositories.WRConfig{DB: db.Get()})
+	walletService := services.NewWalletServices(&services.WSConfig{WalletRepository: &walletRepository})
+
+	router := NewRouter(&RouterConfig{AuthService: authService, WalletService: walletService})
 	err := router.Run()
 	if err != nil {
 		fmt.Println("server error:", err)

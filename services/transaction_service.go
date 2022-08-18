@@ -9,19 +9,16 @@ import (
 
 type TransactionService interface {
 	Topup(req *dto.TopupReq, id int) (*dto.TopupRes, error)
-	Transaction(q *repositories.Query, id int) (*[]dto.TransRes, error)
 	Transfer(req *dto.TransferReq, id int) (*dto.TransferRes, error)
-	UserDetails(id int) (*dto.UserDetailsRes, error)
-	//UpdateInterestAndTax()
 	RunCronJobs()
 }
 
 type transactionService struct {
-	transactionRepository repositories.TransactionRepository
+	transactionRepository repositories.WalletRepository
 }
 
 type TSConfig struct {
-	TransactionRepository repositories.TransactionRepository
+	TransactionRepository repositories.WalletRepository
 }
 
 func NewTransactionServices(c *TSConfig) *transactionService {
@@ -64,30 +61,6 @@ func (a *transactionService) Topup(req *dto.TopupReq, id int) (*dto.TopupRes, er
 	return ret, nil
 }
 
-func (a *transactionService) Transaction(q *repositories.Query, id int) (*[]dto.TransRes, error) {
-
-	var result []dto.TransRes
-	if q.SortBy == "" {
-		q.SortBy = "created_at"
-	}
-	if q.Sort == "" {
-		q.Sort = "desc"
-	}
-	if q.Limit == "" {
-		q.Limit = "10"
-	}
-	t, err := a.transactionRepository.Transaction(q, id)
-	if err != nil {
-		return nil, error(httperror.BadRequestError("Bad Request", "400"))
-	}
-	for _, transaction := range *t {
-		tr := new(dto.TransRes).FromTransaction(&transaction)
-
-		result = append(result, *tr)
-	}
-	return &result, err
-}
-
 func (a *transactionService) Transfer(req *dto.TransferReq, id int) (*dto.TransferRes, error) {
 
 	if req.Amount < 1000 {
@@ -124,23 +97,6 @@ func (a *transactionService) Transfer(req *dto.TransferReq, id int) (*dto.Transf
 	}
 	return ret, nil
 }
-
-func (a *transactionService) UserDetails(id int) (*dto.UserDetailsRes, error) {
-
-	ret, err := a.transactionRepository.UserDetails(id)
-	if err != nil {
-		return nil, error(httperror.BadRequestError("User not found", "400"))
-	}
-
-	return ret, err
-}
-
-//
-//func (a *transactionService) UpdateInterestAndTax() {
-//
-//	a.transactionRepository.UpdateInterestAndTax()
-//
-//}
 
 func (a *transactionService) RunCronJobs() {
 

@@ -7,7 +7,6 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"github.com/robfig/cron/v3"
 	"gorm.io/gorm"
-	"strconv"
 	"time"
 )
 
@@ -20,27 +19,19 @@ type TransactionRepository interface {
 	RunCronJobs()
 }
 
-type walletRepository struct {
+type transactionRepository struct {
 	db *gorm.DB
 }
 
-type WRConfig struct {
+type TRConfig struct {
 	DB *gorm.DB
 }
 
-type Query struct {
-	SortBy string
-	Sort   string
-	Limit  string
-	Page   string
-	Search string
+func NewTransactionRepository(c *TRConfig) transactionRepository {
+	return transactionRepository{db: c.DB}
 }
 
-func NewTransactionRepository(c *WRConfig) walletRepository {
-	return walletRepository{db: c.DB}
-}
-
-func (w *walletRepository) Topup(trans *models.Transaction, id int) (*models.Transaction, error, error) {
+func (w *transactionRepository) Topup(trans *models.Transaction, id int) (*models.Transaction, error, error) {
 	var wallet *models.Wallet
 	err2 := w.db.Where("user_id = ?", id).First(&wallet)
 	newBalance := wallet.Balance + trans.Amount
@@ -56,20 +47,7 @@ func (w *walletRepository) Topup(trans *models.Transaction, id int) (*models.Tra
 	return addTransaction, err1.Error, err2.Error
 }
 
-func (w *walletRepository) Transaction(q *Query, id int) (*[]models.Transaction, error) {
-	var trans *[]models.Transaction
-	var wallet *models.Wallet
-	limit, _ := strconv.Atoi(q.Limit)
-	page, _ := strconv.Atoi(q.Page)
-	search := "%" + q.Search + "%"
-	offset := (limit * page) - limit
-	w.db.Where("user_id = ?", id).First(&wallet)
-	err := w.db.Limit(limit).Offset(offset).Order(q.SortBy+" "+q.Sort).Where("sender_wallet_number = ? OR receiver_wallet_number = ? ", wallet.WalletNumber, wallet.WalletNumber).Where("UPPER(description) like UPPER(?)", search).Find(&trans).Error
-
-	return trans, err
-}
-
-func (w *walletRepository) Transfer(trans *models.Transaction, id int) (*models.Transaction, error, error, error) {
+func (w *transactionRepository) Transfer(trans *models.Transaction, id int) (*models.Transaction, error, error, error) {
 	var senderWallet *models.Wallet
 	var receiverWallet *models.Wallet
 	var checkBalance float32
@@ -99,23 +77,7 @@ func (w *walletRepository) Transfer(trans *models.Transaction, id int) (*models.
 	return addTransaction, nil, nil, nil
 }
 
-func (w *walletRepository) UserDetails(id int) (*dto.UserDetailsRes, error) {
-	var user *models.User
-	var wallet *models.Wallet
-	err := w.db.Where("id = ?", id).First(&user).Error
-	w.db.Where("user_id = ?", id).First(&wallet)
-	ret := &dto.UserDetailsRes{
-		Id:           user.Id,
-		Email:        user.Email,
-		WalletID:     wallet.Id,
-		WalletNumber: wallet.WalletNumber,
-		Balance:      wallet.Balance,
-	}
-
-	return ret, err
-}
-
-func (w *walletRepository) UpdateInterestAndTax() {
+func (w *transactionRepository) UpdateInterestAndTax() {
 	var svs *[]models.Savings
 	w.db.Find(&svs)
 	for _, s := range *svs {
@@ -149,7 +111,7 @@ func (w *walletRepository) UpdateInterestAndTax() {
 }
 
 //
-func (w *walletRepository) RunCronJobs() {
+func (w *transactionRepository) RunCronJobs() {
 	loc, _ := time.LoadLocation("Asia/Jakarta")
 	c := cron.New(cron.WithLocation(loc))
 	c.AddFunc("@daily", func() { w.UpdateInterestAndTax() })

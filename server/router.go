@@ -10,6 +10,7 @@ import (
 
 type RouterConfig struct {
 	AuthService        services.AuthService
+	WalletService      services.WalletService
 	TransactionService services.TransactionService
 }
 
@@ -19,6 +20,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	h := handlers.New(&handlers.HandlerConfig{
 		AuthService:        c.AuthService,
 		TransactionService: c.TransactionService,
+		WalletService:      c.WalletService,
 	})
 	router.Static("/docs", "swaggerui")
 	router.NoRoute(middlewares.WrongEndpoint())
