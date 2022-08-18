@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func (a *Handler) Topup(c *gin.Context) {
+func (a *Handler) TopupSavings(c *gin.Context) {
 
 	payload, _ := c.Get("payload")
 	payload2, _ := c.Get("user")
@@ -15,7 +15,7 @@ func (a *Handler) Topup(c *gin.Context) {
 	user, _ := payload2.(models.User)
 	userid := user.Id
 
-	result, err := a.TransactionService.Topup(param, userid)
+	result, err := a.TransactionService.TopupSavings(param, userid)
 
 	if err != nil {
 		e := c.Error(err)

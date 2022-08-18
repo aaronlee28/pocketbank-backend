@@ -51,7 +51,7 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 	hash, _ := hashPassword(user.Password)
 	user.Password = hash
 	user.EligibleMerchandise = false
-	makeNewReferralCode := false
+	makeNewReferralCode := true
 	for makeNewReferralCode == true {
 		checkReferralNumber := rand.Intn(99999-9999) + 9999
 		user.ReferralNumber = checkReferralNumber

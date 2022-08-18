@@ -39,7 +39,7 @@ func (a *Handler) SignIn(c *gin.Context) {
 		return
 	}
 	fmt.Println(result)
-	//c.(http.StatusOK, result)
+	c.JSON(http.StatusOK, result)
 
 }
 

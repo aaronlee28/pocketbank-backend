@@ -10,7 +10,7 @@ import (
 )
 
 type TransactionRepository interface {
-	Topup(trans *models.Transaction, id int) (*models.Transaction, error, error)
+	TopupSavings(trans *models.Transaction, id int) (*models.Transaction, error, error)
 
 	Transfer(trans *models.Transaction, id int) (*models.Transaction, error, error, error)
 
@@ -29,14 +29,14 @@ type TRConfig struct {
 func NewTransactionRepository(c *TRConfig) transactionRepository {
 	return transactionRepository{db: c.DB}
 }
-func (w *transactionRepository) Topup(trans *models.Transaction, id int) (*models.Transaction, error, error) {
-	var wallet *models.Wallet
-	err2 := w.db.Where("user_id = ?", id).First(&wallet)
-	newBalance := wallet.Balance + trans.Amount
-	w.db.Model(&wallet).Update("balance", newBalance)
+func (w *transactionRepository) TopupSavings(trans *models.Transaction, id int) (*models.Transaction, error, error) {
+	var sv *models.Savings
+	err2 := w.db.Where("user_id = ?", id).First(&sv)
+	newBalance := sv.Balance + trans.Amount
+	w.db.Model(&sv).Update("balance", newBalance)
 	addTransaction := &models.Transaction{
-		SenderWalletNumber:   wallet.WalletNumber,
-		ReceiverWalletNumber: wallet.WalletNumber,
+		SenderWalletNumber:   trans.SenderWalletNumber,
+		ReceiverWalletNumber: sv.SavingsNumber,
 		Amount:               trans.Amount,
 		Description:          trans.Description,
 	}
