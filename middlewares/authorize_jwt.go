@@ -26,10 +26,11 @@ func AuthorizeJWT(c *gin.Context) {
 		fmt.Println("disable JWT authorization on dev env")
 		return
 	}
-	
+
 	authHeader := c.GetHeader("Authorization")
 
 	s := strings.Split(authHeader, "Bearer ")
+
 	unauthorizedErr := httperror.UnauthorizedError()
 	if len(s) < 2 {
 		c.AbortWithStatusJSON(unauthorizedErr.StatusCode, unauthorizedErr)
@@ -54,5 +55,6 @@ func AuthorizeJWT(c *gin.Context) {
 		c.AbortWithStatusJSON(unauthorizedErr.StatusCode, unauthorizedErr)
 		return
 	}
+
 	c.Set("user", user)
 }

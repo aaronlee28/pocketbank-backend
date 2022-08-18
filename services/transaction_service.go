@@ -7,7 +7,7 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
 )
 
-type WalletService interface {
+type TransactionService interface {
 	Topup(req *dto.TopupReq, id int) (*dto.TopupRes, error)
 	Transaction(q *repositories.Query, id int) (*[]dto.TransRes, error)
 	Transfer(req *dto.TransferReq, id int) (*dto.TransferRes, error)
@@ -16,21 +16,21 @@ type WalletService interface {
 	RunCronJobs()
 }
 
-type walletService struct {
-	walletRepository repositories.WalletRepository
+type transactionService struct {
+	transactionRepository repositories.TransactionRepository
 }
 
-type WSConfig struct {
-	WalletRepository repositories.WalletRepository
+type TSConfig struct {
+	TransactionRepository repositories.TransactionRepository
 }
 
-func NewWalletServices(c *WSConfig) *walletService {
-	return &walletService{
-		walletRepository: c.WalletRepository,
+func NewTransactionServices(c *TSConfig) *transactionService {
+	return &transactionService{
+		transactionRepository: c.TransactionRepository,
 	}
 }
 
-func (a *walletService) Topup(req *dto.TopupReq, id int) (*dto.TopupRes, error) {
+func (a *transactionService) Topup(req *dto.TopupReq, id int) (*dto.TopupRes, error) {
 	var desc string
 	if req.SourceOfFundsID == 1 {
 		desc = "Top Up From Bank Transfer"
@@ -53,7 +53,7 @@ func (a *walletService) Topup(req *dto.TopupReq, id int) (*dto.TopupRes, error) 
 		Description: desc,
 	}
 
-	transaction, err1, err2 := a.walletRepository.Topup(t, id)
+	transaction, err1, err2 := a.transactionRepository.Topup(t, id)
 	if err1 != nil || err2 != nil {
 		return nil, error(httperror.BadRequestError("Bad Request", ""))
 	}
@@ -64,7 +64,7 @@ func (a *walletService) Topup(req *dto.TopupReq, id int) (*dto.TopupRes, error) 
 	return ret, nil
 }
 
-func (a *walletService) Transaction(q *repositories.Query, id int) (*[]dto.TransRes, error) {
+func (a *transactionService) Transaction(q *repositories.Query, id int) (*[]dto.TransRes, error) {
 
 	var result []dto.TransRes
 	if q.SortBy == "" {
@@ -76,7 +76,7 @@ func (a *walletService) Transaction(q *repositories.Query, id int) (*[]dto.Trans
 	if q.Limit == "" {
 		q.Limit = "10"
 	}
-	t, err := a.walletRepository.Transaction(q, id)
+	t, err := a.transactionRepository.Transaction(q, id)
 	if err != nil {
 		return nil, error(httperror.BadRequestError("Bad Request", "400"))
 	}
@@ -88,7 +88,7 @@ func (a *walletService) Transaction(q *repositories.Query, id int) (*[]dto.Trans
 	return &result, err
 }
 
-func (a *walletService) Transfer(req *dto.TransferReq, id int) (*dto.TransferRes, error) {
+func (a *transactionService) Transfer(req *dto.TransferReq, id int) (*dto.TransferRes, error) {
 
 	if req.Amount < 1000 {
 		return nil, error(httperror.BadRequestError("Minimum Amount is Rp.1000", ""))
@@ -106,7 +106,7 @@ func (a *walletService) Transfer(req *dto.TransferReq, id int) (*dto.TransferRes
 		Description:          req.Description,
 	}
 
-	transaction, err1, err2, err3 := a.walletRepository.Transfer(t, id)
+	transaction, err1, err2, err3 := a.transactionRepository.Transfer(t, id)
 	if err1 != nil {
 		return nil, error(httperror.BadRequestError("Insufficient Balance", ""))
 	}
@@ -125,9 +125,9 @@ func (a *walletService) Transfer(req *dto.TransferReq, id int) (*dto.TransferRes
 	return ret, nil
 }
 
-func (a *walletService) UserDetails(id int) (*dto.UserDetailsRes, error) {
+func (a *transactionService) UserDetails(id int) (*dto.UserDetailsRes, error) {
 
-	ret, err := a.walletRepository.UserDetails(id)
+	ret, err := a.transactionRepository.UserDetails(id)
 	if err != nil {
 		return nil, error(httperror.BadRequestError("User not found", "400"))
 	}
@@ -136,14 +136,14 @@ func (a *walletService) UserDetails(id int) (*dto.UserDetailsRes, error) {
 }
 
 //
-//func (a *walletService) UpdateInterestAndTax() {
+//func (a *transactionService) UpdateInterestAndTax() {
 //
-//	a.walletRepository.UpdateInterestAndTax()
+//	a.transactionRepository.UpdateInterestAndTax()
 //
 //}
 
-func (a *walletService) RunCronJobs() {
+func (a *transactionService) RunCronJobs() {
 
-	a.walletRepository.RunCronJobs()
+	a.transactionRepository.RunCronJobs()
 
 }

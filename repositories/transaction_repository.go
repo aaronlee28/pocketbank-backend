@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-type WalletRepository interface {
+type TransactionRepository interface {
 	Topup(trans *models.Transaction, id int) (*models.Transaction, error, error)
 	Transaction(q *Query, id int) (*[]models.Transaction, error)
 	Transfer(trans *models.Transaction, id int) (*models.Transaction, error, error, error)
@@ -36,7 +36,7 @@ type Query struct {
 	Search string
 }
 
-func NewWalletRepository(c *WRConfig) walletRepository {
+func NewTransactionRepository(c *WRConfig) walletRepository {
 	return walletRepository{db: c.DB}
 }
 
@@ -152,7 +152,7 @@ func (w *walletRepository) UpdateInterestAndTax() {
 func (w *walletRepository) RunCronJobs() {
 	loc, _ := time.LoadLocation("Asia/Jakarta")
 	c := cron.New(cron.WithLocation(loc))
-	c.AddFunc("@every 2s", func() { w.UpdateInterestAndTax() })
+	c.AddFunc("@daily", func() { w.UpdateInterestAndTax() })
 	c.Start()
 
 }

@@ -16,7 +16,7 @@ func (a *Handler) Topup(c *gin.Context) {
 	user, _ := payload2.(models.User)
 	userid := user.Id
 
-	result, err := a.walletService.Topup(param, userid)
+	result, err := a.TransactionService.Topup(param, userid)
 
 	if err != nil {
 		e := c.Error(err)
@@ -41,7 +41,7 @@ func (a *Handler) Transaction(c *gin.Context) {
 		Search: c.Query("search"),
 	}
 
-	result, err := a.walletService.Transaction(query, userid)
+	result, err := a.TransactionService.Transaction(query, userid)
 
 	if err != nil {
 		e := c.Error(err)
@@ -61,7 +61,7 @@ func (a *Handler) Transfer(c *gin.Context) {
 	user, _ := payload2.(models.User)
 	userid := user.Id
 
-	result, err := a.walletService.Transfer(param, userid)
+	result, err := a.TransactionService.Transfer(param, userid)
 
 	if err != nil {
 		e := c.Error(err)
@@ -79,7 +79,7 @@ func (a *Handler) UserDetails(c *gin.Context) {
 	user, _ := payload.(models.User)
 	userid := user.Id
 
-	result, err := a.walletService.UserDetails(userid)
+	result, err := a.TransactionService.UserDetails(userid)
 
 	if err != nil {
 		e := c.Error(err)
@@ -93,7 +93,7 @@ func (a *Handler) UserDetails(c *gin.Context) {
 
 //func (a *Handler) UpdateInterestAndTax(c *gin.Context) {
 //
-//	a.walletService.UpdateInterestAndTax()
+//	a.TransactionService.UpdateInterestAndTax()
 //
 //	c.JSON(http.StatusOK, nil)
 //
@@ -101,8 +101,8 @@ func (a *Handler) UserDetails(c *gin.Context) {
 
 func (a *Handler) RunCronJobs(c *gin.Context) {
 
-	a.walletService.RunCronJobs()
+	a.TransactionService.RunCronJobs()
 
-	c.JSON(http.StatusOK, nil)
+	c.Next()
 
 }

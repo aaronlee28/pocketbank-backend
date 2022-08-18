@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httperror"
 	"github.com/gin-gonic/gin"
@@ -35,9 +36,10 @@ func (a *Handler) SignIn(c *gin.Context) {
 	if result == nil {
 		e2 := c.Error(httperror.BadRequestError("users not found", ""))
 		c.JSON(http.StatusBadRequest, e2)
-
+		return
 	}
-	c.JSON(http.StatusOK, result)
+	fmt.Println(result)
+	//c.(http.StatusOK, result)
 
 }
 
