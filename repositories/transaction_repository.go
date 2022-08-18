@@ -15,7 +15,7 @@ type TransactionRepository interface {
 
 	Transfer(trans *models.Transaction, id int) (*models.Transaction, error, error, error)
 
-	UpdateInterestAndTax()
+	UpdateInterestAndTaxSavings()
 	RunCronJobs()
 
 	TopupDeposit(trans *models.Transaction, id int) (*models.Transaction, error, error)
@@ -78,7 +78,7 @@ func (w *transactionRepository) Transfer(trans *models.Transaction, id int) (*mo
 	return addTransaction, nil, nil, nil
 }
 
-func (w *transactionRepository) UpdateInterestAndTax() {
+func (w *transactionRepository) UpdateInterestAndTaxSavings() {
 	var svs *[]models.Savings
 	w.db.Find(&svs)
 	for _, s := range *svs {
@@ -111,10 +111,47 @@ func (w *transactionRepository) UpdateInterestAndTax() {
 	}
 }
 
+func (w *transactionRepository) UpdateInterestAndTaxDeposit() {
+	var ds *[]models.Deposit
+	w.db.Find(&ds)
+	for _, s := range *ds {
+		if s.Balance > 0 {
+			interest := (s.Balance * s.InterestRate) / (12 * 30)
+			addInterest := s.Balance + interest
+			w.db.Model(&s).Update("balance", addInterest)
+			addInterestTransaction := &models.Transaction{
+				SenderWalletNumber:   1,
+				ReceiverWalletNumber: s.DepositNumber,
+				Amount:               addInterest,
+				Description:          "Interest",
+			}
+			db.Get().Create(&addInterestTransaction)
+			taxonInterest := interest * s.Tax
+			payTax := s.Balance - taxonInterest
+			interestAfterTax := interest - taxonInterest
+			addTotalInterest := s.Interest + interestAfterTax
+			w.db.Model(&s).Update("balance", payTax)
+
+			w.db.Model(&s).Update("interest", addTotalInterest)
+
+			addTaxTransaction := &models.Transaction{
+				SenderWalletNumber:   s.DepositNumber,
+				ReceiverWalletNumber: 2,
+				Amount:               payTax,
+				Description:          "Tax on Interest",
+			}
+			db.Get().Create(&addTaxTransaction)
+
+		}
+
+	}
+}
+
 func (w *transactionRepository) RunCronJobs() {
 	loc, _ := time.LoadLocation("Asia/Jakarta")
 	c := cron.New(cron.WithLocation(loc))
-	_, _ = c.AddFunc("@daily", func() { w.UpdateInterestAndTax() })
+	_, _ = c.AddFunc("@daily", func() { w.UpdateInterestAndTaxSavings() })
+	_, _ = c.AddFunc("@every 5s", func() { w.UpdateInterestAndTaxDeposit() })
 	c.Start()
 
 }
@@ -130,9 +167,9 @@ func (w *transactionRepository) TopupDeposit(trans *models.Transaction, id int) 
 		DepositNumber: 3 + rand.Intn(99999-10000) + 10000 + id,
 	}
 	if trans.Amount < 10000000 {
-		addDeposit.Interest = 0.06
+		addDeposit.InterestRate = 0.06
 	} else {
-		addDeposit.Interest = 0.08
+		addDeposit.InterestRate = 0.08
 	}
 	err2 := db.Get().Create(&addDeposit)
 

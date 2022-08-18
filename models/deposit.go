@@ -5,6 +5,7 @@ type Deposit struct {
 	UserID        int     `json:"user_id"`
 	DepositNumber int     `json:"deposit_number"`
 	Balance       float32 `json:"balance"`
-	Interest      float32 `json:"interest"`
+	InterestRate  float32 `json:"interest_rate"`
 	Tax           float32 `json:"tax"`
+	Interest      float32 `json:"interest"`
 }
