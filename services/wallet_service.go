@@ -9,6 +9,7 @@ import (
 type WalletService interface {
 	Transaction(q *repositories.Query, id int) (*[]dto.TransRes, error)
 	UserDetails(id int) (*dto.UserDetailsRes, error)
+	DepositInfo(id int) (*[]dto.DepositInfoRes, error)
 }
 
 type walletService struct {
@@ -57,4 +58,19 @@ func (a *walletService) UserDetails(id int) (*dto.UserDetailsRes, error) {
 	}
 
 	return ret, err
+}
+
+func (a *walletService) DepositInfo(id int) (*[]dto.DepositInfoRes, error) {
+	var res []dto.DepositInfoRes
+	ret, err := a.walletRepository.DepositInfo(id)
+	if err != nil {
+		return nil, error(httperror.BadRequestError("User not found", "400"))
+	}
+
+	for _, d := range *ret {
+		tr := new(dto.DepositInfoRes).FromDepositInfo(&d)
+
+		res = append(res, *tr)
+	}
+	return &res, err
 }

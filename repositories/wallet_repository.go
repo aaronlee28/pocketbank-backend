@@ -10,6 +10,7 @@ import (
 type WalletRepository interface {
 	Transaction(q *Query, id int) (*[]models.Transaction, error)
 	UserDetails(id int) (*dto.UserDetailsRes, error)
+	DepositInfo(id int) (*[]models.Deposit, error)
 }
 
 type walletRepository struct {
@@ -59,4 +60,12 @@ func (w *walletRepository) UserDetails(id int) (*dto.UserDetailsRes, error) {
 	}
 
 	return ret, err
+}
+
+func (w *walletRepository) DepositInfo(id int) (*[]models.Deposit, error) {
+	//var user *models.User
+	var ds *[]models.Deposit
+	err := w.db.Where("user_id = ? ", id).Find(&ds).Error
+
+	return ds, err
 }

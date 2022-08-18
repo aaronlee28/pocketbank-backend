@@ -49,3 +49,21 @@ func (a *Handler) UserDetails(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 
 }
+
+func (a *Handler) DepositInfo(c *gin.Context) {
+
+	payload, _ := c.Get("user")
+	user, _ := payload.(models.User)
+	userid := user.Id
+
+	result, err := a.WalletService.DepositInfo(userid)
+
+	if err != nil {
+		e := c.Error(err)
+		c.JSON(http.StatusBadRequest, e)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+
+}

@@ -111,11 +111,10 @@ func (w *transactionRepository) UpdateInterestAndTax() {
 	}
 }
 
-//
 func (w *transactionRepository) RunCronJobs() {
 	loc, _ := time.LoadLocation("Asia/Jakarta")
 	c := cron.New(cron.WithLocation(loc))
-	c.AddFunc("@daily", func() { w.UpdateInterestAndTax() })
+	_, _ = c.AddFunc("@daily", func() { w.UpdateInterestAndTax() })
 	c.Start()
 
 }
