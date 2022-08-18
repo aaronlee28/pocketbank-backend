@@ -113,27 +113,41 @@ func (w *transactionRepository) UpdateInterestAndTaxSavings() {
 
 func (w *transactionRepository) WithdrawDeposit() {
 	var ds *[]models.Deposit
-	var u *models.User
+	var sv *models.Savings
 	w.db.Find(&ds)
 
 	for _, s := range *ds {
 		if s.AutoDeposit == true {
-			difference := time.Now().Sub(s.UpdatedAt)
+
+			difference := time.Now().UTC().Sub(s.UpdatedAt)
+			isOneMonth := int64(difference.Hours() / 24 / 30)
+
+			if isOneMonth == 1 {
+				w.db.Where("user_id", s.UserID).First(&sv)
+				addInterest := sv.Balance + s.Interest
+				w.db.Model(&sv).Update("balance", addInterest)
+				w.db.Model(&s).Update("updated_at", time.Now().UTC())
+			}
+		}
+		if s.AutoDeposit == false {
+			difference := time.Now().UTC().Sub(s.UpdatedAt)
 			isOneMonth := int64(difference.Hours() / 24 / 30)
 			if isOneMonth == 1 {
+				w.db.Where("user_id", s.UserID).First(&sv)
+				addInterest := sv.Balance + s.Interest + s.Balance
+				w.db.Model(&sv).Update("balance", addInterest)
+				w.db.Delete(&s)
+				fmt.Println("im here")
 
 			}
-			w.db.Where("id = ?", s.UserID).First(&u)
-
 		}
 	}
 }
 
 func (w *transactionRepository) RunCronJobs() {
-	loc, _ := time.LoadLocation("Asia/Jakarta")
-	c := cron.New(cron.WithLocation(loc))
+	c := cron.New(cron.WithLocation(time.UTC))
 	_, _ = c.AddFunc("@daily", func() { w.UpdateInterestAndTaxSavings() })
-	_, _ = c.AddFunc("@every 5s", func() { w.WithdrawDeposit() })
+	_, _ = c.AddFunc("@daily", func() { w.WithdrawDeposit() })
 	c.Start()
 
 }
