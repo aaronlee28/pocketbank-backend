@@ -3,7 +3,6 @@ package repositories
 import (
 	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"github.com/robfig/cron/v3"
 	"gorm.io/gorm"
@@ -12,9 +11,9 @@ import (
 
 type TransactionRepository interface {
 	Topup(trans *models.Transaction, id int) (*models.Transaction, error, error)
-	Transaction(q *Query, id int) (*[]models.Transaction, error)
+
 	Transfer(trans *models.Transaction, id int) (*models.Transaction, error, error, error)
-	UserDetails(id int) (*dto.UserDetailsRes, error)
+
 	UpdateInterestAndTax()
 	RunCronJobs()
 }
@@ -30,7 +29,6 @@ type TRConfig struct {
 func NewTransactionRepository(c *TRConfig) transactionRepository {
 	return transactionRepository{db: c.DB}
 }
-
 func (w *transactionRepository) Topup(trans *models.Transaction, id int) (*models.Transaction, error, error) {
 	var wallet *models.Wallet
 	err2 := w.db.Where("user_id = ?", id).First(&wallet)

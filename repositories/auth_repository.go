@@ -51,8 +51,16 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 	hash, _ := hashPassword(user.Password)
 	user.Password = hash
 	user.EligibleMerchandise = false
-	user.ReferralNumber = rand.Intn(99999-9999) + 9999
-	res := db.Get().Create(&user)
+	makeNewReferralCode := false
+	for makeNewReferralCode == true {
+		checkReferralNumber := rand.Intn(99999-9999) + 9999
+		user.ReferralNumber = checkReferralNumber
+		er := db.Get().Create(&user).Error
+		if er == nil {
+			makeNewReferralCode = false
+		}
+	}
+
 	a.db.Model(&user).Update("code", nil)
 
 	w := &models.Wallet{
@@ -83,7 +91,7 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 		db.Get().Create(&addTransaction)
 	}
 
-	return user, res.Error
+	return user, nil
 }
 func (a *authRepository) MatchingCredential(email, password string) (*models.User, error) {
 	var user *models.User

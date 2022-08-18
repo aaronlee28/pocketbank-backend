@@ -11,7 +11,7 @@ import (
 func (a *Handler) Register(c *gin.Context) {
 	payload, _ := c.Get("payload")
 	param, _ := payload.(*dto.RegReq)
-	result, err := a.authService.Register(param)
+	result, err := a.AuthService.Register(param)
 
 	if err != nil {
 		_ = c.Error(err)
@@ -26,7 +26,7 @@ func (a *Handler) SignIn(c *gin.Context) {
 	payload, _ := c.Get("payload")
 	signin, _ := payload.(*dto.AuthReq)
 
-	result, err1 := a.authService.SignIn(signin)
+	result, err1 := a.AuthService.SignIn(signin)
 
 	if err1 != nil {
 		e := c.Error(err1)
@@ -46,7 +46,7 @@ func (a *Handler) SignIn(c *gin.Context) {
 func (a *Handler) GetCode(c *gin.Context) {
 	payload, _ := c.Get("payload")
 	email, _ := payload.(*dto.CodeReq)
-	result, err := a.authService.GetCode(email)
+	result, err := a.AuthService.GetCode(email)
 
 	if err != nil {
 		e := c.Error(err)
@@ -62,7 +62,7 @@ func (a *Handler) ChangePassword(c *gin.Context) {
 	payload, _ := c.Get("payload")
 	data, _ := payload.(*dto.ChangePReq)
 
-	result, err := a.authService.ChangePassword(data)
+	result, err := a.AuthService.ChangePassword(data)
 
 	if err != nil {
 		e := c.Error(err)

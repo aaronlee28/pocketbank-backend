@@ -3,7 +3,7 @@ package handlers
 import "git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/services"
 
 type Handler struct {
-	authService        services.AuthService
+	AuthService        services.AuthService
 	TransactionService services.TransactionService
 	WalletService      services.WalletService
 }
@@ -16,7 +16,7 @@ type HandlerConfig struct {
 
 func New(c *HandlerConfig) *Handler {
 	return &Handler{
-		authService:        c.AuthService,
+		AuthService:        c.AuthService,
 		TransactionService: c.TransactionService,
 		WalletService:      c.WalletService,
 	}

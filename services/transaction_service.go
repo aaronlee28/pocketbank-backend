@@ -14,11 +14,11 @@ type TransactionService interface {
 }
 
 type transactionService struct {
-	transactionRepository repositories.WalletRepository
+	transactionRepository repositories.TransactionRepository
 }
 
 type TSConfig struct {
-	TransactionRepository repositories.WalletRepository
+	TransactionRepository repositories.TransactionRepository
 }
 
 func NewTransactionServices(c *TSConfig) *transactionService {

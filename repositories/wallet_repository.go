@@ -8,12 +8,8 @@ import (
 )
 
 type WalletRepository interface {
-	Topup(trans *models.Transaction, id int) (*models.Transaction, error, error)
 	Transaction(q *Query, id int) (*[]models.Transaction, error)
-	Transfer(trans *models.Transaction, id int) (*models.Transaction, error, error, error)
 	UserDetails(id int) (*dto.UserDetailsRes, error)
-	UpdateInterestAndTax()
-	RunCronJobs()
 }
 
 type walletRepository struct {
