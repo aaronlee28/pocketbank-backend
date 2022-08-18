@@ -111,39 +111,21 @@ func (w *transactionRepository) UpdateInterestAndTaxSavings() {
 	}
 }
 
-func (w *transactionRepository) UpdateInterestAndTaxDeposit() {
+func (w *transactionRepository) WithdrawDeposit() {
 	var ds *[]models.Deposit
+	var u *models.User
 	w.db.Find(&ds)
+
 	for _, s := range *ds {
-		if s.Balance > 0 {
-			interest := (s.Balance * s.InterestRate) / (12 * 30)
-			addInterest := s.Balance + interest
-			w.db.Model(&s).Update("balance", addInterest)
-			addInterestTransaction := &models.Transaction{
-				SenderWalletNumber:   1,
-				ReceiverWalletNumber: s.DepositNumber,
-				Amount:               addInterest,
-				Description:          "Interest",
-			}
-			db.Get().Create(&addInterestTransaction)
-			taxonInterest := interest * s.Tax
-			payTax := s.Balance - taxonInterest
-			interestAfterTax := interest - taxonInterest
-			addTotalInterest := s.Interest + interestAfterTax
-			w.db.Model(&s).Update("balance", payTax)
+		if s.AutoDeposit == true {
+			difference := time.Now().Sub(s.UpdatedAt)
+			isOneMonth := int64(difference.Hours() / 24 / 30)
+			if isOneMonth == 1 {
 
-			w.db.Model(&s).Update("interest", addTotalInterest)
-
-			addTaxTransaction := &models.Transaction{
-				SenderWalletNumber:   s.DepositNumber,
-				ReceiverWalletNumber: 2,
-				Amount:               payTax,
-				Description:          "Tax on Interest",
 			}
-			db.Get().Create(&addTaxTransaction)
+			w.db.Where("id = ?", s.UserID).First(&u)
 
 		}
-
 	}
 }
 
@@ -151,7 +133,7 @@ func (w *transactionRepository) RunCronJobs() {
 	loc, _ := time.LoadLocation("Asia/Jakarta")
 	c := cron.New(cron.WithLocation(loc))
 	_, _ = c.AddFunc("@daily", func() { w.UpdateInterestAndTaxSavings() })
-	_, _ = c.AddFunc("@every 5s", func() { w.UpdateInterestAndTaxDeposit() })
+	_, _ = c.AddFunc("@every 5s", func() { w.WithdrawDeposit() })
 	c.Start()
 
 }
@@ -171,6 +153,9 @@ func (w *transactionRepository) TopupDeposit(trans *models.Transaction, id int) 
 	} else {
 		addDeposit.InterestRate = 0.08
 	}
+	interestBeforeTax := (trans.Amount * addDeposit.InterestRate) / 12
+	interestAfterTax := interestBeforeTax * (1 - addDeposit.Tax)
+	addDeposit.Interest = interestAfterTax
 	err2 := db.Get().Create(&addDeposit)
 
 	newBalance := sv.Balance - trans.Amount
