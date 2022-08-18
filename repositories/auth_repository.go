@@ -64,9 +64,8 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 	a.db.Model(&user).Update("code", nil)
 
 	w := &models.Wallet{
-		UserID:        user.Id,
-		WalletNumber:  1 + rand.Intn(99999-10000) + 10000 + user.Id,
-		DepositNumber: 200000 + user.Id,
+		UserID:       user.Id,
+		WalletNumber: 1 + rand.Intn(99999-10000) + 10000 + user.Id,
 	}
 	db.Get().Create(&w)
 

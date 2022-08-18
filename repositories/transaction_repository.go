@@ -6,6 +6,7 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"github.com/robfig/cron/v3"
 	"gorm.io/gorm"
+	"math/rand"
 	"time"
 )
 
@@ -16,6 +17,8 @@ type TransactionRepository interface {
 
 	UpdateInterestAndTax()
 	RunCronJobs()
+
+	TopupDeposit(trans *models.Transaction, id int) (*models.Transaction, error)
 }
 
 type transactionRepository struct {
@@ -115,4 +118,32 @@ func (w *transactionRepository) RunCronJobs() {
 	c.AddFunc("@daily", func() { w.UpdateInterestAndTax() })
 	c.Start()
 
+}
+
+func (w *transactionRepository) TopupDeposit(trans *models.Transaction, id int) (*models.Transaction, error) {
+	var sv *models.Savings
+	w.db.Where("user_id = ?", id).First(&sv)
+
+	addDeposit := &models.Deposit{
+		UserID:        id,
+		Balance:       trans.Amount,
+		Tax:           0.2,
+		DepositNumber: 3 + rand.Intn(99999-10000) + 10000 + id,
+	}
+	if trans.Amount < 10000000 {
+		addDeposit.Interest = 0.06
+	} else {
+		addDeposit.Interest = 0.08
+	}
+	newBalance := sv.Balance - trans.Amount
+	w.db.Model(&sv).Update("balance", newBalance)
+
+	addTransaction := &models.Transaction{
+		SenderWalletNumber:   sv.SavingsNumber,
+		ReceiverWalletNumber: addDeposit.DepositNumber,
+		Amount:               trans.Amount,
+	}
+	err1 := db.Get().Create(&addTransaction)
+
+	return addTransaction, err1.Error
 }

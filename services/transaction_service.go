@@ -8,9 +8,10 @@ import (
 )
 
 type TransactionService interface {
-	TopupSavings(req *dto.TopupReq, id int) (*dto.TopupRes, error)
+	TopupSavings(req *dto.TopupSavingsReq, id int) (*dto.TopupSavingsRes, error)
 	Transfer(req *dto.TransferReq, id int) (*dto.TransferRes, error)
 	RunCronJobs()
+	TopupDeposit(req *dto.TopupDepositReq, id int) (*dto.SuccessRes, error)
 }
 
 type transactionService struct {
@@ -27,7 +28,7 @@ func NewTransactionServices(c *TSConfig) *transactionService {
 	}
 }
 
-func (a *transactionService) TopupSavings(req *dto.TopupReq, id int) (*dto.TopupRes, error) {
+func (a *transactionService) TopupSavings(req *dto.TopupSavingsReq, id int) (*dto.TopupSavingsRes, error) {
 
 	if req.Amount < 50000 {
 		return nil, error(httperror.BadRequestError("Minimum Amount is Rp.50000", "400"))
@@ -45,7 +46,7 @@ func (a *transactionService) TopupSavings(req *dto.TopupReq, id int) (*dto.Topup
 	if err1 != nil || err2 != nil {
 		return nil, error(httperror.BadRequestError("Bad Request", ""))
 	}
-	ret := &dto.TopupRes{
+	ret := &dto.TopupSavingsRes{
 		Amount:      transaction.Amount,
 		Description: transaction.Description,
 	}
@@ -93,4 +94,24 @@ func (a *transactionService) RunCronJobs() {
 
 	a.transactionRepository.RunCronJobs()
 
+}
+
+func (a *transactionService) TopupDeposit(req *dto.TopupDepositReq, id int) (*dto.SuccessRes, error) {
+
+	if req.Amount < 1000000 {
+		return nil, error(httperror.BadRequestError("Minimum Amount is Rp.1000000", "400"))
+	}
+
+	t := &models.Transaction{
+		Amount: req.Amount,
+	}
+
+	transaction, err := a.transactionRepository.TopupDeposit(t, id)
+	if err != nil || transaction == nil {
+		return nil, error(httperror.BadRequestError("Failed to Add Transaction", "401"))
+	}
+	ret := &dto.SuccessRes{
+		Success: "Successful Deposit",
+	}
+	return ret, nil
 }

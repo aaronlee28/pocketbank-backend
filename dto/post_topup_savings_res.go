@@ -1,6 +1,6 @@
 package dto
 
-type TopupRes struct {
+type TopupSavingsRes struct {
 	Amount      float32 `json:"amount"`
 	Description string  `json:"description"`
 }
