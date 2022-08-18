@@ -17,7 +17,7 @@ func (a *Handler) Transaction(c *gin.Context) {
 		Sort:         c.Query("sort"),
 		Limit:        c.Query("limit"),
 		Page:         c.Query("page"),
-		FilterTime:   c.Query("search"),
+		Search:       c.Query("search"),
 		FilterTime:   c.Query("filterTime"),
 		FilterAmount: c.Query("filterAmount"),
 	}
