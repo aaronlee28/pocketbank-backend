@@ -11,7 +11,7 @@ type TransactionService interface {
 	TopupSavings(req *dto.TopupSavingsReq, id int) (*dto.TopupSavingsRes, error)
 	Payment(req *dto.PaymentReq, id int) (*dto.PaymentRes, error)
 	RunCronJobs()
-	TopupDeposit(req *dto.TopupDepositReq, id int) (*dto.SuccessRes, error)
+	TopupDeposit(req *dto.TopupDepositReq, id int) (*dto.DepositRes, error)
 }
 
 type transactionService struct {
@@ -96,7 +96,7 @@ func (a *transactionService) RunCronJobs() {
 
 }
 
-func (a *transactionService) TopupDeposit(req *dto.TopupDepositReq, id int) (*dto.SuccessRes, error) {
+func (a *transactionService) TopupDeposit(req *dto.TopupDepositReq, id int) (*dto.DepositRes, error) {
 
 	if req.Amount < 1000000 {
 		return nil, error(httperror.BadRequestError("Minimum Amount is Rp.1000000", "400"))
@@ -111,8 +111,8 @@ func (a *transactionService) TopupDeposit(req *dto.TopupDepositReq, id int) (*dt
 		return nil, error(httperror.BadRequestError("Insufficient Balance", "401"))
 	}
 
-	ret := &dto.SuccessRes{
-		Success: "Successful Deposit",
+	ret := &dto.DepositRes{
+		Amount: req.Amount,
 	}
 	return ret, nil
 }

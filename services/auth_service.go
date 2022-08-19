@@ -82,7 +82,7 @@ func (a *authService) Register(req *dto.RegReq) (*dto.RegRes, error) {
 	if err != nil {
 		return nil, error(httperror.BadRequestError("Failed to register account", ""))
 	}
-	res := &dto.RegRes{Success: "Success"}
+	res := &dto.RegRes{Email: req.Email, Name: req.Name, Contact: req.Contact}
 	return res, nil
 }
 
