@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httperror"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httpsuccess"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -18,8 +19,8 @@ func (a *Handler) Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
-
+	successResponse := httpsuccess.CreatedSuccess("Created", result)
+	c.JSON(http.StatusCreated, successResponse)
 }
 
 func (a *Handler) SignIn(c *gin.Context) {
@@ -39,8 +40,8 @@ func (a *Handler) SignIn(c *gin.Context) {
 		return
 	}
 	fmt.Println(result)
-	c.JSON(http.StatusOK, result)
-
+	successResponse := httpsuccess.OkSuccess("Ok", result)
+	c.JSON(http.StatusOK, successResponse)
 }
 
 func (a *Handler) GetCode(c *gin.Context) {
@@ -54,7 +55,8 @@ func (a *Handler) GetCode(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	successResponse := httpsuccess.CreatedSuccess("Created", result)
+	c.JSON(http.StatusCreated, successResponse)
 
 }
 
@@ -70,6 +72,6 @@ func (a *Handler) ChangePassword(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
-
+	successResponse := httpsuccess.OkSuccess("Ok", result)
+	c.JSON(http.StatusOK, successResponse)
 }

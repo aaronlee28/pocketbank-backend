@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httpsuccess"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
 	"github.com/gin-gonic/gin"
@@ -31,7 +32,8 @@ func (a *Handler) Transaction(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	successResponse := httpsuccess.OkSuccess("Ok", result)
+	c.JSON(http.StatusOK, successResponse)
 
 }
 
@@ -48,8 +50,8 @@ func (a *Handler) UserDetails(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, e)
 		return
 	}
-
-	c.JSON(http.StatusOK, result)
+	successResponse := httpsuccess.OkSuccess("Ok", result)
+	c.JSON(http.StatusOK, successResponse)
 
 }
 
@@ -66,7 +68,7 @@ func (a *Handler) DepositInfo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, e)
 		return
 	}
-
-	c.JSON(http.StatusOK, result)
+	successResponse := httpsuccess.OkSuccess("Ok", result)
+	c.JSON(http.StatusOK, successResponse)
 
 }

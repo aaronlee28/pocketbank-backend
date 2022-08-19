@@ -9,7 +9,7 @@ import (
 
 type TransactionService interface {
 	TopupSavings(req *dto.TopupSavingsReq, id int) (*dto.TopupSavingsRes, error)
-	Payment(req *dto.TransferReq, id int) (*dto.TransferRes, error)
+	Payment(req *dto.PaymentReq, id int) (*dto.PaymentRes, error)
 	RunCronJobs()
 	TopupDeposit(req *dto.TopupDepositReq, id int) (*dto.SuccessRes, error)
 }
@@ -53,7 +53,7 @@ func (a *transactionService) TopupSavings(req *dto.TopupSavingsReq, id int) (*dt
 	return ret, nil
 }
 
-func (a *transactionService) Payment(req *dto.TransferReq, id int) (*dto.TransferRes, error) {
+func (a *transactionService) Payment(req *dto.PaymentReq, id int) (*dto.PaymentRes, error) {
 
 	if req.Amount < 1000 {
 		return nil, error(httperror.BadRequestError("Minimum Amount is Rp.1000", ""))
@@ -82,7 +82,7 @@ func (a *transactionService) Payment(req *dto.TransferReq, id int) (*dto.Transfe
 		return nil, error(httperror.BadRequestError("Should Not Be Able To Payment with Someone Else's Wallet", ""))
 	}
 
-	ret := &dto.TransferRes{
+	ret := &dto.PaymentRes{
 		ReceiverWalletNumber: transaction.ReceiverWalletNumber,
 		Amount:               transaction.Amount,
 		Description:          transaction.Description,

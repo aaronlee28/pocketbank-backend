@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httpsuccess"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -23,15 +24,15 @@ func (a *Handler) TopupSavings(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
-
+	successResponse := httpsuccess.CreatedSuccess("Created", result)
+	c.JSON(http.StatusCreated, successResponse)
 }
 
 func (a *Handler) Payment(c *gin.Context) {
 
 	payload, _ := c.Get("payload")
 	payload2, _ := c.Get("user")
-	param, _ := payload.(*dto.TransferReq)
+	param, _ := payload.(*dto.PaymentReq)
 	user, _ := payload2.(models.User)
 	userid := user.Id
 
@@ -43,8 +44,8 @@ func (a *Handler) Payment(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
-
+	successResponse := httpsuccess.CreatedSuccess("Created", result)
+	c.JSON(http.StatusCreated, successResponse)
 }
 
 func (a *Handler) RunCronJobs(c *gin.Context) {
@@ -71,6 +72,6 @@ func (a *Handler) TopupDeposit(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
-
+	successResponse := httpsuccess.CreatedSuccess("Created", result)
+	c.JSON(http.StatusCreated, successResponse)
 }
