@@ -36,6 +36,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	router.GET("/userdetails", h.UserDetails)
 	router.POST("/topupdeposit", middlewares.RequestValidator(&dto.TopupDepositReq{}), h.TopupDeposit)
 	router.GET("/depositinfo", h.DepositInfo)
-	//router.GET("/paymenthistory", h.PaymentHistory)
+	router.GET("/paymenthistory", h.PaymentHistory)
 	return router
 }

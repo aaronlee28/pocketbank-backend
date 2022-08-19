@@ -12,6 +12,7 @@ type WalletRepository interface {
 	TransactionHistory(q *Query, id int) (*[]models.Transaction, error)
 	UserDetails(id int) (*dto.UserDetailsRes, error)
 	DepositInfo(id int) (*[]models.Deposit, error)
+	PaymentHistory(id int) (*[]models.Transaction, error)
 }
 
 type walletRepository struct {
@@ -72,4 +73,13 @@ func (w *walletRepository) DepositInfo(id int) (*[]models.Deposit, error) {
 	err := w.db.Where("user_id = ? ", id).Find(&ds).Error
 
 	return ds, err
+}
+
+func (w *walletRepository) PaymentHistory(id int) (*[]models.Transaction, error) {
+	var trans *[]models.Transaction
+	var account *models.Savings
+	w.db.Where("user_id = ?", id).First(&account)
+	err := w.db.Where("WHERE TYPE = Transfer").Find(&trans).Error
+
+	return trans, err
 }
