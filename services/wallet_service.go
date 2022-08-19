@@ -10,6 +10,7 @@ type WalletService interface {
 	TransactionHistory(q *repositories.Query, id int) (*[]dto.TransRes, error)
 	UserDetails(id int) (*dto.UserDetailsRes, error)
 	DepositInfo(id int) (*[]dto.DepositInfoRes, error)
+	//PaymentHistory(id int) (*[]dto.PaymentRes, error)
 }
 
 type walletService struct {
@@ -26,7 +27,7 @@ func NewWalletServices(c *WSConfig) *walletService {
 	}
 }
 
-func (a *walletService) Transaction(q *repositories.Query, id int) (*[]dto.TransRes, error) {
+func (a *walletService) TransactionHistory(q *repositories.Query, id int) (*[]dto.TransRes, error) {
 
 	var result []dto.TransRes
 	if q.SortBy == "" {
@@ -40,6 +41,12 @@ func (a *walletService) Transaction(q *repositories.Query, id int) (*[]dto.Trans
 	}
 	if q.FilterTime == "" {
 		q.FilterTime = "74000"
+	}
+	if q.MinAmount == "" {
+		q.MinAmount = "0"
+	}
+	if q.MaxAmount == "" {
+		q.MaxAmount = "999999999"
 	}
 	t, err := a.walletRepository.TransactionHistory(q, id)
 	if err != nil {
@@ -77,3 +84,7 @@ func (a *walletService) DepositInfo(id int) (*[]dto.DepositInfoRes, error) {
 	}
 	return &res, err
 }
+
+//func (a *walletService) PaymentHistory(id int) {
+//
+//}

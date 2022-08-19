@@ -5,5 +5,5 @@ type PaymentRes struct {
 	ReceiverAccount int     `json:"receiver_account"`
 	Amount          float32 `json:"amount"`
 	Status          string  `json:"status"`
-	Description     string  `json:"Description"`
+	Description     string  `json:"description"`
 }

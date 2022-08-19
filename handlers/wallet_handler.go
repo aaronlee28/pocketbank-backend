@@ -71,3 +71,21 @@ func (a *Handler) DepositInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, successResponse)
 
 }
+
+//func (a *Handler) PaymentHistory(c *gin.Context) {
+//
+//	payload, _ := c.Get("user")
+//	user, _ := payload.(models.User)
+//	userid := user.Id
+//
+//	result, err := a.WalletService.PaymentHistory(userid)
+//
+//	if err != nil {
+//		e := c.Error(err)
+//		c.JSON(http.StatusBadRequest, e)
+//		return
+//	}
+//	successResponse := httpsuccess.OkSuccess("Ok", result)
+//	c.JSON(http.StatusOK, successResponse)
+//
+//}

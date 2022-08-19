@@ -58,12 +58,10 @@ func (w *transactionRepository) Payment(trans *models.Transaction, id int) (*mod
 
 	w.db.Where("user_id = ?", id).First(&senderSavings)
 	err := w.db.Where("savings_number= ?", trans.ReceiverWalletNumber).First(&receiverSavings).Error
-	fmt.Println(senderSavings.SavingsNumber)
-	fmt.Println("error", err)
 
 	addFailedPayment := &models.Transaction{
 		SenderWalletNumber:   senderSavings.SavingsNumber,
-		ReceiverWalletNumber: receiverSavings.SavingsNumber,
+		ReceiverWalletNumber: trans.ReceiverWalletNumber,
 		Amount:               trans.Amount,
 		Type:                 trans.Type,
 		Status:               "Failed",
@@ -80,14 +78,15 @@ func (w *transactionRepository) Payment(trans *models.Transaction, id int) (*mod
 	//check if receiver wallet exist
 	if err != nil {
 		fmt.Println("here")
-		db.Get().Create(&addFailedPayment)
 		addFailedPayment.Description = "Destination Account Not Found"
+		db.Get().Create(&addFailedPayment)
+
 		return addFailedPayment, nil
 	}
 
 	addSuccessfulPayment := &models.Transaction{
 		SenderWalletNumber:   senderSavings.SavingsNumber,
-		ReceiverWalletNumber: receiverSavings.SavingsNumber,
+		ReceiverWalletNumber: trans.ReceiverWalletNumber,
 		Amount:               trans.Amount,
 		Type:                 trans.Type,
 		Status:               "Success",
