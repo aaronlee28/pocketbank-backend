@@ -89,7 +89,7 @@ func (a *walletService) PaymentHistory(id int) (*[]dto.PaymentHistoryRes, error)
 	var res []dto.PaymentHistoryRes
 	ret, err := a.walletRepository.PaymentHistory(id)
 	if err != nil {
-		return nil, error(httperror.BadRequestError("User not found", "400"))
+		return nil, error(httperror.BadRequestError("INTERNAL SERVER ERROR", "400"))
 	}
 
 	for _, t := range *ret {

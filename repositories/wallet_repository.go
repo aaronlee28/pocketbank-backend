@@ -79,7 +79,7 @@ func (w *walletRepository) PaymentHistory(id int) (*[]models.Transaction, error)
 	var trans *[]models.Transaction
 	var account *models.Savings
 	w.db.Where("user_id = ?", id).First(&account)
-	err := w.db.Where("WHERE TYPE = Transfer").Find(&trans).Error
+	err := w.db.Where("TYPE = 'Transfer'").Find(&trans).Error
 
 	return trans, err
 }
