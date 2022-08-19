@@ -13,7 +13,7 @@ import (
 type TransactionRepository interface {
 	TopupSavings(trans *models.Transaction, id int) (*models.Transaction, error, error)
 
-	Transfer(trans *models.Transaction, id int) (*models.Transaction, error, error, error)
+	Payment(trans *models.Transaction, id int) (*models.Transaction, error, error, error)
 
 	UpdateInterestAndTaxSavings()
 	RunCronJobs()
@@ -48,7 +48,7 @@ func (w *transactionRepository) TopupSavings(trans *models.Transaction, id int) 
 	return addTransaction, err1.Error, err2.Error
 }
 
-func (w *transactionRepository) Transfer(trans *models.Transaction, id int) (*models.Transaction, error, error, error) {
+func (w *transactionRepository) Payment(trans *models.Transaction, id int) (*models.Transaction, error, error, error) {
 	var senderWallet *models.Wallet
 	var receiverWallet *models.Wallet
 	var checkBalance float32

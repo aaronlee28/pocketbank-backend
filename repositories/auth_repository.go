@@ -85,7 +85,7 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 			SenderWalletNumber:   3,
 			ReceiverWalletNumber: referralBonus.SavingsNumber,
 			Amount:               20000,
-			Description:          "Referral Payments",
+			Description:          "Referral Payment",
 		}
 		db.Get().Create(&addTransaction)
 	}

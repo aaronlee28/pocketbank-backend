@@ -9,7 +9,7 @@ import (
 
 type TransactionService interface {
 	TopupSavings(req *dto.TopupSavingsReq, id int) (*dto.TopupSavingsRes, error)
-	Transfer(req *dto.TransferReq, id int) (*dto.TransferRes, error)
+	Payment(req *dto.TransferReq, id int) (*dto.TransferRes, error)
 	RunCronJobs()
 	TopupDeposit(req *dto.TopupDepositReq, id int) (*dto.SuccessRes, error)
 }
@@ -53,7 +53,7 @@ func (a *transactionService) TopupSavings(req *dto.TopupSavingsReq, id int) (*dt
 	return ret, nil
 }
 
-func (a *transactionService) Transfer(req *dto.TransferReq, id int) (*dto.TransferRes, error) {
+func (a *transactionService) Payment(req *dto.TransferReq, id int) (*dto.TransferRes, error) {
 
 	if req.Amount < 1000 {
 		return nil, error(httperror.BadRequestError("Minimum Amount is Rp.1000", ""))
@@ -71,7 +71,7 @@ func (a *transactionService) Transfer(req *dto.TransferReq, id int) (*dto.Transf
 		Description:          req.Description,
 	}
 
-	transaction, err1, err2, err3 := a.transactionRepository.Transfer(t, id)
+	transaction, err1, err2, err3 := a.transactionRepository.Payment(t, id)
 	if err1 != nil {
 		return nil, error(httperror.BadRequestError("Insufficient Balance", ""))
 	}
@@ -79,7 +79,7 @@ func (a *transactionService) Transfer(req *dto.TransferReq, id int) (*dto.Transf
 		return nil, error(httperror.BadRequestError("Target Wallet Not Found", ""))
 	}
 	if err3 != nil {
-		return nil, error(httperror.BadRequestError("Should Not Be Able To Transfer with Someone Else's Wallet", ""))
+		return nil, error(httperror.BadRequestError("Should Not Be Able To Payment with Someone Else's Wallet", ""))
 	}
 
 	ret := &dto.TransferRes{

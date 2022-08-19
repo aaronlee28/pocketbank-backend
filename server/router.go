@@ -32,7 +32,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	router.Use(middlewares.AuthorizeJWT)
 	router.POST("/topupsavings", middlewares.RequestValidator(&dto.TopupSavingsReq{}), h.TopupSavings)
 	router.GET("/transaction", h.Transaction)
-	router.POST("/transfer", middlewares.RequestValidator(&dto.TransferReq{}), h.Transfer)
+	router.POST("/payment", middlewares.RequestValidator(&dto.TransferReq{}), h.Payment)
 	router.GET("/userdetails", h.UserDetails)
 	router.POST("/topupdeposit", middlewares.RequestValidator(&dto.TopupDepositReq{}), h.TopupDeposit)
 	router.GET("/depositinfo", h.DepositInfo)
