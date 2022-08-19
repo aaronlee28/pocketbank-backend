@@ -32,6 +32,7 @@ type TRConfig struct {
 func NewTransactionRepository(c *TRConfig) transactionRepository {
 	return transactionRepository{db: c.DB}
 }
+
 func (w *transactionRepository) TopupSavings(trans *models.Transaction, id int) (*models.Transaction, error, error) {
 	var sv *models.Savings
 	err2 := w.db.Where("user_id = ?", id).First(&sv)
@@ -49,27 +50,27 @@ func (w *transactionRepository) TopupSavings(trans *models.Transaction, id int) 
 }
 
 func (w *transactionRepository) Payment(trans *models.Transaction, id int) (*models.Transaction, error, error, error) {
-	var senderWallet *models.Wallet
-	var receiverWallet *models.Wallet
+	var senderSavings *models.Savings
+	var receiverSavings *models.Savings
 	var checkBalance float32
 	var addBalance float32
 	err := fmt.Errorf("")
-	_ = w.db.Where("user_id = ?", id).First(&senderWallet)
-	checkBalance = senderWallet.Balance - trans.Amount
+	_ = w.db.Where("user_id = ?", id).First(&senderSavings)
+	checkBalance = senderSavings.Balance - trans.Amount
 	if checkBalance < 0 {
 		return nil, err, nil, nil
 	}
-	_ = w.db.Where("wallet_number = ?", trans.ReceiverWalletNumber).First(&receiverWallet)
-	addBalance = receiverWallet.Balance + trans.Amount
-	if receiverWallet.UserID == 0 {
+	_ = w.db.Where("wallet_number = ?", trans.ReceiverWalletNumber).First(&receiverSavings)
+	addBalance = receiverSavings.Balance + trans.Amount
+	if receiverSavings.UserID == 0 {
 		return nil, nil, err, nil
 	}
 
-	w.db.Model(&senderWallet).Update("balance", checkBalance)
-	w.db.Model(&receiverWallet).Update("balance", addBalance)
+	w.db.Model(&senderSavings).Update("balance", checkBalance)
+	w.db.Model(&receiverSavings).Update("balance", addBalance)
 	addTransaction := &models.Transaction{
-		SenderWalletNumber:   senderWallet.WalletNumber,
-		ReceiverWalletNumber: receiverWallet.WalletNumber,
+		SenderWalletNumber:   senderSavings.WalletNumber,
+		ReceiverWalletNumber: receiverSavings.WalletNumber,
 		Amount:               trans.Amount,
 		Description:          trans.Description,
 	}
