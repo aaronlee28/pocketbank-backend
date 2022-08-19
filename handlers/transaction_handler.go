@@ -35,7 +35,6 @@ func (a *Handler) Payment(c *gin.Context) {
 	param, _ := payload.(*dto.PaymentReq)
 	user, _ := payload2.(models.User)
 	userid := user.Id
-
 	result, err := a.TransactionService.Payment(param, userid)
 
 	if err != nil {

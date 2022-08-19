@@ -39,7 +39,7 @@ func (a *transactionService) TopupSavings(req *dto.TopupSavingsReq, id int) (*dt
 	t := &models.Transaction{
 		Amount:             req.Amount,
 		SenderWalletNumber: req.SenderWalletNumber,
-		Description:        req.Description,
+		Type:               "Top Up",
 	}
 
 	transaction, err1, err2 := a.transactionRepository.TopupSavings(t, id)
@@ -56,38 +56,29 @@ func (a *transactionService) TopupSavings(req *dto.TopupSavingsReq, id int) (*dt
 func (a *transactionService) Payment(req *dto.PaymentReq, id int) (*dto.PaymentRes, error) {
 
 	if req.Amount < 1000 {
-		return nil, error(httperror.BadRequestError("Minimum Amount is Rp.1000", ""))
+		return nil, error(httperror.BadRequestError("Minimum Amount is Rp.1000", "402"))
 	}
 	if req.Amount > 50000000 {
-		return nil, error(httperror.BadRequestError("Maximum Amount is Rp.50000000", ""))
+		return nil, error(httperror.BadRequestError("Maximum Amount is Rp.50000000", "402"))
 	}
-	if len(req.Description) > 35 {
-		return nil, error(httperror.BadRequestError("Description Maximum Length is 35 Characters", "402"))
-	}
-
 	t := &models.Transaction{
-		ReceiverWalletNumber: req.ReceiverWalletNumber,
+		SenderWalletNumber:   id,
+		ReceiverWalletNumber: req.ReceiverAccount,
 		Amount:               req.Amount,
 		Description:          req.Description,
+		Type:                 "Transfer",
 	}
 
-	transaction, err1, err2, err3 := a.transactionRepository.Payment(t, id)
-	if err1 != nil {
-		return nil, error(httperror.BadRequestError("Insufficient Balance", ""))
-	}
-	if err2 != nil {
-		return nil, error(httperror.BadRequestError("Target Wallet Not Found", ""))
-	}
-	if err3 != nil {
-		return nil, error(httperror.BadRequestError("Should Not Be Able To Payment with Someone Else's Wallet", ""))
-	}
+	payment, err := a.transactionRepository.Payment(t, id)
 
 	ret := &dto.PaymentRes{
-		ReceiverWalletNumber: transaction.ReceiverWalletNumber,
-		Amount:               transaction.Amount,
-		Description:          transaction.Description,
+		SenderAccount:   payment.SenderWalletNumber,
+		ReceiverAccount: payment.ReceiverWalletNumber,
+		Amount:          payment.Amount,
+		Status:          payment.Status,
+		Description:     payment.Description,
 	}
-	return ret, nil
+	return ret, err
 }
 
 func (a *transactionService) RunCronJobs() {

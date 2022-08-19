@@ -13,7 +13,7 @@ import (
 type TransactionRepository interface {
 	TopupSavings(trans *models.Transaction, id int) (*models.Transaction, error, error)
 
-	Payment(trans *models.Transaction, id int) (*models.Transaction, error, error, error)
+	Payment(trans *models.Transaction, id int) (*models.Transaction, error)
 
 	UpdateInterestAndTaxSavings()
 	RunCronJobs()
@@ -42,41 +42,73 @@ func (w *transactionRepository) TopupSavings(trans *models.Transaction, id int) 
 		SenderWalletNumber:   trans.SenderWalletNumber,
 		ReceiverWalletNumber: sv.SavingsNumber,
 		Amount:               trans.Amount,
-		Description:          trans.Description,
+		Type:                 trans.Type,
+		Status:               "Success",
 	}
 	err1 := db.Get().Create(&addTransaction)
 
 	return addTransaction, err1.Error, err2.Error
 }
 
-func (w *transactionRepository) Payment(trans *models.Transaction, id int) (*models.Transaction, error, error, error) {
+func (w *transactionRepository) Payment(trans *models.Transaction, id int) (*models.Transaction, error) {
 	var senderSavings *models.Savings
 	var receiverSavings *models.Savings
 	var checkBalance float32
 	var addBalance float32
-	err := fmt.Errorf("")
-	_ = w.db.Where("user_id = ?", id).First(&senderSavings)
-	checkBalance = senderSavings.Balance - trans.Amount
-	if checkBalance < 0 {
-		return nil, err, nil, nil
-	}
-	_ = w.db.Where("wallet_number = ?", trans.ReceiverWalletNumber).First(&receiverSavings)
-	addBalance = receiverSavings.Balance + trans.Amount
-	if receiverSavings.UserID == 0 {
-		return nil, nil, err, nil
-	}
 
-	w.db.Model(&senderSavings).Update("balance", checkBalance)
-	w.db.Model(&receiverSavings).Update("balance", addBalance)
-	addTransaction := &models.Transaction{
-		SenderWalletNumber:   senderSavings.WalletNumber,
-		ReceiverWalletNumber: receiverSavings.WalletNumber,
+	w.db.Where("user_id = ?", id).First(&senderSavings)
+	err := w.db.Where("savings_number= ?", trans.ReceiverWalletNumber).First(&receiverSavings).Error
+	fmt.Println(senderSavings.SavingsNumber)
+	fmt.Println("error", err)
+
+	addFailedPayment := &models.Transaction{
+		SenderWalletNumber:   senderSavings.SavingsNumber,
+		ReceiverWalletNumber: receiverSavings.SavingsNumber,
 		Amount:               trans.Amount,
-		Description:          trans.Description,
+		Type:                 trans.Type,
+		Status:               "Failed",
 	}
-	_ = db.Get().Create(&addTransaction)
+	checkBalance = senderSavings.Balance - trans.Amount
+	//check if sender has balance
+	if checkBalance < 0 {
+		addFailedPayment.Description = "Insufficient Balance"
+		db.Get().Create(&addFailedPayment)
 
-	return addTransaction, nil, nil, nil
+		return addFailedPayment, nil
+	}
+
+	//check if receiver wallet exist
+	if err != nil {
+		fmt.Println("here")
+		db.Get().Create(&addFailedPayment)
+		addFailedPayment.Description = "Destination Account Not Found"
+		return addFailedPayment, nil
+	}
+
+	addSuccessfulPayment := &models.Transaction{
+		SenderWalletNumber:   senderSavings.SavingsNumber,
+		ReceiverWalletNumber: receiverSavings.SavingsNumber,
+		Amount:               trans.Amount,
+		Type:                 trans.Type,
+		Status:               "Success",
+	}
+	revertBalance := receiverSavings.Balance
+	addBalance = receiverSavings.Balance + trans.Amount
+
+	err3 := w.db.Model(&senderSavings).Update("balance", checkBalance).Error
+	if err3 != nil {
+		db.Get().Create(&addFailedPayment)
+		return addFailedPayment, err3
+	}
+	err4 := w.db.Model(&receiverSavings).Update("balance", addBalance).Error
+	if err4 != nil {
+		db.Get().Create(&addFailedPayment)
+		w.db.Model(&senderSavings).Update("balance", revertBalance)
+		return addFailedPayment, err4
+	}
+
+	db.Get().Create(&addSuccessfulPayment)
+	return addSuccessfulPayment, nil
 }
 
 func (w *transactionRepository) UpdateInterestAndTaxSavings() {
@@ -184,7 +216,8 @@ func (w *transactionRepository) TopupDeposit(trans *models.Transaction, id int) 
 		SenderWalletNumber:   sv.SavingsNumber,
 		ReceiverWalletNumber: addDeposit.DepositNumber,
 		Amount:               trans.Amount,
-		Description:          "Deposit",
+		Type:                 "Deposit",
+		Status:               "Success",
 	}
 	db.Get().Create(&addTransaction)
 
