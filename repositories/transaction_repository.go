@@ -18,7 +18,7 @@ type TransactionRepository interface {
 	UpdateInterestAndTaxSavings()
 	RunCronJobs()
 
-	TopupDeposit(trans *models.Transaction, id int) (*models.Transaction, error, error)
+	TopupDeposit(trans *models.Transaction, id int) (*models.Transaction, error)
 }
 
 type transactionRepository struct {
@@ -152,10 +152,14 @@ func (w *transactionRepository) RunCronJobs() {
 
 }
 
-func (w *transactionRepository) TopupDeposit(trans *models.Transaction, id int) (*models.Transaction, error, error) {
+func (w *transactionRepository) TopupDeposit(trans *models.Transaction, id int) (*models.Transaction, error) {
 	var sv *models.Savings
+	err1 := new(error)
 	w.db.Where("user_id = ?", id).First(&sv)
-
+	fmt.Println(sv.Balance - trans.Amount)
+	if sv.Balance-trans.Amount < 0 {
+		return nil, *err1
+	}
 	addDeposit := &models.Deposit{
 		UserID:        id,
 		Balance:       trans.Amount,
@@ -170,7 +174,7 @@ func (w *transactionRepository) TopupDeposit(trans *models.Transaction, id int) 
 	interestBeforeTax := (trans.Amount * addDeposit.InterestRate) / 12
 	interestAfterTax := interestBeforeTax * (1 - addDeposit.Tax)
 	addDeposit.Interest = interestAfterTax
-	err2 := db.Get().Create(&addDeposit)
+	db.Get().Create(&addDeposit)
 
 	newBalance := sv.Balance - trans.Amount
 	w.db.Model(&sv).Update("balance", newBalance)
@@ -181,7 +185,7 @@ func (w *transactionRepository) TopupDeposit(trans *models.Transaction, id int) 
 		Amount:               trans.Amount,
 		Description:          "Deposit",
 	}
-	err1 := db.Get().Create(&addTransaction)
+	db.Get().Create(&addTransaction)
 
-	return addTransaction, err1.Error, err2.Error
+	return addTransaction, nil
 }

@@ -106,13 +106,11 @@ func (a *transactionService) TopupDeposit(req *dto.TopupDepositReq, id int) (*dt
 		Amount: req.Amount,
 	}
 
-	transaction, err1, err2 := a.transactionRepository.TopupDeposit(t, id)
+	transaction, err1 := a.transactionRepository.TopupDeposit(t, id)
 	if err1 != nil || transaction == nil {
-		return nil, error(httperror.BadRequestError("Failed to Add Transaction", "401"))
+		return nil, error(httperror.BadRequestError("Insufficient Balance", "401"))
 	}
-	if err2 != nil || transaction == nil {
-		return nil, error(httperror.BadRequestError("Failed to Add Deposit", "401"))
-	}
+
 	ret := &dto.SuccessRes{
 		Success: "Successful Deposit",
 	}

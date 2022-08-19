@@ -38,6 +38,9 @@ func (a *walletService) Transaction(q *repositories.Query, id int) (*[]dto.Trans
 	if q.Limit == "" {
 		q.Limit = "10"
 	}
+	if q.FilterTime == "" {
+		q.FilterTime = "74000"
+	}
 	t, err := a.walletRepository.Transaction(q, id)
 	if err != nil {
 		return nil, error(httperror.BadRequestError("Bad Request", "400"))

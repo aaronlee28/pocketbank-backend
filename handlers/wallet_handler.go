@@ -13,13 +13,14 @@ func (a *Handler) Transaction(c *gin.Context) {
 	userid := user.Id
 
 	query := &repositories.Query{
-		SortBy:       c.Query("sortBy"),
-		Sort:         c.Query("sort"),
-		Limit:        c.Query("limit"),
-		Page:         c.Query("page"),
-		Search:       c.Query("search"),
-		FilterTime:   c.Query("filterTime"),
-		FilterAmount: c.Query("filterAmount"),
+		SortBy:     c.Query("sortBy"),
+		Sort:       c.Query("sort"),
+		Limit:      c.Query("limit"),
+		Page:       c.Query("page"),
+		Search:     c.Query("search"),
+		FilterTime: c.Query("filterTime"),
+		MinAmount:  c.Query("minAmount"),
+		MaxAmount:  c.Query("maxAmount"),
 	}
 
 	result, err := a.WalletService.Transaction(query, userid)

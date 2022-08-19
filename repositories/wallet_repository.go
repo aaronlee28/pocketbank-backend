@@ -23,13 +23,14 @@ type WRConfig struct {
 }
 
 type Query struct {
-	SortBy       string
-	Sort         string
-	Limit        string
-	Page         string
-	Search       string
-	FilterTime   string
-	FilterAmount string
+	SortBy     string
+	Sort       string
+	Limit      string
+	Page       string
+	Search     string
+	FilterTime string
+	MinAmount  string
+	MaxAmount  string
 }
 
 func NewWalletRepository(c *WRConfig) walletRepository {
@@ -44,7 +45,7 @@ func (w *walletRepository) Transaction(q *Query, id int) (*[]models.Transaction,
 	search := "%" + q.Search + "%"
 	offset := (limit * page) - limit
 	w.db.Where("user_id = ?", id).First(&account)
-	err := w.db.Limit(limit).Offset(offset).Order(q.SortBy+" "+q.Sort).Where("sender_wallet_number = ? OR receiver_wallet_number = ? ", account.SavingsNumber, account.SavingsNumber).Where("UPPER(description) like UPPER(?)", search).Where("created_at >= ? at time zone 'UTC' - interval '"+q.FilterTime+"' day", time.Now()).Where().Find(&trans).Error
+	err := w.db.Limit(limit).Offset(offset).Order(q.SortBy+" "+q.Sort).Where("sender_wallet_number = ? OR receiver_wallet_number = ? ", account.SavingsNumber, account.SavingsNumber).Where("UPPER(description) like UPPER(?)", search).Where("created_at >= ? at time zone 'UTC' - interval '"+q.FilterTime+"' day", time.Now()).Where("amount BETWEEN ? and ?", q.MinAmount, q.MaxAmount).Find(&trans).Error
 
 	return trans, err
 }
