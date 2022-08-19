@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func (a *Handler) Transaction(c *gin.Context) {
+func (a *Handler) TransactionHistory(c *gin.Context) {
 	payload, _ := c.Get("user")
 	user, _ := payload.(models.User)
 	userid := user.Id
@@ -24,8 +24,7 @@ func (a *Handler) Transaction(c *gin.Context) {
 		MaxAmount:  c.Query("maxAmount"),
 	}
 
-	result, err := a.WalletService.Transaction(query, userid)
-
+	result, err := a.WalletService.TransactionHistory(query, userid)
 	if err != nil {
 		e := c.Error(err)
 		c.JSON(http.StatusBadRequest, e)

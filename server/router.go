@@ -31,10 +31,11 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	router.POST("/signin", middlewares.RequestValidator(&dto.AuthReq{}), h.SignIn)
 	router.Use(middlewares.AuthorizeJWT)
 	router.POST("/topupsavings", middlewares.RequestValidator(&dto.TopupSavingsReq{}), h.TopupSavings)
-	router.GET("/transaction", h.Transaction)
+	router.GET("/transactionhistory", h.TransactionHistory)
 	router.POST("/payment", middlewares.RequestValidator(&dto.PaymentReq{}), h.Payment)
 	router.GET("/userdetails", h.UserDetails)
 	router.POST("/topupdeposit", middlewares.RequestValidator(&dto.TopupDepositReq{}), h.TopupDeposit)
 	router.GET("/depositinfo", h.DepositInfo)
+	//router.GET("/paymenthistory", h.PaymentHistory)
 	return router
 }

@@ -9,7 +9,7 @@ import (
 )
 
 type WalletRepository interface {
-	Transaction(q *Query, id int) (*[]models.Transaction, error)
+	TransactionHistory(q *Query, id int) (*[]models.Transaction, error)
 	UserDetails(id int) (*dto.UserDetailsRes, error)
 	DepositInfo(id int) (*[]models.Deposit, error)
 }
@@ -37,7 +37,7 @@ func NewWalletRepository(c *WRConfig) walletRepository {
 	return walletRepository{db: c.DB}
 }
 
-func (w *walletRepository) Transaction(q *Query, id int) (*[]models.Transaction, error) {
+func (w *walletRepository) TransactionHistory(q *Query, id int) (*[]models.Transaction, error) {
 	var trans *[]models.Transaction
 	var account *models.Savings
 	limit, _ := strconv.Atoi(q.Limit)

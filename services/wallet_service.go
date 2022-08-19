@@ -7,7 +7,7 @@ import (
 )
 
 type WalletService interface {
-	Transaction(q *repositories.Query, id int) (*[]dto.TransRes, error)
+	TransactionHistory(q *repositories.Query, id int) (*[]dto.TransRes, error)
 	UserDetails(id int) (*dto.UserDetailsRes, error)
 	DepositInfo(id int) (*[]dto.DepositInfoRes, error)
 }
@@ -41,7 +41,7 @@ func (a *walletService) Transaction(q *repositories.Query, id int) (*[]dto.Trans
 	if q.FilterTime == "" {
 		q.FilterTime = "74000"
 	}
-	t, err := a.walletRepository.Transaction(q, id)
+	t, err := a.walletRepository.TransactionHistory(q, id)
 	if err != nil {
 		return nil, error(httperror.BadRequestError("Bad Request", "400"))
 	}
