@@ -113,7 +113,7 @@ func (w *walletRepository) FavoriteContactList(id int) (*[]models.Favoritecontac
 	return fc, err
 }
 
-func (w *authRepository) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error) {
+func (w *walletRepository) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error) {
 	var user *models.User
 	err := w.db.Where("id = ?", id).First(&user).Error
 	fmt.Println(data)
