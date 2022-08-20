@@ -133,6 +133,7 @@ func (a *walletService) FavoriteContactList(id int) (*[]dto.FavoriteContactRes, 
 func (a *walletService) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error) {
 
 	ret, err := a.walletRepository.ChangeUserDetails(data, id)
+
 	//if errNumber == 1 {
 	//	return nil, error(httperror.BadRequestError("Email is not found", "400"))
 	//}

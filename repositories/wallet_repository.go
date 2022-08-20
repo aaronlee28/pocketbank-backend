@@ -5,6 +5,7 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"gorm.io/gorm"
+	"reflect"
 	"strconv"
 	"time"
 )
@@ -115,22 +116,15 @@ func (w *walletRepository) FavoriteContactList(id int) (*[]models.Favoritecontac
 func (w *walletRepository) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error) {
 	var user *models.User
 	err := w.db.Where("id = ?", id).First(&user).Error
-	//errorNumber := 0
-	//email := data.Email
-	//err := a.db.Where("email = ?", email).First(&user).Error
-	//if err != nil {
-	//	errorNumber = 1
-	//	return errorNumber
-	//}
+	v := reflect.ValueOf(*data)
+	for i := 0; i < v.NumField(); i++ {
+		val := v.Field(i).Interface()
+		if val != "" && val != 0 {
+			change := v.Type().Field(i).Name
+			input := v.Field(i).Interface()
+			w.db.Model(&user).Update(change, input)
+		}
+	}
 
-	//if data.Code == user.Code {
-	//
-	//	hash, _ := hashPassword(data.NewPassword)
-	//	a.db.Model(&user).Update("password", hash)
-	//	a.db.Model(&user).Update("code", nil)
-	//	return errorNumber
-	//}
-	//errorNumber = 2
-	//return errorNumber
 	return data, err
 }
