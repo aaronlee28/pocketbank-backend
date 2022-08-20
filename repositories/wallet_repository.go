@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
@@ -116,7 +115,6 @@ func (w *walletRepository) FavoriteContactList(id int) (*[]models.Favoritecontac
 func (w *walletRepository) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error) {
 	var user *models.User
 	err := w.db.Where("id = ?", id).First(&user).Error
-	fmt.Println(data)
 	//errorNumber := 0
 	//email := data.Email
 	//err := a.db.Where("email = ?", email).First(&user).Error

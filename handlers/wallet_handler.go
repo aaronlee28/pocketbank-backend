@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httpsuccess"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
@@ -136,8 +137,8 @@ func (a *Handler) ChangeUserDetails(c *gin.Context) {
 	param, _ := payload.(*dto.ChangeUserDetailsReqRes)
 	user, _ := payload2.(models.User)
 	userid := user.Id
-
 	result, err := a.WalletService.ChangeUserDetails(param, userid)
+	fmt.Println(param.Name)
 
 	if err != nil {
 		e := c.Error(err)
