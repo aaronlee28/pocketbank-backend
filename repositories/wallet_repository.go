@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"gorm.io/gorm"
@@ -13,6 +14,7 @@ type WalletRepository interface {
 	UserDetails(id int) (*dto.UserDetailsRes, error)
 	DepositInfo(id int) (*[]models.Deposit, error)
 	PaymentHistory(id int) (*[]models.Transaction, error)
+	FavoriteContact(favoriteid int, selfid int) (*models.Favoritecontact, error)
 }
 
 type walletRepository struct {
@@ -82,4 +84,20 @@ func (w *walletRepository) PaymentHistory(id int) (*[]models.Transaction, error)
 	err := w.db.Where("TYPE = 'Transfer'").Find(&trans).Error
 
 	return trans, err
+}
+
+func (w *walletRepository) FavoriteContact(favoriteid int, selfid int) (*models.Favoritecontact, error) {
+	var user *models.User
+	err := w.db.Where("id = ?", favoriteid).First(&user).Error
+
+	if err == nil {
+		addFavoriteContact := &models.Favoritecontact{
+			UserID:         selfid,
+			FavoriteUserID: user.Id,
+		}
+		db.Get().Create(&addFavoriteContact)
+		return addFavoriteContact, err
+
+	}
+	return nil, err
 }

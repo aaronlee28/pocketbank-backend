@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httpsuccess"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
@@ -79,6 +80,26 @@ func (a *Handler) PaymentHistory(c *gin.Context) {
 	userid := user.Id
 
 	result, err := a.WalletService.PaymentHistory(userid)
+
+	if err != nil {
+		e := c.Error(err)
+		c.JSON(http.StatusBadRequest, e)
+		return
+	}
+	successResponse := httpsuccess.OkSuccess("Ok", result)
+	c.JSON(http.StatusOK, successResponse)
+
+}
+
+func (a *Handler) FavoriteContact(c *gin.Context) {
+
+	payload, _ := c.Get("payload")
+	payload2, _ := c.Get("user")
+	param, _ := payload.(*dto.FavoriteContactReq)
+	user, _ := payload2.(models.User)
+	userid := user.Id
+
+	result, err := a.WalletService.FavoriteContact(param, userid)
 
 	if err != nil {
 		e := c.Error(err)
