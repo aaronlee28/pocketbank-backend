@@ -133,7 +133,7 @@ func (a *Handler) ChangeUserDetails(c *gin.Context) {
 
 	payload, _ := c.Get("payload")
 	payload2, _ := c.Get("user")
-	param, _ := payload.(*dto.FavoriteContactReq)
+	param, _ := payload.(*dto.ChangeUserDetailsReqRes)
 	user, _ := payload2.(models.User)
 	userid := user.Id
 
