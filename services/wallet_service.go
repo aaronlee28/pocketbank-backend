@@ -13,6 +13,7 @@ type WalletService interface {
 	PaymentHistory(id int) (*[]dto.PaymentHistoryRes, error)
 	FavoriteContact(param *dto.FavoriteContactReq, favoriteid int) (*dto.FavoriteContactRes, error)
 	FavoriteContactList(id int) (*[]dto.FavoriteContactRes, error)
+	ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error)
 }
 
 type walletService struct {
@@ -127,4 +128,20 @@ func (a *walletService) FavoriteContactList(id int) (*[]dto.FavoriteContactRes, 
 	}
 
 	return &res, err
+}
+
+func (a *walletService) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error) {
+
+	ret, err := a.walletRepository.ChangeUserDetails(data, id)
+	//if errNumber == 1 {
+	//	return nil, error(httperror.BadRequestError("Email is not found", "400"))
+	//}
+	//if errNumber == 2 {
+	//	return nil, error(httperror.BadRequestError("Code Invalid", "401"))
+	//
+	//}
+	//returnres := &dto.ChangePRes{
+	//	Success: "Successfully Change Password",
+	//}
+	return ret, err
 }

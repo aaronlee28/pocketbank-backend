@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
@@ -16,6 +17,7 @@ type WalletRepository interface {
 	PaymentHistory(id int) (*[]models.Transaction, error)
 	FavoriteContact(favoriteid int, selfid int) (*models.Favoritecontact, error)
 	FavoriteContactList(id int) (*[]models.Favoritecontact, error)
+	ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error)
 }
 
 type walletRepository struct {
@@ -109,4 +111,28 @@ func (w *walletRepository) FavoriteContactList(id int) (*[]models.Favoritecontac
 	err := w.db.Where("user_id = ?", id).Find(&fc).Error
 
 	return fc, err
+}
+
+func (w *authRepository) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error) {
+	var user *models.User
+	err := w.db.Where("id = ?", id).First(&user).Error
+	fmt.Println(data)
+	//errorNumber := 0
+	//email := data.Email
+	//err := a.db.Where("email = ?", email).First(&user).Error
+	//if err != nil {
+	//	errorNumber = 1
+	//	return errorNumber
+	//}
+
+	//if data.Code == user.Code {
+	//
+	//	hash, _ := hashPassword(data.NewPassword)
+	//	a.db.Model(&user).Update("password", hash)
+	//	a.db.Model(&user).Update("code", nil)
+	//	return errorNumber
+	//}
+	//errorNumber = 2
+	//return errorNumber
+	return data, err
 }

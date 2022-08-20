@@ -128,3 +128,22 @@ func (a *Handler) FavoriteContactList(c *gin.Context) {
 	c.JSON(http.StatusOK, successResponse)
 
 }
+
+func (a *Handler) ChangeUserDetails(c *gin.Context) {
+
+	payload, _ := c.Get("payload")
+	payload2, _ := c.Get("user")
+	param, _ := payload.(*dto.FavoriteContactReq)
+	user, _ := payload2.(models.User)
+	userid := user.Id
+
+	result, err := a.WalletService.ChangeUserDetails(param, userid)
+
+	if err != nil {
+		e := c.Error(err)
+		c.JSON(http.StatusBadRequest, e)
+		return
+	}
+	successResponse := httpsuccess.OkSuccess("Ok", result)
+	c.JSON(http.StatusOK, successResponse)
+}
