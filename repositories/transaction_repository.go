@@ -43,6 +43,7 @@ func (w *transactionRepository) TopupSavings(trans *models.Transaction, id int) 
 		ReceiverWalletNumber: sv.SavingsNumber,
 		Amount:               trans.Amount,
 		Type:                 trans.Type,
+		Description:          trans.Description,
 		Status:               "Success",
 	}
 	err1 := db.Get().Create(&addTransaction)

@@ -39,6 +39,7 @@ func (a *transactionService) TopupSavings(req *dto.TopupSavingsReq, id int) (*dt
 	t := &models.Transaction{
 		Amount:             req.Amount,
 		SenderWalletNumber: req.SenderWalletNumber,
+		Description:        req.Description,
 		Type:               "Top Up",
 	}
 
