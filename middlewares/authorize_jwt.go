@@ -58,3 +58,22 @@ func AuthorizeJWT(c *gin.Context) {
 
 	c.Set("user", user)
 }
+
+func AuthorizeAdmin(c *gin.Context) {
+	authHeader := c.GetHeader("Authorization")
+
+	s := strings.Split(authHeader, "Bearer ")
+
+	unauthorizedErr := httperror.UnauthorizedError()
+	encodedToken := s[1]
+	token, _ := validateToken(encodedToken)
+	claims, _ := token.Claims.(jwt.MapClaims)
+	scopeJson, _ := json.Marshal(claims["Scope"])
+	var scope interface{}
+	json.Unmarshal(scopeJson, &scope)
+	if scope != "user admin" {
+		c.AbortWithStatusJSON(unauthorizedErr.StatusCode, unauthorizedErr)
+		return
+	}
+	return
+}

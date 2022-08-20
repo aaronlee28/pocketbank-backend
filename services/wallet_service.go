@@ -133,16 +133,8 @@ func (a *walletService) FavoriteContactList(id int) (*[]dto.FavoriteContactRes, 
 func (a *walletService) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error) {
 
 	ret, err := a.walletRepository.ChangeUserDetails(data, id)
-
-	//if errNumber == 1 {
-	//	return nil, error(httperror.BadRequestError("Email is not found", "400"))
-	//}
-	//if errNumber == 2 {
-	//	return nil, error(httperror.BadRequestError("Code Invalid", "401"))
-	//
-	//}
-	//returnres := &dto.ChangePRes{
-	//	Success: "Successfully Change Password",
-	//}
+	if err != nil {
+		return nil, error(httperror.BadRequestError("INTERNAL SERVER ERROR", "400"))
+	}
 	return ret, err
 }
