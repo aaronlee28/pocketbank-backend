@@ -165,11 +165,11 @@ func (w *transactionRepository) WithdrawDeposit() {
 		if s.AutoDeposit == false {
 			difference := time.Now().UTC().Sub(s.UpdatedAt)
 			isOneMonth := int64(difference.Hours() / 24 / 30)
-			if isOneMonth == 1 {
+			if isOneMonth == 1 && time.Time.IsZero(s.DeletedAt) == true {
 				w.db.Where("user_id", s.UserID).First(&sv)
 				addInterest := sv.Balance + s.Interest + s.Balance
 				w.db.Model(&sv).Update("balance", addInterest)
-				w.db.Delete(&s)
+				w.db.Model(&s).Update("deleted_at", time.Now())
 				fmt.Println("im here")
 
 			}
