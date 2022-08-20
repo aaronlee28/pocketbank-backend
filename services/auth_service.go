@@ -37,7 +37,8 @@ func NewAuthService(c *ASConfig) *authService {
 
 type idTokenClaims struct {
 	jwt.RegisteredClaims
-	User *models.User `json:"user"`
+	Scope string
+	User  *models.User `json:"user"`
 }
 
 func (a *authService) generateJWTToken(user *models.User) (*dto.TokenRes, error) {
@@ -54,7 +55,7 @@ func (a *authService) generateJWTToken(user *models.User) (*dto.TokenRes, error)
 			ExpiresAt: &timeExpire,
 			IssuedAt:  &timeNow,
 		},
-
+		user.Role,
 		&models.User{Id: user.Id, Email: user.Email},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

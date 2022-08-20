@@ -10,4 +10,5 @@ type User struct {
 	ReferralNumber      int    `json:"referral_number"`
 	ProfilePicture      string `json:"profile_picture"`
 	EligibleMerchandise bool   `json:"eligible_merchandise"`
+	Role                string `json:"role"`
 }
