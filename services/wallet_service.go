@@ -105,7 +105,7 @@ func (a *walletService) FavoriteContact(favoriteid *dto.FavoriteContactReq, self
 	fid := favoriteid.FavoriteUserID
 	ret, err := a.walletRepository.FavoriteContact(fid, selfid)
 
-	if err != nil {
+	if err != nil || fid == selfid {
 		return nil, error(httperror.BadRequestError("INTERNAL SERVER ERROR", "400"))
 	}
 	res := new(dto.FavoriteContactRes).FromFavoritecontact(ret)
