@@ -56,15 +56,16 @@ func (w *walletRepository) TransactionHistory(q *Query, id int) (*[]models.Trans
 
 func (w *walletRepository) UserDetails(id int) (*dto.UserDetailsRes, error) {
 	var user *models.User
-	var wallet *models.Wallet
+	var sv *models.Savings
 	err := w.db.Where("id = ?", id).First(&user).Error
-	w.db.Where("user_id = ?", id).First(&wallet)
+	w.db.Where("user_id = ?", id).First(&sv)
 	ret := &dto.UserDetailsRes{
-		Id:           user.Id,
-		Email:        user.Email,
-		WalletID:     wallet.Id,
-		WalletNumber: wallet.WalletNumber,
-		Balance:      wallet.Balance,
+		Name:           user.Name,
+		Email:          user.Email,
+		Contact:        user.Contact,
+		ProfilePicture: user.ProfilePicture,
+		ReferralNumber: user.ReferralNumber,
+		AccountNumber:  sv.SavingsNumber,
 	}
 
 	return ret, err
