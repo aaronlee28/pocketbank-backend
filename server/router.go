@@ -38,5 +38,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	router.GET("/depositinfo", h.DepositInfo)
 	router.GET("/paymenthistory", h.PaymentHistory)
 	router.POST("/favoritecontact", middlewares.RequestValidator(&dto.FavoriteContactReq{}), h.FavoriteContact)
+	router.GET("/favoritecontactlist", h.FavoriteContactList)
 	return router
 }

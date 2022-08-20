@@ -15,6 +15,7 @@ type WalletRepository interface {
 	DepositInfo(id int) (*[]models.Deposit, error)
 	PaymentHistory(id int) (*[]models.Transaction, error)
 	FavoriteContact(favoriteid int, selfid int) (*models.Favoritecontact, error)
+	FavoriteContactList(id int) (*[]models.Favoritecontact, error)
 }
 
 type walletRepository struct {
@@ -100,4 +101,11 @@ func (w *walletRepository) FavoriteContact(favoriteid int, selfid int) (*models.
 
 	}
 	return nil, err
+}
+
+func (w *walletRepository) FavoriteContactList(id int) (*[]models.Favoritecontact, error) {
+	var fc *[]models.Favoritecontact
+	err := w.db.Where("user_id = ?", id).Find(&fc).Error
+
+	return fc, err
 }

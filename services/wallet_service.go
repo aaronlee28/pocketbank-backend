@@ -12,6 +12,7 @@ type WalletService interface {
 	DepositInfo(id int) (*[]dto.DepositInfoRes, error)
 	PaymentHistory(id int) (*[]dto.PaymentHistoryRes, error)
 	FavoriteContact(param *dto.FavoriteContactReq, favoriteid int) (*dto.FavoriteContactRes, error)
+	FavoriteContactList(id int) (*[]dto.FavoriteContactRes, error)
 }
 
 type walletService struct {
@@ -111,4 +112,19 @@ func (a *walletService) FavoriteContact(favoriteid *dto.FavoriteContactReq, self
 	res := new(dto.FavoriteContactRes).FromFavoritecontact(ret)
 
 	return res, err
+}
+func (a *walletService) FavoriteContactList(id int) (*[]dto.FavoriteContactRes, error) {
+	var res []dto.FavoriteContactRes
+	ret, err := a.walletRepository.FavoriteContactList(id)
+
+	if err != nil {
+		return nil, error(httperror.BadRequestError("INTERNAL SERVER ERROR", "400"))
+	}
+	for _, t := range *ret {
+		tmp := new(dto.FavoriteContactRes).FromFavoritecontact(&t)
+
+		res = append(res, *tmp)
+	}
+
+	return &res, err
 }

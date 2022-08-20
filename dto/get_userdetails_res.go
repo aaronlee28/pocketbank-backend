@@ -1,9 +1,10 @@
 package dto
 
 type UserDetailsRes struct {
-	Id           int     `json:"id"`
-	Email        string  `json:"email"`
-	WalletID     int     `json:"wallet_id"`
-	WalletNumber int     `json:"wallet_number"`
-	Balance      float32 `json:"balance"`
+	Name           int    `json:"name"`
+	Email          string `json:"email"`
+	Contact        string `json:"contact"`
+	ProfilePicture string `json:"profile_picture"`
+	ReferralNumber int    `json:"referral_number"`
+	AccountNumber  int    `json:"account_number"`
 }
