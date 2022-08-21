@@ -12,6 +12,7 @@ type RouterConfig struct {
 	AuthService        services.AuthService
 	WalletService      services.WalletService
 	TransactionService services.TransactionService
+	AdminService       services.AdminService
 }
 
 func NewRouter(c *RouterConfig) *gin.Engine {
@@ -21,6 +22,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 		AuthService:        c.AuthService,
 		TransactionService: c.TransactionService,
 		WalletService:      c.WalletService,
+		AdminService:       c.AdminService,
 	})
 	router.Static("/docs", "swaggerui")
 	router.NoRoute(middlewares.WrongEndpoint())

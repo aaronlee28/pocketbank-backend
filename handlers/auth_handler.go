@@ -29,8 +29,6 @@ func (a *Handler) Register(c *gin.Context) {
 		ReferralNumber: referralNumberInt,
 		Photo:          readPhoto,
 	}
-	fmt.Printf("photo datatype %T %v", readPhoto, readPhoto)
-	fmt.Println("photo size", photo.Size)
 	result, err := a.AuthService.Register(param)
 	if err != nil {
 		_ = c.Error(err)

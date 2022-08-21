@@ -21,10 +21,14 @@ func Init() {
 	transactionRepository := repositories.NewTransactionRepository(&repositories.TRConfig{DB: db.Get()})
 	transactionService := services.NewTransactionServices(&services.TSConfig{TransactionRepository: &transactionRepository})
 
+	adminRepository := repositories.NewAdminRepository(&repositories.ADRConfig{DB: db.Get()})
+	adminService := services.NewAdminServices(&services.ADSConfig{&services.ADSConfig{AdminRepository: &adminRepository}})
+
 	router := NewRouter(&RouterConfig{
 		AuthService:        authService,
 		WalletService:      walletService,
 		TransactionService: transactionService,
+		AdminService:       adminService,
 	})
 	err := router.Run()
 	if err != nil {
