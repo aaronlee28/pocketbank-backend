@@ -8,7 +8,7 @@ type User struct {
 	Password            string `json:"password,omitempty"`
 	Code                int    `json:"code"`
 	ReferralNumber      int    `json:"referralNumber"`
-	ProfilePicture      string `json:"profilePicture"`
+	ProfilePicture      []byte `json:"profilePicture"`
 	EligibleMerchandise bool   `json:"eligibleMerchandise"`
 	Role                string `json:"role"`
 }

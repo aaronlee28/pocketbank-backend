@@ -51,6 +51,7 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 	hash, _ := hashPassword(user.Password)
 	user.Password = hash
 	user.EligibleMerchandise = false
+	user.Role = "user"
 	makeNewReferralCode := true
 	for makeNewReferralCode == true {
 		checkReferralNumber := rand.Intn(99999-9999) + 9999
@@ -61,19 +62,10 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 		}
 	}
 
-	a.db.Model(&user).Update("code", nil)
-
-	w := &models.Wallet{
-		UserID:       user.Id,
-		WalletNumber: 1 + rand.Intn(99999-10000) + 10000 + user.Id,
-	}
-	db.Get().Create(&w)
-
 	s := &models.Savings{
 		UserID:        user.Id,
-		SavingsNumber: w.WalletNumber,
+		SavingsNumber: 1 + rand.Intn(99999-10000) + 10000 + user.Id,
 	}
-
 	db.Get().Create(&s)
 	//has to be last because referral code might be there but failed to create the account for other reasons
 	if cr != 0 {

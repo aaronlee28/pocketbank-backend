@@ -6,14 +6,32 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httperror"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httpsuccess"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 func (a *Handler) Register(c *gin.Context) {
-	payload, _ := c.Get("payload")
-	param, _ := payload.(*dto.RegReq)
+	name := c.PostForm("name")
+	email := c.PostForm("email")
+	contact := c.PostForm("contact")
+	password := c.PostForm("password")
+	referralNumber := c.PostForm("referralNumber")
+	referralNumberInt, _ := strconv.Atoi(referralNumber)
+	photo, err := c.FormFile("profilePhoto")
+	photoContent, _ := photo.Open()
+	readPhoto, _ := ioutil.ReadAll(photoContent)
+	param := &dto.RegReq{
+		Name:           name,
+		Email:          email,
+		Contact:        contact,
+		Password:       password,
+		ReferralNumber: referralNumberInt,
+		Photo:          readPhoto,
+	}
+	fmt.Printf("photo datatype %T %v", readPhoto, readPhoto)
+	fmt.Println("photo size", photo.Size)
 	result, err := a.AuthService.Register(param)
-
 	if err != nil {
 		_ = c.Error(err)
 		return

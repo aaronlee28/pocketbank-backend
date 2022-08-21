@@ -1,9 +1,10 @@
 package dto
 
 type RegReq struct {
-	Name           string `json:"name"`
-	Email          string `json:"email"`
-	Contact        string `json:"contact"`
-	Password       string `json:"password,omitempty"`
-	ReferralNumber int    `json:"referralNumber"`
+	Name           string `json:"name" binding:"required"`
+	Email          string `json:"email" binding:"required"`
+	Contact        string `json:"contact" binding:"required"`
+	Password       string `json:"password" binding:"required"`
+	ReferralNumber int    `json:"referralNumber,omitempty"`
+	Photo          []byte `json:"photo,omitempty"`
 }
