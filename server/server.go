@@ -30,6 +30,7 @@ func Init() {
 		TransactionService: transactionService,
 		AdminService:       adminService,
 	})
+
 	err := router.Run()
 	if err != nil {
 		fmt.Println("server error:", err)
