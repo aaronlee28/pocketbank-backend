@@ -5,13 +5,13 @@ import "time"
 type Deposit struct {
 	Id            int       `json:"id" gorm:"primarykey"`
 	UserID        int       `json:"user_id"`
-	DepositNumber int       `json:"deposit_number"`
+	DepositNumber int       `json:"depositNumber"`
 	Balance       float32   `json:"balance"`
-	InterestRate  float32   `json:"interest_rate"`
+	InterestRate  float32   `json:"interestRate"`
 	Tax           float32   `json:"tax"`
 	Interest      float32   `json:"interest"`
-	AutoDeposit   bool      `json:"auto_deposit"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
-	DeletedAt     time.Time `json:"deleted_at"`
+	AutoDeposit   bool      `json:"autoDeposit"`
+	CreatedAt     time.Time `json:"createdAt"`
+	UpdatedAt     time.Time `json:"updatedAt"`
+	DeletedAt     time.Time `json:"deletedAt"`
 }

@@ -4,10 +4,10 @@ import "time"
 
 type Payment struct {
 	Id              int       `json:"id" gorm:"primarykey"`
-	SenderAccount   int       `json:"sender_account"`
-	ReceiverAccount int       `json:"receiver_account"`
+	SenderAccount   int       `json:"senderAccount"`
+	ReceiverAccount int       `json:"receiverAccount"`
 	Amount          float32   `json:"amount"`
 	Status          string    `json:"status"`
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
+	CreatedAt       time.Time `json:"createdAt"`
+	UpdatedAt       time.Time `json:"updatedAt"`
 }

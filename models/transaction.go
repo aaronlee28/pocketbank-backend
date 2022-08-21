@@ -4,11 +4,11 @@ import "time"
 
 type Transaction struct {
 	Id                   int       `json:"id" gorm:"primarykey"`
-	SenderWalletNumber   int       `json:"sender_wallet_number"`
-	ReceiverWalletNumber int       `json:"receiver_wallet_number"`
+	SenderWalletNumber   int       `json:"senderWalletNumber"`
+	ReceiverWalletNumber int       `json:"receiverWalletNumber"`
 	Amount               float32   `json:"amount"`
 	Description          string    `json:"description"`
-	CreatedAt            time.Time `json:"created_at"`
+	CreatedAt            time.Time `json:"createdAt"`
 	Type                 string    `json:"type"`
 	Status               string    `json:"status"`
 }

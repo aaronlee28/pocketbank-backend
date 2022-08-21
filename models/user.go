@@ -7,8 +7,8 @@ type User struct {
 	Contact             string `json:"contact"`
 	Password            string `json:"password,omitempty"`
 	Code                int    `json:"code"`
-	ReferralNumber      int    `json:"referral_number"`
-	ProfilePicture      string `json:"profile_picture"`
-	EligibleMerchandise bool   `json:"eligible_merchandise"`
+	ReferralNumber      int    `json:"referralNumber"`
+	ProfilePicture      string `json:"profilePicture"`
+	EligibleMerchandise bool   `json:"eligibleMerchandise"`
 	Role                string `json:"role"`
 }
