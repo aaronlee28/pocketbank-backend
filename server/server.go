@@ -22,7 +22,7 @@ func Init() {
 	transactionService := services.NewTransactionServices(&services.TSConfig{TransactionRepository: &transactionRepository})
 
 	adminRepository := repositories.NewAdminRepository(&repositories.ADRConfig{DB: db.Get()})
-	adminService := services.NewAdminServices(&services.ADSConfig{&services.ADSConfig{AdminRepository: &adminRepository}})
+	adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: &adminRepository})
 
 	router := NewRouter(&RouterConfig{
 		AuthService:        authService,

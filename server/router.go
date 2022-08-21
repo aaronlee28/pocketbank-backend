@@ -44,6 +44,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	router.GET("/favoritecontactlist", h.FavoriteContactList)
 	//admin router
 	router.Use(middlewares.AuthorizeAdmin)
+	router.GET("/userslist", h.UsersList)
 
 	return router
 }
