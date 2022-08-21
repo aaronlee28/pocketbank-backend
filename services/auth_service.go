@@ -114,7 +114,6 @@ func (a *authService) GetCode(email *dto.CodeReq) (*dto.CodeRes, error) {
 }
 
 func (a *authService) ChangePassword(data *dto.ChangePReq) (*dto.ChangePRes, error) {
-
 	errNumber := a.authRepository.ChangePassword(data)
 	if errNumber == 1 {
 		return nil, error(httperror.BadRequestError("Email is not found", "400"))

@@ -121,7 +121,6 @@ func (a *authRepository) ChangePassword(data *dto.ChangePReq) int {
 	}
 
 	if data.Code == user.Code {
-
 		hash, _ := hashPassword(data.NewPassword)
 		a.db.Model(&user).Update("password", hash)
 		a.db.Model(&user).Update("code", nil)
