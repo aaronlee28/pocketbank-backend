@@ -125,6 +125,5 @@ func (w *walletRepository) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, 
 			w.db.Model(&user).Update(change, input)
 		}
 	}
-
 	return data, err
 }

@@ -68,6 +68,16 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 		SavingsNumber: 1 + rand.Intn(99999-10000) + 10000 + user.Id,
 	}
 	db.Get().Create(&s)
+
+	m := &models.Merchandise{
+		UserID:        user.Id,
+		TotalTransfer: 0,
+		Pen:           false,
+		Umbrella:      false,
+		CardHolder:    false,
+	}
+	db.Get().Create(&m)
+
 	//has to be last because referral code might be there but failed to create the account for other reasons
 	if cr != 0 {
 		a.db.Where("user_id = ?", checkUser.Id).First(&referralBonus)

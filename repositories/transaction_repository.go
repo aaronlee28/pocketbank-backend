@@ -35,9 +35,25 @@ func NewTransactionRepository(c *TRConfig) transactionRepository {
 
 func (w *transactionRepository) TopupSavings(trans *models.Transaction, id int) (*models.Transaction, error, error) {
 	var sv *models.Savings
+	var m *models.Merchandise
 	err2 := w.db.Where("user_id = ?", id).First(&sv)
 	newBalance := sv.Balance + trans.Amount
 	w.db.Model(&sv).Update("balance", newBalance)
+	w.db.Where("user_id = ?", id).First(&m)
+	totalTransfer := m.TotalTransfer + trans.Amount
+	w.db.Model(&m).Update("total_transfer", totalTransfer)
+	if totalTransfer > 1000000 {
+		w.db.Model(&m).Update("pen", true)
+
+	}
+	if totalTransfer > 5000000 {
+		w.db.Model(&m).Update("umbrella", true)
+
+	}
+	if totalTransfer > 10000000 {
+		w.db.Model(&m).Update("card_holder", true)
+
+	}
 	addTransaction := &models.Transaction{
 		SenderWalletNumber:   trans.SenderWalletNumber,
 		ReceiverWalletNumber: sv.SavingsNumber,
