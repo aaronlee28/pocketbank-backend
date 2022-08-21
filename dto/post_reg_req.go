@@ -5,5 +5,5 @@ type RegReq struct {
 	Email          string `json:"email"`
 	Contact        string `json:"contact"`
 	Password       string `json:"password,omitempty"`
-	ReferralNumber int    `json:"referral_number"`
+	ReferralNumber int    `json:"referralNumber"`
 }

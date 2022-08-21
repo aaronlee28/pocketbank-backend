@@ -40,3 +40,11 @@ func UnauthorizedError() AppError {
 		StatusCode: http.StatusUnauthorized,
 	}
 }
+
+func ForbiddenError() AppError {
+	return AppError{
+		Code:       "FORBIDDEN_ERROR",
+		Message:    "Forbidden error",
+		StatusCode: http.StatusForbidden,
+	}
+}

@@ -1,7 +1,7 @@
 package dto
 
 type RegRes struct {
-	Email   string `json:"email_created"`
-	Name    string `json:"name_created"`
-	Contact string `json:"contact_created"`
+	Email   string `json:"emailCreated"`
+	Name    string `json:"nameCreated"`
+	Contact string `json:"contactCreated"`
 }

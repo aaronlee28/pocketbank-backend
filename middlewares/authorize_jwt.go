@@ -64,7 +64,7 @@ func AuthorizeAdmin(c *gin.Context) {
 
 	s := strings.Split(authHeader, "Bearer ")
 
-	unauthorizedErr := httperror.UnauthorizedError()
+	forbiddenErr := httperror.ForbiddenError()
 	encodedToken := s[1]
 	token, _ := validateToken(encodedToken)
 	claims, _ := token.Claims.(jwt.MapClaims)
@@ -72,7 +72,7 @@ func AuthorizeAdmin(c *gin.Context) {
 	var scope interface{}
 	json.Unmarshal(scopeJson, &scope)
 	if scope != "user admin" {
-		c.AbortWithStatusJSON(unauthorizedErr.StatusCode, unauthorizedErr)
+		c.AbortWithStatusJSON(forbiddenErr.StatusCode, forbiddenErr)
 		return
 	}
 	return

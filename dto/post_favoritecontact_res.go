@@ -4,7 +4,7 @@ import "git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/mode
 
 type FavoriteContactRes struct {
 	UserID         int `json:"user_id" binding:"required"`
-	FavoriteUserID int `json:"favorite_user_id" binding:"required"`
+	FavoriteUserID int `json:"favoriteUserID" binding:"required"`
 }
 
 func (_ *FavoriteContactRes) FromFavoritecontact(t *models.Favoritecontact) *FavoriteContactRes {

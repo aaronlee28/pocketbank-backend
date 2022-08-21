@@ -6,7 +6,7 @@ import (
 
 type DepositInfoRes struct {
 	Balance       float32 `json:"balance"`
-	DepositNumber int     `json:"deposit_number"`
+	DepositNumber int     `json:"depositNumber"`
 }
 
 func (_ *DepositInfoRes) FromDepositInfo(t *models.Deposit) *DepositInfoRes {
