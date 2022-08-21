@@ -44,7 +44,10 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	router.GET("/favoritecontactlist", h.FavoriteContactList)
 	//admin router
 	router.Use(middlewares.AuthorizeAdmin)
-	router.GET("/userslist", h.UsersList)
+	router.GET("/userslist", h.AdminUsersList)
+	router.GET("/usertransaction/:id", h.AdminUserTransaction)
+	router.GET("/userdetails/:id", h.AdminUserDetails)
+	router.GET("/userreferraldetails/:id", h.AdminUserReferralDetails)
 
 	return router
 }
