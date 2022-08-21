@@ -52,6 +52,7 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 	user.Password = hash
 	user.EligibleMerchandise = false
 	user.Role = "user"
+	user.Status = "active"
 	makeNewReferralCode := true
 	for makeNewReferralCode == true {
 		checkReferralNumber := rand.Intn(99999-9999) + 9999

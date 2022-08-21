@@ -11,4 +11,5 @@ type User struct {
 	ProfilePicture      []byte `json:"profilePicture"`
 	EligibleMerchandise bool   `json:"eligibleMerchandise"`
 	Role                string `json:"role"`
+	Status              string `json:"status"`
 }
