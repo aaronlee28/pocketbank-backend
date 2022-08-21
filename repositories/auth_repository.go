@@ -50,7 +50,6 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 
 	hash, _ := hashPassword(user.Password)
 	user.Password = hash
-	user.EligibleMerchandise = false
 	user.Role = "user"
 	user.IsActive = true
 	makeNewReferralCode := true

@@ -44,7 +44,6 @@ func (w *transactionRepository) TopupSavings(trans *models.Transaction, id int) 
 	w.db.Model(&m).Update("total_transfer", totalTransfer)
 	if totalTransfer > 1000000 {
 		w.db.Model(&m).Update("pen", true)
-
 	}
 	if totalTransfer > 5000000 {
 		w.db.Model(&m).Update("umbrella", true)
@@ -52,7 +51,6 @@ func (w *transactionRepository) TopupSavings(trans *models.Transaction, id int) 
 	}
 	if totalTransfer > 10000000 {
 		w.db.Model(&m).Update("card_holder", true)
-
 	}
 	addTransaction := &models.Transaction{
 		SenderWalletNumber:   trans.SenderWalletNumber,
