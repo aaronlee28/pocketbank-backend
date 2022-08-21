@@ -11,7 +11,7 @@ import (
 )
 
 type AuthRepository interface {
-	MatchingCredential(email, password string) (*models.User, error)
+	MatchingCredential(email, password string) (*models.User, error, bool)
 	Register(user *models.User, cr int) (*models.User, error)
 	GetCode(email string) (*models.User, int, error)
 	ChangePassword(data *dto.ChangePReq) int
@@ -52,7 +52,7 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 	user.Password = hash
 	user.EligibleMerchandise = false
 	user.Role = "user"
-	user.Status = "active"
+	user.IsActive = true
 	makeNewReferralCode := true
 	for makeNewReferralCode == true {
 		checkReferralNumber := rand.Intn(99999-9999) + 9999
@@ -91,20 +91,23 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 
 	return user, nil
 }
-func (a *authRepository) MatchingCredential(email, password string) (*models.User, error) {
+func (a *authRepository) MatchingCredential(email, password string) (*models.User, error, bool) {
 	var user *models.User
 	err := a.db.Where("email = ?", email).First(&user).Error
+	if user.IsActive == false {
+		return nil, nil, false
+	}
 	hashed := user.Password
 	check := checkPasswordHash(password, hashed)
 	if err != nil || check == false {
-		return nil, err
+		return nil, err, true
 	}
 
 	isNotFound := errors.Is(err, gorm.ErrRecordNotFound)
 	if isNotFound {
-		return nil, err
+		return nil, err, true
 	}
-	return user, err
+	return user, err, true
 }
 
 func (a *authRepository) GetCode(email string) (*models.User, int, error) {

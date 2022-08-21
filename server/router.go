@@ -48,6 +48,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	router.GET("/usertransaction/:id", h.AdminUserTransaction)
 	router.GET("/userdetails/:id", h.AdminUserDetails)
 	router.GET("/userreferraldetails/:id", h.AdminUserReferralDetails)
+	router.PATCH("/changeuserstatus/:id", h.ChangeUserStatus)
 
 	return router
 }

@@ -11,6 +11,7 @@ type AdminService interface {
 	AdminUserTransaction(q *repositories.Query, id int) (*[]dto.TransRes, error)
 	AdminUserDetails(id int) (*dto.UserDetailsRes, error)
 	AdminUserReferralDetails(id int) (*dto.UserReferralDetailsRes, error)
+	ChangeUserStatus(id int) error
 }
 
 type adminService struct {
@@ -101,4 +102,12 @@ func (a *adminService) AdminUserReferralDetails(id int) (*dto.UserReferralDetail
 		ListOfUsers: list,
 	}
 	return refdetails, err
+}
+
+func (a *adminService) ChangeUserStatus(id int) error {
+	err := a.adminRepository.ChangeUserStatus(id)
+	if err != nil {
+		return error(httperror.BadRequestError("User not found", "400"))
+	}
+	return err
 }

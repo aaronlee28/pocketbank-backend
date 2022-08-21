@@ -74,3 +74,17 @@ func (a *Handler) AdminUserReferralDetails(c *gin.Context) {
 	successResponse := httpsuccess.OkSuccess("Ok", result)
 	c.JSON(http.StatusOK, successResponse)
 }
+
+func (a *Handler) ChangeUserStatus(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	ret := a.AdminService.ChangeUserStatus(id)
+
+	if ret != nil {
+		e := c.Error(ret)
+		c.JSON(http.StatusBadRequest, e)
+		return
+	}
+
+	successResponse := httpsuccess.OkSuccess("Ok", ret)
+	c.JSON(http.StatusOK, successResponse)
+}

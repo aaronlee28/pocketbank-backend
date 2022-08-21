@@ -89,7 +89,14 @@ func (a *authService) Register(req *dto.RegReq) (*dto.RegRes, error) {
 }
 
 func (a *authService) SignIn(req *dto.AuthReq) (*dto.TokenRes, error) {
-	user, err := a.authRepository.MatchingCredential(req.Email, req.Password)
+	user, err, isUserActive := a.authRepository.MatchingCredential(req.Email, req.Password)
+	if isUserActive == false {
+		return nil, httperror.AppError{
+			StatusCode: http.StatusForbidden,
+			Code:       "User Account Inactive",
+			Message:    "User Account Inactive",
+		}
+	}
 	if err != nil || user == nil {
 		return nil, httperror.AppError{
 			StatusCode: http.StatusUnauthorized,

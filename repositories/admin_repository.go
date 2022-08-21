@@ -13,6 +13,7 @@ type AdminRepository interface {
 	AdminUserTransaction(q *Query, id int) (*[]models.Transaction, error)
 	AdminUserDetails(id int) (*dto.UserDetailsRes, error)
 	AdminUserReferralDetails(id int) (*[]models.Referral, error)
+	ChangeUserStatus(id int) error
 }
 
 type adminRepository struct {
@@ -71,4 +72,20 @@ func (w *adminRepository) AdminUserReferralDetails(id int) (*[]models.Referral, 
 	w.db.Where("referral_number = ?", user.ReferralNumber).Find(&rs)
 
 	return rs, err
+}
+
+func (w *adminRepository) ChangeUserStatus(id int) error {
+	var user *models.User
+	err := w.db.Where("id = ?", id).First(&user).Error
+	if user.IsActive == false {
+		w.db.Model(&user).Update("is_active", true)
+		return err
+	}
+
+	if user.IsActive == true {
+		w.db.Model(&user).Update("is_active", false)
+		return err
+	}
+
+	return err
 }
