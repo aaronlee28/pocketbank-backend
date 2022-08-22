@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httpsuccess"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
 	"github.com/gin-gonic/gin"
@@ -114,5 +115,39 @@ func (a *Handler) UserDepositInfo(c *gin.Context) {
 	}
 
 	successResponse := httpsuccess.OkSuccess("Ok", ret)
+	c.JSON(http.StatusOK, successResponse)
+}
+
+func (a *Handler) UserRate(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	payload, _ := c.Get("payload")
+	data, _ := payload.(*dto.ChangeInterestRateReq)
+
+	err := a.AdminService.UserRate(id, data)
+
+	if err != nil {
+		e := c.Error(err)
+		c.JSON(http.StatusBadRequest, e)
+		return
+	}
+
+	successResponse := httpsuccess.OkSuccess("Ok", err)
+	c.JSON(http.StatusOK, successResponse)
+}
+
+func (a *Handler) UsersRate(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	payload, _ := c.Get("payload")
+	data, _ := payload.(*dto.ChangeInterestRateReq)
+
+	err := a.AdminService.UserRate(id, data)
+
+	if err != nil {
+		e := c.Error(err)
+		c.JSON(http.StatusBadRequest, e)
+		return
+	}
+
+	successResponse := httpsuccess.OkSuccess("Ok", err)
 	c.JSON(http.StatusOK, successResponse)
 }
