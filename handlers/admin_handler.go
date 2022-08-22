@@ -5,6 +5,7 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httpsuccess"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 )
@@ -148,5 +149,26 @@ func (a *Handler) UsersRate(c *gin.Context) {
 	}
 
 	successResponse := httpsuccess.OkSuccess("Ok", err)
+	c.JSON(http.StatusOK, successResponse)
+}
+
+func (a *Handler) CreatePromotion(c *gin.Context) {
+	title := c.PostForm("title")
+	photo, err := c.FormFile("photo")
+	photoContent, _ := photo.Open()
+	readPhoto, _ := ioutil.ReadAll(photoContent)
+	data := &dto.PromotionReq{
+		Title: title,
+		Photo: readPhoto,
+	}
+	res, err := a.AdminService.CreatePromotion(data)
+
+	if err != nil {
+		e := c.Error(err)
+		c.JSON(http.StatusBadRequest, e)
+		return
+	}
+
+	successResponse := httpsuccess.OkSuccess("Ok", res)
 	c.JSON(http.StatusOK, successResponse)
 }

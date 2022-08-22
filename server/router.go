@@ -53,7 +53,8 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	router.GET("/userdepositinfo/:id", h.UserDepositInfo)
 	router.PATCH("/userrate/:id", middlewares.RequestValidator(&dto.ChangeInterestRateReq{}), h.UserRate)
 	router.PATCH("/usersrate", middlewares.RequestValidator(&dto.ChangeInterestRateReq{}), h.UsersRate)
-	//router.PATCH("/usersrateandtax/", h.)
+
+	router.POST("/promotion", h.CreatePromotion)
 
 	return router
 }

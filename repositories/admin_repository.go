@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"gorm.io/gorm"
@@ -18,6 +19,7 @@ type AdminRepository interface {
 	UserDepositInfo(id int) (*[]models.Deposit, error)
 	UserRate(id int, data *dto.ChangeInterestRateReq) error
 	UsersRate(data *dto.ChangeInterestRateReq) error
+	CreatePromotion(data *dto.PromotionReq) (*models.Promotion, error)
 }
 
 type adminRepository struct {
@@ -129,4 +131,15 @@ func (w *adminRepository) UsersRate(data *dto.ChangeInterestRateReq) error {
 
 	}
 	return err
+}
+
+func (w *adminRepository) CreatePromotion(data *dto.PromotionReq) (*models.Promotion, error) {
+	p := &models.Promotion{
+		Title: data.Title,
+		Photo: data.Photo,
+	}
+
+	err := db.Get().Create(&p).Error
+
+	return p, err
 }

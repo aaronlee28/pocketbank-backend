@@ -17,6 +17,7 @@ type AdminService interface {
 	UserDepositInfo(id int) (*dto.UserDepositInfo, error)
 	UserRate(id int, data *dto.ChangeInterestRateReq) error
 	UsersRate(data *dto.ChangeInterestRateReq) error
+	CreatePromotion(data *dto.PromotionReq) (*dto.PromotionReq, error)
 }
 
 type adminService struct {
@@ -162,4 +163,18 @@ func (a *adminService) UsersRate(data *dto.ChangeInterestRateReq) error {
 	}
 
 	return err
+}
+
+func (a *adminService) CreatePromotion(data *dto.PromotionReq) (*dto.PromotionReq, error) {
+
+	p, err := a.adminRepository.CreatePromotion(data)
+
+	if err != nil {
+		return nil, error(httperror.BadRequestError("Failed to Create Promotion", "400"))
+	}
+	ret := &dto.PromotionReq{
+		Title: p.Title,
+		Photo: p.Photo,
+	}
+	return ret, err
 }
