@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"gorm.io/gorm"
@@ -18,6 +17,7 @@ type AdminRepository interface {
 	Merchandise(id int) (*models.Merchandise, error)
 	UserDepositInfo(id int) (*[]models.Deposit, error)
 	UserRate(id int, data *dto.ChangeInterestRateReq) error
+	UsersRate(data *dto.ChangeInterestRateReq) error
 }
 
 type adminRepository struct {
@@ -112,11 +112,21 @@ func (w *adminRepository) UserRate(id int, data *dto.ChangeInterestRateReq) erro
 	err := w.db.Where("user_id = ?", id).Find(&d).Error
 
 	for _, deposit := range *d {
-		fmt.Println("data:", data.InterestRate)
 
 		w.db.Model(deposit).Update("interest_rate", data.InterestRate)
 
-		//fmt.Println(deposit.InterestRate)
+	}
+	return err
+}
+
+func (w *adminRepository) UsersRate(data *dto.ChangeInterestRateReq) error {
+	var d *[]models.Deposit
+	err := w.db.Find(&d).Error
+
+	for _, deposit := range *d {
+
+		w.db.Model(deposit).Update("interest_rate", data.InterestRate)
+
 	}
 	return err
 }

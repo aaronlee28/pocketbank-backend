@@ -136,11 +136,10 @@ func (a *Handler) UserRate(c *gin.Context) {
 }
 
 func (a *Handler) UsersRate(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
 	payload, _ := c.Get("payload")
 	data, _ := payload.(*dto.ChangeInterestRateReq)
 
-	err := a.AdminService.UserRate(id, data)
+	err := a.AdminService.UsersRate(data)
 
 	if err != nil {
 		e := c.Error(err)

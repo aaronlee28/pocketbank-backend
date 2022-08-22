@@ -16,6 +16,7 @@ type AdminService interface {
 	Merchandise(id int) (*models.Merchandise, error)
 	UserDepositInfo(id int) (*dto.UserDepositInfo, error)
 	UserRate(id int, data *dto.ChangeInterestRateReq) error
+	UsersRate(data *dto.ChangeInterestRateReq) error
 }
 
 type adminService struct {
@@ -144,6 +145,17 @@ func (a *adminService) UserDepositInfo(id int) (*dto.UserDepositInfo, error) {
 func (a *adminService) UserRate(id int, data *dto.ChangeInterestRateReq) error {
 
 	err := a.adminRepository.UserRate(id, data)
+
+	if err != nil {
+		return error(httperror.BadRequestError("User not found", "400"))
+	}
+
+	return err
+}
+
+func (a *adminService) UsersRate(data *dto.ChangeInterestRateReq) error {
+
+	err := a.adminRepository.UsersRate(data)
 
 	if err != nil {
 		return error(httperror.BadRequestError("User not found", "400"))
