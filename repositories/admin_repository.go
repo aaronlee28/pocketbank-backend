@@ -20,6 +20,7 @@ type AdminRepository interface {
 	UserRate(id int, data *dto.ChangeInterestRateReq) error
 	UsersRate(data *dto.ChangeInterestRateReq) error
 	CreatePromotion(data *dto.PromotionReq) (*models.Promotion, error)
+	GetPromotion() (*[]models.Promotion, error)
 }
 
 type adminRepository struct {
@@ -141,5 +142,11 @@ func (w *adminRepository) CreatePromotion(data *dto.PromotionReq) (*models.Promo
 
 	err := db.Get().Create(&p).Error
 
+	return p, err
+}
+
+func (w *adminRepository) GetPromotion() (*[]models.Promotion, error) {
+	var p *[]models.Promotion
+	err := w.db.Find(&p).Error
 	return p, err
 }
