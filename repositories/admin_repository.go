@@ -5,6 +5,7 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"gorm.io/gorm"
+	"reflect"
 	"strconv"
 	"time"
 )
@@ -21,6 +22,7 @@ type AdminRepository interface {
 	UsersRate(data *dto.ChangeInterestRateReq) error
 	CreatePromotion(data *dto.PromotionReq) (*models.Promotion, error)
 	GetPromotion() (*[]models.Promotion, error)
+	UpdatePromotion(id int, data *dto.PatchPromotionReq) (*dto.PatchPromotionReq, error)
 }
 
 type adminRepository struct {
@@ -149,4 +151,26 @@ func (w *adminRepository) GetPromotion() (*[]models.Promotion, error) {
 	var p *[]models.Promotion
 	err := w.db.Find(&p).Error
 	return p, err
+}
+
+func (w *adminRepository) UpdatePromotion(id int, data *dto.PatchPromotionReq) (*dto.PatchPromotionReq, error) {
+
+	var p *models.Promotion
+	err := w.db.Where("id = ?", id).First(&p).Error
+	pho := p.Photo
+	v := reflect.ValueOf(*data)
+	for i := 0; i < v.NumField(); i++ {
+		val := v.Field(i).Interface()
+		if val != "" && val != 0 {
+			change := v.Type().Field(i).Name
+			input := v.Field(i).Interface()
+			w.db.Model(&p).Update(change, input)
+		}
+	}
+	if data.Photo == nil {
+
+		w.db.Model(&p).Update("photo", pho)
+
+	}
+	return data, err
 }

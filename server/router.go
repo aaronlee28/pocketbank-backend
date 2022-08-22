@@ -56,6 +56,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 	router.POST("/promotion", h.CreatePromotion)
 	router.GET("/promotion", h.GetPromotion)
+	router.PATCH("/promotion", h.UpdatePromotion)
 
 	return router
 }

@@ -18,7 +18,8 @@ type AdminService interface {
 	UserRate(id int, data *dto.ChangeInterestRateReq) error
 	UsersRate(data *dto.ChangeInterestRateReq) error
 	CreatePromotion(data *dto.PromotionReq) (*dto.PromotionReq, error)
-	GetPromotion() (*[]dto.PromotionReq, error)
+	GetPromotion() (*[]models.Promotion, error)
+	UpdatePromotion(id int, data *dto.PatchPromotionReq) (*dto.PatchPromotionReq, error)
 }
 
 type adminService struct {
@@ -180,19 +181,22 @@ func (a *adminService) CreatePromotion(data *dto.PromotionReq) (*dto.PromotionRe
 	return ret, err
 }
 
-func (a *adminService) GetPromotion() (*[]dto.PromotionReq, error) {
+func (a *adminService) GetPromotion() (*[]models.Promotion, error) {
 
 	p, err := a.adminRepository.GetPromotion()
-	var pro []dto.PromotionReq
 	if err != nil {
 		return nil, error(httperror.BadRequestError("Failed to Create Promotion", "400"))
 	}
-	for _, promotion := range *p {
-		promo := &dto.PromotionReq{
-			Title: promotion.Title,
-			Photo: promotion.Photo,
-		}
-		pro = append(pro, *promo)
+
+	return p, err
+}
+
+func (a *adminService) UpdatePromotion(id int, data *dto.PatchPromotionReq) (*dto.PatchPromotionReq, error) {
+
+	p, err := a.adminRepository.UpdatePromotion(id, data)
+	if err != nil {
+		return nil, error(httperror.BadRequestError("Failed to Create Promotion", "400"))
 	}
-	return &pro, err
+
+	return p, err
 }

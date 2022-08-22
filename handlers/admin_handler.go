@@ -186,3 +186,36 @@ func (a *Handler) GetPromotion(c *gin.Context) {
 	successResponse := httpsuccess.OkSuccess("Ok", res)
 	c.JSON(http.StatusOK, successResponse)
 }
+
+func (a *Handler) UpdatePromotion(c *gin.Context) {
+
+	id := c.PostForm("id")
+	title := c.PostForm("title")
+	var ph []byte
+	photo, _ := c.FormFile("photo")
+
+	if photo != nil {
+		photoContent, _ := photo.Open()
+		ph, _ = ioutil.ReadAll(photoContent)
+	}
+
+	var res *dto.PatchPromotionReq
+	var err error
+
+	param := &dto.PatchPromotionReq{
+		Title: title,
+		Photo: ph,
+	}
+
+	idInt, _ := strconv.Atoi(id)
+	res, err = a.AdminService.UpdatePromotion(idInt, param)
+
+	if err != nil {
+		e := c.Error(err)
+		c.JSON(http.StatusBadRequest, e)
+		return
+	}
+
+	successResponse := httpsuccess.OkSuccess("Ok", res)
+	c.JSON(http.StatusOK, successResponse)
+}
