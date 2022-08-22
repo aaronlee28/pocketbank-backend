@@ -7,6 +7,7 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -133,12 +134,24 @@ func (a *Handler) FavoriteContactList(c *gin.Context) {
 
 func (a *Handler) ChangeUserDetails(c *gin.Context) {
 
-	payload, _ := c.Get("payload")
-	payload2, _ := c.Get("user")
-
-	param, _ := payload.(*dto.ChangeUserDetailsReqRes)
-	user, _ := payload2.(models.User)
+	payload, _ := c.Get("user")
+	user, _ := payload.(models.User)
 	userid := user.Id
+	name := c.PostForm("name")
+	email := c.PostForm("email")
+	contact := c.PostForm("contact")
+	var ph []byte
+	photo, _ := c.FormFile("photo")
+	if photo != nil {
+		photoContent, _ := photo.Open()
+		ph, _ = ioutil.ReadAll(photoContent)
+	}
+	param := &dto.ChangeUserDetailsReqRes{
+		Name:           name,
+		Email:          email,
+		Contact:        contact,
+		ProfilePicture: ph,
+	}
 	result, err := a.WalletService.ChangeUserDetails(param, userid)
 
 	if err != nil {

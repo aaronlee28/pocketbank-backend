@@ -116,6 +116,7 @@ func (w *walletRepository) FavoriteContactList(id int) (*[]models.Favoritecontac
 func (w *walletRepository) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error) {
 	var user *models.User
 	err := w.db.Where("id = ?", id).First(&user).Error
+	pho := user.ProfilePicture
 	v := reflect.ValueOf(*data)
 	for i := 0; i < v.NumField(); i++ {
 		val := v.Field(i).Interface()
@@ -124,6 +125,10 @@ func (w *walletRepository) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, 
 			input := v.Field(i).Interface()
 			w.db.Model(&user).Update(change, input)
 		}
+	}
+	if data.ProfilePicture == nil {
+		w.db.Model(&user).Update("profile_picture", pho)
+
 	}
 	return data, err
 }
