@@ -61,6 +61,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 	router.GET("/eligiblemerchandiselist", h.EligibleMerchandiseList)
 	router.POST("/merchandisestatus", middlewares.RequestValidator(&dto.MerchandiseStatus{}), h.MerchandiseStatus)
-
+	router.PATCH("/updatemerchstocks", middlewares.RequestValidator(&dto.UpdateMerchStocksReq{}), h.UpdateMerchStocks)
 	return router
 }

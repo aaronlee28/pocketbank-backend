@@ -23,6 +23,7 @@ type AdminService interface {
 	DeletePromotion(id int) (*models.Promotion, error)
 	EligibleMerchandiseList() (*[]models.Merchandise, error)
 	MerchandiseStatus(data *dto.MerchandiseStatus) error
+	UpdateMerchStocks(data *dto.UpdateMerchStocksReq) (*models.Merchstock, error)
 }
 
 type adminService struct {
@@ -238,4 +239,14 @@ func (a *adminService) MerchandiseStatus(data *dto.MerchandiseStatus) error {
 	}
 
 	return nil
+}
+
+func (a *adminService) UpdateMerchStocks(data *dto.UpdateMerchStocksReq) (*models.Merchstock, error) {
+
+	p, err := a.adminRepository.UpdateMerchStocks(data)
+	if err != nil {
+		return nil, error(httperror.BadRequestError("Merchandise could not be found", "400"))
+	}
+
+	return p, err
 }

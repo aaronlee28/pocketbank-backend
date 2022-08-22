@@ -263,3 +263,19 @@ func (a *Handler) MerchandiseStatus(c *gin.Context) {
 	successResponse := httpsuccess.OkSuccess("Ok", nil)
 	c.JSON(http.StatusOK, successResponse)
 }
+
+func (a *Handler) UpdateMerchStocks(c *gin.Context) {
+	payload, _ := c.Get("payload")
+	data, _ := payload.(*dto.UpdateMerchStocksReq)
+
+	ret, err := a.AdminService.UpdateMerchStocks(data)
+
+	if err != nil {
+		e := c.Error(err)
+		c.JSON(http.StatusBadRequest, e)
+		return
+	}
+
+	successResponse := httpsuccess.OkSuccess("Ok", ret)
+	c.JSON(http.StatusOK, successResponse)
+}
