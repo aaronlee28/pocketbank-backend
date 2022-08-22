@@ -252,15 +252,10 @@ func (a *Handler) MerchandiseStatus(c *gin.Context) {
 	payload, _ := c.Get("payload")
 	data, _ := payload.(*dto.MerchandiseStatus)
 
-	err1, err2 := a.AdminService.MerchandiseStatus(data)
+	err := a.AdminService.MerchandiseStatus(data)
 
-	if err1 != nil {
-		e := c.Error(err1)
-		c.JSON(http.StatusBadRequest, e)
-		return
-	}
-	if err2 != nil {
-		e := c.Error(err2)
+	if err != nil {
+		e := c.Error(err)
 		c.JSON(http.StatusBadRequest, e)
 		return
 	}

@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
@@ -25,7 +26,7 @@ type AdminRepository interface {
 	UpdatePromotion(id int, data *dto.PatchPromotionReq) (*dto.PatchPromotionReq, error)
 	DeletePromotion(id int) (*models.Promotion, error)
 	EligibleMerchandiseList() (*[]models.Merchandise, error)
-	MerchandiseStatus(data *dto.MerchandiseStatus) (error, error)
+	MerchandiseStatus(data *dto.MerchandiseStatus) (error, error, int)
 }
 
 type adminRepository struct {
@@ -193,11 +194,24 @@ func (w *adminRepository) EligibleMerchandiseList() (*[]models.Merchandise, erro
 	return m, err
 }
 
-func (w *adminRepository) MerchandiseStatus(data *dto.MerchandiseStatus) (error, error) {
+func (w *adminRepository) MerchandiseStatus(data *dto.MerchandiseStatus) (error, error, int) {
 	var m *models.Merchandise
+	var s *models.Merchstock
 	err1 := w.db.Where("user_id = ?", data.UserID).First(&m).Error
 	send := "send_" + data.MerchToSend
 	err2 := w.db.Model(&m).Update(send, data.Status).Error
+	fmt.Println("status", data.Status)
+	if data.Status == "On process" {
+		w.db.Where("name = ?", data.MerchToSend).First(&s)
+		fmt.Println("name", data.MerchToSend)
 
-	return err1, err2
+		if s.StockCount <= 0 {
+			return nil, nil, 1
+		}
+		newStock := s.StockCount - 1
+
+		w.db.Model(&s).Update("stock_count", newStock)
+	}
+
+	return err1, err2, 0
 }

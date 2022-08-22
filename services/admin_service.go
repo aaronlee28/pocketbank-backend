@@ -22,7 +22,7 @@ type AdminService interface {
 	UpdatePromotion(id int, data *dto.PatchPromotionReq) (*dto.PatchPromotionReq, error)
 	DeletePromotion(id int) (*models.Promotion, error)
 	EligibleMerchandiseList() (*[]models.Merchandise, error)
-	MerchandiseStatus(data *dto.MerchandiseStatus) (error, error)
+	MerchandiseStatus(data *dto.MerchandiseStatus) error
 }
 
 type adminService struct {
@@ -224,15 +224,18 @@ func (a *adminService) EligibleMerchandiseList() (*[]models.Merchandise, error) 
 	return p, err
 }
 
-func (a *adminService) MerchandiseStatus(data *dto.MerchandiseStatus) (error, error) {
+func (a *adminService) MerchandiseStatus(data *dto.MerchandiseStatus) error {
 
-	err1, err2 := a.adminRepository.MerchandiseStatus(data)
+	err1, err2, code := a.adminRepository.MerchandiseStatus(data)
+	if code == 1 {
+		return error(httperror.BadRequestError("Merchandise stock insufficient", "400"))
+	}
 	if err1 != nil {
-		return error(httperror.BadRequestError("User Id Not Found", "400")), nil
+		return error(httperror.BadRequestError("User Id Not Found", "400"))
 	}
 	if err2 != nil {
-		return nil, error(httperror.BadRequestError("Failed To Update Delivery", "400"))
+		return error(httperror.BadRequestError("Failed To Update Delivery", "400"))
 	}
 
-	return err1, err2
+	return nil
 }
