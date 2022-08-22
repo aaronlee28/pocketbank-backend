@@ -14,6 +14,8 @@ type AdminRepository interface {
 	AdminUserDetails(id int) (*dto.UserDetailsRes, error)
 	AdminUserReferralDetails(id int) (*[]models.Referral, error)
 	ChangeUserStatus(id int) error
+	Merchandise(id int) (*models.Merchandise, error)
+	UserDepositInfo(id int) (*[]models.Deposit, error)
 }
 
 type adminRepository struct {
@@ -88,4 +90,17 @@ func (w *adminRepository) ChangeUserStatus(id int) error {
 	}
 
 	return err
+}
+
+func (w *adminRepository) Merchandise(id int) (*models.Merchandise, error) {
+	var m *models.Merchandise
+	err := w.db.Where("user_id = ?", id).First(&m).Error
+
+	return m, err
+}
+
+func (w *adminRepository) UserDepositInfo(id int) (*[]models.Deposit, error) {
+	var m *[]models.Deposit
+	err := w.db.Where("user_id = ?", id).Order("updated_at").Find(&m).Error
+	return m, err
 }

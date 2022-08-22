@@ -88,3 +88,31 @@ func (a *Handler) ChangeUserStatus(c *gin.Context) {
 	successResponse := httpsuccess.OkSuccess("Ok", ret)
 	c.JSON(http.StatusOK, successResponse)
 }
+
+func (a *Handler) Merchandise(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	ret, err := a.AdminService.Merchandise(id)
+
+	if err != nil {
+		e := c.Error(err)
+		c.JSON(http.StatusBadRequest, e)
+		return
+	}
+
+	successResponse := httpsuccess.OkSuccess("Ok", ret)
+	c.JSON(http.StatusOK, successResponse)
+}
+
+func (a *Handler) UserDepositInfo(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	ret, err := a.AdminService.UserDepositInfo(id)
+
+	if err != nil {
+		e := c.Error(err)
+		c.JSON(http.StatusBadRequest, e)
+		return
+	}
+
+	successResponse := httpsuccess.OkSuccess("Ok", ret)
+	c.JSON(http.StatusOK, successResponse)
+}

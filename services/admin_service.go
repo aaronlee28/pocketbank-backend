@@ -3,6 +3,7 @@ package services
 import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httperror"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
 )
 
@@ -12,6 +13,8 @@ type AdminService interface {
 	AdminUserDetails(id int) (*dto.UserDetailsRes, error)
 	AdminUserReferralDetails(id int) (*dto.UserReferralDetailsRes, error)
 	ChangeUserStatus(id int) error
+	Merchandise(id int) (*models.Merchandise, error)
+	UserDepositInfo(id int) (*dto.UserDepositInfo, error)
 }
 
 type adminService struct {
@@ -110,4 +113,29 @@ func (a *adminService) ChangeUserStatus(id int) error {
 		return error(httperror.BadRequestError("User not found", "400"))
 	}
 	return err
+}
+
+func (a *adminService) Merchandise(id int) (*models.Merchandise, error) {
+	m, err := a.adminRepository.Merchandise(id)
+	if err != nil {
+		return nil, error(httperror.BadRequestError("User not found", "400"))
+	}
+	return m, err
+}
+
+func (a *adminService) UserDepositInfo(id int) (*dto.UserDepositInfo, error) {
+	deposits, err := a.adminRepository.UserDepositInfo(id)
+	var totalDepositBalance float32
+	if err != nil {
+		return nil, error(httperror.BadRequestError("User not found", "400"))
+	}
+	for _, d := range *deposits {
+		totalDepositBalance = totalDepositBalance + d.Balance
+	}
+	ret := &dto.UserDepositInfo{
+		UserID:      id,
+		Balance:     totalDepositBalance,
+		AllDeposits: deposits,
+	}
+	return ret, err
 }
