@@ -184,8 +184,6 @@ func (w *transactionRepository) WithdrawDeposit() {
 				addInterest := sv.Balance + s.Interest + s.Balance
 				w.db.Model(&sv).Update("balance", addInterest)
 				w.db.Model(&s).Update("deleted_at", time.Now())
-				fmt.Println("im here")
-
 			}
 		}
 	}
@@ -222,6 +220,7 @@ func (w *transactionRepository) TopupDeposit(trans *models.Transaction, id int) 
 	interestAfterTax := interestBeforeTax * (1 - addDeposit.Tax)
 	addDeposit.Interest = interestAfterTax
 	db.Get().Create(&addDeposit)
+	w.db.Model(&addDeposit).Update("deleted_at", nil)
 
 	newBalance := sv.Balance - trans.Amount
 	w.db.Model(&sv).Update("balance", newBalance)

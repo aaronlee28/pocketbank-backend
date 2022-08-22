@@ -20,6 +20,9 @@ type AdminService interface {
 	CreatePromotion(data *dto.PromotionReq) (*dto.PromotionReq, error)
 	GetPromotion() (*[]models.Promotion, error)
 	UpdatePromotion(id int, data *dto.PatchPromotionReq) (*dto.PatchPromotionReq, error)
+	DeletePromotion(id int) (*models.Promotion, error)
+	EligibleMerchandiseList() (*[]models.Merchandise, error)
+	MerchandiseStatus(data *dto.MerchandiseStatus) (error, error)
 }
 
 type adminService struct {
@@ -199,4 +202,37 @@ func (a *adminService) UpdatePromotion(id int, data *dto.PatchPromotionReq) (*dt
 	}
 
 	return p, err
+}
+
+func (a *adminService) DeletePromotion(id int) (*models.Promotion, error) {
+
+	p, err := a.adminRepository.DeletePromotion(id)
+	if err != nil {
+		return nil, error(httperror.BadRequestError("Failed to Create Promotion", "400"))
+	}
+
+	return p, err
+}
+
+func (a *adminService) EligibleMerchandiseList() (*[]models.Merchandise, error) {
+
+	p, err := a.adminRepository.EligibleMerchandiseList()
+	if err != nil {
+		return nil, error(httperror.BadRequestError("Failed to Create Promotion", "400"))
+	}
+
+	return p, err
+}
+
+func (a *adminService) MerchandiseStatus(data *dto.MerchandiseStatus) (error, error) {
+
+	err1, err2 := a.adminRepository.MerchandiseStatus(data)
+	if err1 != nil {
+		return error(httperror.BadRequestError("User Id Not Found", "400")), nil
+	}
+	if err2 != nil {
+		return nil, error(httperror.BadRequestError("Failed To Update Delivery", "400"))
+	}
+
+	return err1, err2
 }

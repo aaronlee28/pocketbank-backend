@@ -219,3 +219,52 @@ func (a *Handler) UpdatePromotion(c *gin.Context) {
 	successResponse := httpsuccess.OkSuccess("Ok", res)
 	c.JSON(http.StatusOK, successResponse)
 }
+
+func (a *Handler) DeletePromotion(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	res, err := a.AdminService.DeletePromotion(id)
+
+	if err != nil {
+		e := c.Error(err)
+		c.JSON(http.StatusBadRequest, e)
+		return
+	}
+
+	successResponse := httpsuccess.OkSuccess("Ok", res)
+	c.JSON(http.StatusOK, successResponse)
+}
+
+func (a *Handler) EligibleMerchandiseList(c *gin.Context) {
+
+	res, err := a.AdminService.EligibleMerchandiseList()
+
+	if err != nil {
+		e := c.Error(err)
+		c.JSON(http.StatusBadRequest, e)
+		return
+	}
+
+	successResponse := httpsuccess.OkSuccess("Ok", res)
+	c.JSON(http.StatusOK, successResponse)
+}
+func (a *Handler) MerchandiseStatus(c *gin.Context) {
+	payload, _ := c.Get("payload")
+	data, _ := payload.(*dto.MerchandiseStatus)
+
+	err1, err2 := a.AdminService.MerchandiseStatus(data)
+
+	if err1 != nil {
+		e := c.Error(err1)
+		c.JSON(http.StatusBadRequest, e)
+		return
+	}
+	if err2 != nil {
+		e := c.Error(err2)
+		c.JSON(http.StatusBadRequest, e)
+		return
+	}
+
+	successResponse := httpsuccess.OkSuccess("Ok", nil)
+	c.JSON(http.StatusOK, successResponse)
+}

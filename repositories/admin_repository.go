@@ -23,6 +23,9 @@ type AdminRepository interface {
 	CreatePromotion(data *dto.PromotionReq) (*models.Promotion, error)
 	GetPromotion() (*[]models.Promotion, error)
 	UpdatePromotion(id int, data *dto.PatchPromotionReq) (*dto.PatchPromotionReq, error)
+	DeletePromotion(id int) (*models.Promotion, error)
+	EligibleMerchandiseList() (*[]models.Merchandise, error)
+	MerchandiseStatus(data *dto.MerchandiseStatus) (error, error)
 }
 
 type adminRepository struct {
@@ -108,7 +111,7 @@ func (w *adminRepository) Merchandise(id int) (*models.Merchandise, error) {
 
 func (w *adminRepository) UserDepositInfo(id int) (*[]models.Deposit, error) {
 	var m *[]models.Deposit
-	err := w.db.Where("user_id = ?", id).Order("updated_at").Find(&m).Error
+	err := w.db.Where("user_id = ?", id).Where("deleted_at is null").Order("updated_at").Find(&m).Error
 	return m, err
 }
 
@@ -149,7 +152,7 @@ func (w *adminRepository) CreatePromotion(data *dto.PromotionReq) (*models.Promo
 
 func (w *adminRepository) GetPromotion() (*[]models.Promotion, error) {
 	var p *[]models.Promotion
-	err := w.db.Find(&p).Error
+	err := w.db.Where("deleted_at is null").Find(&p).Error
 	return p, err
 }
 
@@ -173,4 +176,28 @@ func (w *adminRepository) UpdatePromotion(id int, data *dto.PatchPromotionReq) (
 
 	}
 	return data, err
+}
+
+func (w *adminRepository) DeletePromotion(id int) (*models.Promotion, error) {
+	var p *models.Promotion
+	err := w.db.Where("id = ?", id).Find(&p).Error
+	w.db.Model(&p).Update("deleted_at", time.Now())
+
+	return p, err
+}
+
+func (w *adminRepository) EligibleMerchandiseList() (*[]models.Merchandise, error) {
+	var m *[]models.Merchandise
+	err := w.db.Where("pen = true or umbrella = true or card_holder = true").Find(&m).Error
+
+	return m, err
+}
+
+func (w *adminRepository) MerchandiseStatus(data *dto.MerchandiseStatus) (error, error) {
+	var m *models.Merchandise
+	err1 := w.db.Where("user_id = ?", data.UserID).First(&m).Error
+	send := "send_" + data.MerchToSend
+	err2 := w.db.Model(&m).Update(send, data.Status).Error
+
+	return err1, err2
 }

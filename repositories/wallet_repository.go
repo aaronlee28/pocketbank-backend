@@ -76,7 +76,7 @@ func (w *walletRepository) UserDetails(id int) (*dto.UserDetailsRes, error) {
 func (w *walletRepository) DepositInfo(id int) (*[]models.Deposit, error) {
 	//var user *models.User
 	var ds *[]models.Deposit
-	err := w.db.Where("user_id = ? ", id).Find(&ds).Error
+	err := w.db.Where("user_id = ? ", id).Where("deleted_at is null").Find(&ds).Error
 
 	return ds, err
 }
