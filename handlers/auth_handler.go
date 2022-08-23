@@ -6,7 +6,6 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httperror"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httpsuccess"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 )
@@ -18,16 +17,13 @@ func (a *Handler) Register(c *gin.Context) {
 	password := c.PostForm("password")
 	referralNumber := c.PostForm("referralNumber")
 	referralNumberInt, _ := strconv.Atoi(referralNumber)
-	photo, err := c.FormFile("profilePhoto")
-	photoContent, _ := photo.Open()
-	readPhoto, _ := ioutil.ReadAll(photoContent)
+
 	param := &dto.RegReq{
 		Name:           name,
 		Email:          email,
 		Contact:        contact,
 		Password:       password,
 		ReferralNumber: referralNumberInt,
-		Photo:          readPhoto,
 	}
 	result, err := a.AuthService.Register(param)
 	if err != nil {

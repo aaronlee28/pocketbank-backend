@@ -5,6 +5,7 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/handlers"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/middlewares"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/services"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,6 +18,7 @@ type RouterConfig struct {
 
 func NewRouter(c *RouterConfig) *gin.Engine {
 	router := gin.Default()
+	router.Use(cors.Default())
 
 	h := handlers.New(&handlers.HandlerConfig{
 		AuthService:        c.AuthService,

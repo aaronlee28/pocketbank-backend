@@ -73,11 +73,10 @@ func (a *authService) generateJWTToken(user *models.User) (*dto.TokenRes, error)
 func (a *authService) Register(req *dto.RegReq) (*dto.RegRes, error) {
 
 	u := &models.User{
-		Name:           req.Name,
-		Email:          req.Email,
-		Password:       req.Password,
-		Contact:        req.Contact,
-		ProfilePicture: req.Photo,
+		Name:     req.Name,
+		Email:    req.Email,
+		Password: req.Password,
+		Contact:  req.Contact,
 	}
 	checkReferral := req.ReferralNumber
 	_, err := a.authRepository.Register(u, checkReferral)

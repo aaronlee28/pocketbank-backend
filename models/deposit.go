@@ -11,6 +11,7 @@ type Deposit struct {
 	Tax           float32   `json:"tax"`
 	Interest      float32   `json:"interest"`
 	AutoDeposit   bool      `json:"autoDeposit"`
+	Duration      int       `json:"duration"`
 	CreatedAt     time.Time `json:"createdAt"`
 	UpdatedAt     time.Time `json:"updatedAt"`
 	DeletedAt     time.Time `json:"deletedAt"`

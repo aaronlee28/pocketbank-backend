@@ -94,11 +94,7 @@ func (a *transactionService) TopupDeposit(req *dto.TopupDepositReq, id int) (*dt
 		return nil, error(httperror.BadRequestError("Minimum Amount is Rp.1000000", "400"))
 	}
 
-	t := &models.Transaction{
-		Amount: req.Amount,
-	}
-
-	transaction, err1 := a.transactionRepository.TopupDeposit(t, id)
+	transaction, err1 := a.transactionRepository.TopupDeposit(req, id)
 	if err1 != nil || transaction == nil {
 		return nil, error(httperror.BadRequestError("Insufficient Balance", "401"))
 	}

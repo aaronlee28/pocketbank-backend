@@ -3,6 +3,7 @@ package repositories
 import (
 	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"github.com/robfig/cron/v3"
 	"gorm.io/gorm"
@@ -18,7 +19,7 @@ type TransactionRepository interface {
 	UpdateInterestAndTaxSavings()
 	RunCronJobs()
 
-	TopupDeposit(trans *models.Transaction, id int) (*models.Transaction, error)
+	TopupDeposit(trans *dto.TopupDepositReq, id int) (*models.Transaction, error)
 }
 
 type transactionRepository struct {
@@ -167,9 +168,9 @@ func (w *transactionRepository) WithdrawDeposit() {
 		if s.AutoDeposit == true {
 
 			difference := time.Now().UTC().Sub(s.UpdatedAt)
-			isOneMonth := int64(difference.Hours() / 24 / 30)
+			isOneMonth := int(difference.Hours() / 24 / 30)
 
-			if isOneMonth == 1 {
+			if isOneMonth == s.Duration {
 				w.db.Where("user_id", s.UserID).First(&sv)
 				addInterest := sv.Balance + s.Interest
 				w.db.Model(&sv).Update("balance", addInterest)
@@ -197,7 +198,7 @@ func (w *transactionRepository) RunCronJobs() {
 
 }
 
-func (w *transactionRepository) TopupDeposit(trans *models.Transaction, id int) (*models.Transaction, error) {
+func (w *transactionRepository) TopupDeposit(trans *dto.TopupDepositReq, id int) (*models.Transaction, error) {
 	var sv *models.Savings
 	err1 := new(error)
 	w.db.Where("user_id = ?", id).First(&sv)
