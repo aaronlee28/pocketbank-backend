@@ -12,6 +12,6 @@ func (_ *UsersListRes) FromUser(t *models.User) *UsersListRes {
 	return &UsersListRes{
 		Id:           t.Id,
 		Name:         t.Name,
-		ReferralCode: t.ReferralNumber,
+		ReferralCode: *t.ReferralNumber,
 	}
 }

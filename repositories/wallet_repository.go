@@ -63,10 +63,10 @@ func (w *walletRepository) UserDetails(id int) (*dto.UserDetailsRes, error) {
 	w.db.Where("user_id = ?", id).First(&sv)
 	ret := &dto.UserDetailsRes{
 		Name:           user.Name,
-		Email:          user.Email,
+		Email:          *user.Email,
 		Contact:        user.Contact,
 		ProfilePicture: user.ProfilePicture,
-		ReferralNumber: user.ReferralNumber,
+		ReferralNumber: *user.ReferralNumber,
 		AccountNumber:  sv.SavingsNumber,
 	}
 

@@ -27,7 +27,9 @@ func (a *Handler) Register(c *gin.Context) {
 	}
 	result, err := a.AuthService.Register(param)
 	if err != nil {
-		_ = c.Error(err)
+		e := c.Error(err)
+		c.JSON(http.StatusBadRequest, e)
+
 		return
 	}
 

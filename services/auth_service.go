@@ -74,14 +74,14 @@ func (a *authService) Register(req *dto.RegReq) (*dto.RegRes, error) {
 
 	u := &models.User{
 		Name:     req.Name,
-		Email:    req.Email,
+		Email:    &req.Email,
 		Password: req.Password,
 		Contact:  req.Contact,
 	}
 	checkReferral := req.ReferralNumber
 	_, err := a.authRepository.Register(u, checkReferral)
 	if err != nil {
-		return nil, error(httperror.BadRequestError("Failed to register account", ""))
+		return nil, error(httperror.BadRequestError("Failed to register account", "401"))
 	}
 	res := &dto.RegRes{Email: req.Email, Name: req.Name, Contact: req.Contact}
 	return res, nil

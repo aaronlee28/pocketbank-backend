@@ -52,11 +52,16 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 	user.Password = hash
 	user.Role = "user"
 	user.IsActive = true
+	user.ReferralNumber = nil
+	err := db.Get().Create(&user).Error
+
+	if err != nil {
+		return nil, err
+	}
 	makeNewReferralCode := true
 	for makeNewReferralCode == true {
 		checkReferralNumber := rand.Intn(99999-9999) + 9999
-		user.ReferralNumber = checkReferralNumber
-		er := db.Get().Create(&user).Error
+		er := a.db.Model(&user).Update("referral_number", checkReferralNumber).Error
 		if er == nil {
 			makeNewReferralCode = false
 		}
