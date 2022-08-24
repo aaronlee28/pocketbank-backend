@@ -8,6 +8,7 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
 	"github.com/golang-jwt/jwt/v4"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -81,7 +82,16 @@ func (a *authService) Register(req *dto.RegReq) (*dto.RegRes, error) {
 	checkReferral := req.ReferralNumber
 	_, err := a.authRepository.Register(u, checkReferral)
 	if err != nil {
-		return nil, error(httperror.BadRequestError("Failed to register account", "401"))
+		if strings.Contains(err.Error(), "users_contact_uindex") {
+			return nil, error(httperror.BadRequestError("Contact is already registered", "401"))
+		}
+		if strings.Contains(err.Error(), "users_email_uindex") {
+			return nil, error(httperror.BadRequestError("Email is already registered", "401"))
+		}
+		if strings.Contains(err.Error(), "record not found") {
+			return nil, error(httperror.BadRequestError("Referral code not registered", "401"))
+		}
+
 	}
 	res := &dto.RegRes{Email: req.Email, Name: req.Name, Contact: req.Contact}
 	return res, nil
