@@ -10,6 +10,7 @@ type WalletService interface {
 	TransactionHistory(q *repositories.Query, id int) (*[]dto.TransRes, error)
 	UserDetails(id int) (*dto.UserDetailsRes, error)
 	DepositInfo(id int) (*[]dto.DepositInfoRes, error)
+	SavingsInfo(id int) (*dto.SavingsRes, error)
 	PaymentHistory(id int) (*[]dto.PaymentHistoryRes, error)
 	FavoriteContact(param *dto.FavoriteContactReq, favoriteid int) (*dto.FavoriteContactRes, error)
 	FavoriteContactList(id int) (*[]dto.FavoriteContactRes, error)
@@ -86,6 +87,20 @@ func (a *walletService) DepositInfo(id int) (*[]dto.DepositInfoRes, error) {
 		res = append(res, *tr)
 	}
 	return &res, err
+}
+
+func (a *walletService) SavingsInfo(id int) (*dto.SavingsRes, error) {
+	ret, err := a.walletRepository.SavingsInfo(id)
+	if err != nil {
+		return nil, error(httperror.BadRequestError("User not found", "400"))
+	}
+	res := &dto.SavingsRes{
+		UserID:   ret.UserID,
+		Balance:  ret.Balance,
+		Interest: ret.Interest,
+		Tax:      ret.Tax,
+	}
+	return res, err
 }
 
 func (a *walletService) PaymentHistory(id int) (*[]dto.PaymentHistoryRes, error) {

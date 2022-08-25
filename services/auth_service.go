@@ -110,7 +110,7 @@ func (a *authService) SignIn(req *dto.AuthReq) (*dto.TokenRes, error) {
 		return nil, httperror.AppError{
 			StatusCode: http.StatusUnauthorized,
 			Code:       "UNAUTHORIZED",
-			Message:    "Unauthorized",
+			Message:    "Incorrect email or password",
 		}
 	}
 	token, err := a.generateJWTToken(user)

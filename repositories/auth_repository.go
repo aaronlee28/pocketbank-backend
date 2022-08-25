@@ -75,6 +75,8 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 	s := &models.Savings{
 		UserID:        user.Id,
 		SavingsNumber: 1 + rand.Intn(99999-10000) + 10000 + user.Id,
+		Tax:           0.05,
+		Interest:      0.2,
 	}
 	db.Get().Create(&s)
 

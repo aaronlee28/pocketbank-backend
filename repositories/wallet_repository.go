@@ -14,6 +14,7 @@ type WalletRepository interface {
 	TransactionHistory(q *Query, id int) (*[]models.Transaction, error)
 	UserDetails(id int) (*dto.UserDetailsRes, error)
 	DepositInfo(id int) (*[]models.Deposit, error)
+	SavingsInfo(id int) (*models.Savings, error)
 	PaymentHistory(id int) (*[]models.Transaction, error)
 	FavoriteContact(favoriteid int, selfid int) (*models.Favoritecontact, error)
 	FavoriteContactList(id int) (*[]models.Favoritecontact, error)
@@ -74,11 +75,18 @@ func (w *walletRepository) UserDetails(id int) (*dto.UserDetailsRes, error) {
 }
 
 func (w *walletRepository) DepositInfo(id int) (*[]models.Deposit, error) {
-	//var user *models.User
 	var ds *[]models.Deposit
 	err := w.db.Where("user_id = ? ", id).Where("deleted_at is null").Find(&ds).Error
 
 	return ds, err
+}
+
+func (w *walletRepository) SavingsInfo(id int) (*models.Savings, error) {
+	//var user *models.User
+	var s *models.Savings
+	err := w.db.Where("user_id = ? ", id).First(&s).Error
+
+	return s, err
 }
 
 func (w *walletRepository) PaymentHistory(id int) (*[]models.Transaction, error) {

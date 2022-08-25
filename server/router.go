@@ -18,9 +18,14 @@ type RouterConfig struct {
 
 func NewRouter(c *RouterConfig) *gin.Engine {
 	router := gin.Default()
-	router.Use(cors.Default())
-
-	h := handlers.New(&handlers.HandlerConfig{
+	//router.Use(cors.Default())
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AllowCredentials = true
+	config.AddAllowHeaders("authorization")
+	router.Use(cors.New(config))
+	h := handlers.New(&handlers.
+		HandlerConfig{
 		AuthService:        c.AuthService,
 		TransactionService: c.TransactionService,
 		WalletService:      c.WalletService,
@@ -40,6 +45,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	router.GET("/userdetails", h.UserDetails)
 	router.PATCH("/userdetails", h.ChangeUserDetails)
 	router.POST("/topupdeposit", middlewares.RequestValidator(&dto.TopupDepositReq{}), h.TopupDeposit)
+	router.GET("/savingsinfo", h.SavingsInfo)
 	router.GET("/depositinfo", h.DepositInfo)
 	router.GET("/paymenthistory", h.PaymentHistory)
 	router.POST("/favoritecontact", middlewares.RequestValidator(&dto.FavoriteContactReq{}), h.FavoriteContact)
