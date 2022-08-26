@@ -50,6 +50,8 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	//router.GET("/paymenthistory", h.PaymentHistory)
 	router.POST("/favoritecontact", middlewares.RequestValidator(&dto.FavoriteContactReq{}), h.FavoriteContact)
 	router.GET("/favoritecontactlist", h.FavoriteContactList)
+	router.GET("/promotion", h.GetPromotion)
+
 	//admin router
 	router.Use(middlewares.AuthorizeAdmin)
 	router.GET("/userslist", h.AdminUsersList)
@@ -63,7 +65,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	router.PATCH("/usersrate", middlewares.RequestValidator(&dto.ChangeInterestRateReq{}), h.UsersRate)
 
 	router.POST("/promotion", h.CreatePromotion)
-	router.GET("/promotion", h.GetPromotion)
 	router.PATCH("/promotion", h.UpdatePromotion)
 	router.DELETE("/promotion/:id", h.DeletePromotion)
 
