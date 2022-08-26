@@ -65,9 +65,6 @@ func (a *adminService) AdminUserTransaction(q *repositories.Query, id int) (*[]d
 	if q.Sort == "" {
 		q.Sort = "desc"
 	}
-	if q.Limit == "" {
-		q.Limit = "10"
-	}
 	if q.FilterTime == "" {
 		q.FilterTime = "74000"
 	}
