@@ -69,7 +69,6 @@ func (a *transactionService) Payment(req *dto.PaymentReq, id int) (*dto.PaymentR
 		Description:          req.Description,
 		Type:                 "Transfer",
 	}
-
 	payment, err := a.transactionRepository.Payment(t, id)
 
 	ret := &dto.PaymentRes{

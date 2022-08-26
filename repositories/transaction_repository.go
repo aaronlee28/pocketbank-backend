@@ -106,6 +106,7 @@ func (w *transactionRepository) Payment(trans *models.Transaction, id int) (*mod
 		Amount:               trans.Amount,
 		Type:                 trans.Type,
 		Status:               "Success",
+		Description:          trans.Description,
 	}
 	revertBalance := receiverSavings.Balance
 	addBalance = receiverSavings.Balance + trans.Amount

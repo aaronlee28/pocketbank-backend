@@ -15,7 +15,7 @@ type WalletRepository interface {
 	UserDetails(id int) (*dto.UserDetailsRes, error)
 	DepositInfo(id int) (*[]models.Deposit, error)
 	SavingsInfo(id int) (*models.Savings, error)
-	PaymentHistory(id int) (*[]models.Transaction, error)
+	//PaymentHistory(id int) (*[]models.Transaction, error)
 	FavoriteContact(favoriteid int, selfid int) (*models.Favoritecontact, error)
 	FavoriteContactList(id int) (*[]models.Favoritecontact, error)
 	ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error)
@@ -38,6 +38,7 @@ type Query struct {
 	FilterTime string
 	MinAmount  string
 	MaxAmount  string
+	Type       string
 }
 
 func NewWalletRepository(c *WRConfig) walletRepository {
@@ -52,7 +53,7 @@ func (w *walletRepository) TransactionHistory(q *Query, id int) (*[]models.Trans
 	search := "%" + q.Search + "%"
 	offset := (limit * page) - limit
 	w.db.Where("user_id = ?", id).First(&account)
-	err := w.db.Limit(limit).Offset(offset).Order(q.SortBy+" "+q.Sort).Where("sender_wallet_number = ? OR receiver_wallet_number = ? ", account.SavingsNumber, account.SavingsNumber).Where("UPPER(description) like UPPER(?)", search).Where("created_at >= ? at time zone 'UTC' - interval '"+q.FilterTime+"' day", time.Now()).Where("amount BETWEEN ? and ?", q.MinAmount, q.MaxAmount).Find(&trans).Error
+	err := w.db.Limit(limit).Offset(offset).Order(q.SortBy+" "+q.Sort).Where("sender_wallet_number = ? OR receiver_wallet_number = ? ", account.SavingsNumber, account.SavingsNumber).Where("UPPER(description) like UPPER(?)", search).Where("created_at >= ? at time zone 'UTC' - interval '"+q.FilterTime+"' day", time.Now()).Where("amount BETWEEN ? and ?", q.MinAmount, q.MaxAmount).Where("type = ?", q.Type).Find(&trans).Error
 
 	return trans, err
 }
@@ -89,14 +90,14 @@ func (w *walletRepository) SavingsInfo(id int) (*models.Savings, error) {
 	return s, err
 }
 
-func (w *walletRepository) PaymentHistory(id int) (*[]models.Transaction, error) {
-	var trans *[]models.Transaction
-	var account *models.Savings
-	w.db.Where("user_id = ?", id).First(&account)
-	err := w.db.Where("TYPE = 'Transfer'").Find(&trans).Error
-
-	return trans, err
-}
+//func (w *walletRepository) PaymentHistory(id int) (*[]models.Transaction, error) {
+//	var trans *[]models.Transaction
+//	var account *models.Savings
+//	w.db.Where("user_id = ?", id).First(&account)
+//	err := w.db.Where("TYPE = 'Transfer'").Find(&trans).Error
+//
+//	return trans, err
+//}
 
 func (w *walletRepository) FavoriteContact(favoriteid int, selfid int) (*models.Favoritecontact, error) {
 	var user *models.User

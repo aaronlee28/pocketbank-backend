@@ -11,7 +11,7 @@ type WalletService interface {
 	UserDetails(id int) (*dto.UserDetailsRes, error)
 	DepositInfo(id int) (*[]dto.DepositInfoRes, error)
 	SavingsInfo(id int) (*dto.SavingsRes, error)
-	PaymentHistory(id int) (*[]dto.PaymentHistoryRes, error)
+	//PaymentHistory(id int) (*[]dto.PaymentHistoryRes, error)
 	FavoriteContact(param *dto.FavoriteContactReq, favoriteid int) (*dto.FavoriteContactRes, error)
 	FavoriteContactList(id int) (*[]dto.FavoriteContactRes, error)
 	ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error)
@@ -103,20 +103,20 @@ func (a *walletService) SavingsInfo(id int) (*dto.SavingsRes, error) {
 	return res, err
 }
 
-func (a *walletService) PaymentHistory(id int) (*[]dto.PaymentHistoryRes, error) {
-	var res []dto.PaymentHistoryRes
-	ret, err := a.walletRepository.PaymentHistory(id)
-	if err != nil {
-		return nil, error(httperror.BadRequestError("INTERNAL SERVER ERROR", "400"))
-	}
-
-	for _, t := range *ret {
-		tr := new(dto.PaymentHistoryRes).FromTransaction(&t)
-
-		res = append(res, *tr)
-	}
-	return &res, err
-}
+//func (a *walletService) PaymentHistory(id int) (*[]dto.PaymentHistoryRes, error) {
+//	var res []dto.PaymentHistoryRes
+//	ret, err := a.walletRepository.PaymentHistory(id)
+//	if err != nil {
+//		return nil, error(httperror.BadRequestError("INTERNAL SERVER ERROR", "400"))
+//	}
+//
+//	for _, t := range *ret {
+//		tr := new(dto.PaymentHistoryRes).FromTransaction(&t)
+//
+//		res = append(res, *tr)
+//	}
+//	return &res, err
+//}
 
 func (a *walletService) FavoriteContact(favoriteid *dto.FavoriteContactReq, selfid int) (*dto.FavoriteContactRes, error) {
 	fid := favoriteid.FavoriteUserID
