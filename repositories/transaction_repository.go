@@ -68,12 +68,16 @@ func (w *transactionRepository) TopupSavings(trans *models.Transaction, id int) 
 
 func (w *transactionRepository) Payment(trans *models.Transaction, id int) (*models.Transaction, error) {
 	var senderSavings *models.Savings
+	var receiverName *models.User
 	var receiverSavings *models.Savings
 	var checkBalance float32
 	var addBalance float32
 
 	w.db.Where("user_id = ?", id).First(&senderSavings)
 	err := w.db.Where("savings_number= ?", trans.ReceiverWalletNumber).First(&receiverSavings).Error
+	receiverId := receiverSavings.UserID
+	fmt.Println("iddddd", receiverId)
+	w.db.Where("id = ?", receiverId).First(&receiverName)
 
 	addFailedPayment := &models.Transaction{
 		SenderWalletNumber:   senderSavings.SavingsNumber,
@@ -103,11 +107,13 @@ func (w *transactionRepository) Payment(trans *models.Transaction, id int) (*mod
 	addSuccessfulPayment := &models.Transaction{
 		SenderWalletNumber:   senderSavings.SavingsNumber,
 		ReceiverWalletNumber: trans.ReceiverWalletNumber,
+		ReceiverName:         receiverName.Name,
 		Amount:               trans.Amount,
 		Type:                 trans.Type,
 		Status:               "Success",
 		Description:          trans.Description,
 	}
+	fmt.Println("nameeeee", receiverName.Name)
 	revertBalance := receiverSavings.Balance
 	addBalance = receiverSavings.Balance + trans.Amount
 
@@ -143,6 +149,7 @@ func (w *transactionRepository) UpdateInterestAndTaxSavings() {
 				SenderWalletNumber:   1,
 				ReceiverWalletNumber: s.SavingsNumber,
 				Amount:               addInterest,
+				Type:                 "Interest",
 				Description:          "Interest",
 			}
 			db.Get().Create(&addInterestTransaction)
@@ -151,6 +158,7 @@ func (w *transactionRepository) UpdateInterestAndTaxSavings() {
 				SenderWalletNumber:   s.SavingsNumber,
 				ReceiverWalletNumber: 2,
 				Amount:               addInterest,
+				Type:                 "Tax on Interest",
 				Description:          "Tax on Interest",
 			}
 			db.Get().Create(&addTaxTransaction)
@@ -176,6 +184,14 @@ func (w *transactionRepository) WithdrawDeposit() {
 				addInterest := sv.Balance + s.Interest
 				w.db.Model(&sv).Update("balance", addInterest)
 				w.db.Model(&s).Update("updated_at", time.Now().UTC())
+				addTransaction1 := &models.Transaction{
+					SenderWalletNumber:   3,
+					ReceiverWalletNumber: sv.SavingsNumber,
+					Amount:               addInterest,
+					Description:          "Tax on Interest",
+				}
+				db.Get().Create(&addTransaction1)
+
 			}
 		}
 		if s.AutoDeposit == false {
@@ -186,6 +202,13 @@ func (w *transactionRepository) WithdrawDeposit() {
 				addInterest := sv.Balance + s.Interest + s.Balance
 				w.db.Model(&sv).Update("balance", addInterest)
 				w.db.Model(&s).Update("deleted_at", time.Now())
+				addTransaction2 := &models.Transaction{
+					SenderWalletNumber:   4,
+					ReceiverWalletNumber: sv.SavingsNumber,
+					Amount:               addInterest,
+					Description:          "Tax on Interest",
+				}
+				db.Get().Create(&addTransaction2)
 			}
 		}
 	}

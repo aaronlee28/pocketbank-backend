@@ -74,6 +74,7 @@ func (a *transactionService) Payment(req *dto.PaymentReq, id int) (*dto.PaymentR
 	ret := &dto.PaymentRes{
 		SenderAccount:   payment.SenderWalletNumber,
 		ReceiverAccount: payment.ReceiverWalletNumber,
+		ReceiverName:    payment.ReceiverName,
 		Amount:          payment.Amount,
 		Status:          payment.Status,
 		Description:     payment.Description,
