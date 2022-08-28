@@ -74,6 +74,7 @@ func (a *transactionService) Payment(req *dto.PaymentReq, id int) (*dto.PaymentR
 	ret := &dto.PaymentRes{
 		SenderAccount:   payment.SenderWalletNumber,
 		ReceiverAccount: payment.ReceiverWalletNumber,
+		SenderName:      payment.SenderName,
 		ReceiverName:    payment.ReceiverName,
 		Amount:          payment.Amount,
 		Status:          payment.Status,
@@ -94,13 +95,14 @@ func (a *transactionService) TopupDeposit(req *dto.TopupDepositReq, id int) (*dt
 		return nil, error(httperror.BadRequestError("Minimum Amount is Rp.1000000", "400"))
 	}
 
-	transaction, err1 := a.transactionRepository.TopupDeposit(req, id)
-	if err1 != nil || transaction == nil {
+	deposit, err1 := a.transactionRepository.TopupDeposit(req, id)
+	if err1 != nil || deposit == nil {
 		return nil, error(httperror.BadRequestError("Insufficient Balance", "401"))
 	}
 
 	ret := &dto.DepositRes{
-		Amount: req.Amount,
+		Amount:   deposit.Balance,
+		Duration: deposit.Duration,
 	}
 	return ret, nil
 }

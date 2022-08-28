@@ -55,7 +55,6 @@ func (w *walletRepository) TransactionHistory(q *Query, id int) (*[]models.Trans
 	offset := (limit * page) - limit
 	w.db.Where("user_id = ?", id).First(&account)
 	err := w.db.Limit(limit).Offset(offset).Order(q.SortBy+" "+q.Sort).Where("sender_wallet_number = ? OR receiver_wallet_number = ? ", account.SavingsNumber, account.SavingsNumber).Where("UPPER(description) like UPPER(?)", search).Where("created_at >= ? at time zone 'UTC' - interval '"+q.FilterTime+"' day", time.Now()).Where("amount BETWEEN ? and ?", q.MinAmount, q.MaxAmount).Where("type like ?", ty).Find(&trans).Error
-
 	return trans, err
 }
 

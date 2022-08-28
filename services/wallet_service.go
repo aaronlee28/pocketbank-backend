@@ -58,7 +58,6 @@ func (a *walletService) TransactionHistory(q *repositories.Query, id int) (*[]dt
 	}
 	for _, transaction := range *t {
 		tr := new(dto.TransRes).FromTransaction(&transaction)
-
 		result = append(result, *tr)
 	}
 	return &result, err

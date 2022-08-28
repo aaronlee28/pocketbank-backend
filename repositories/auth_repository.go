@@ -96,9 +96,10 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 		a.db.Model(&referralBonus).Update("balance", referralPrice)
 
 		addTransaction := &models.Transaction{
-			SenderWalletNumber:   3,
+			SenderWalletNumber:   5,
 			ReceiverWalletNumber: referralBonus.SavingsNumber,
 			Amount:               20000,
+			Type:                 "Referral Payment",
 			Description:          "Referral Payment",
 		}
 		db.Get().Create(&addTransaction)

@@ -9,6 +9,7 @@ type DepositInfoRes struct {
 	DepositNumber int     `json:"depositNumber"`
 	InterestRate  float32 `json:"interestRate"`
 	Interest      float32 `json:"interest"`
+	Duration      int     `json:"duration"`
 }
 
 func (_ *DepositInfoRes) FromDepositInfo(t *models.Deposit) *DepositInfoRes {
@@ -17,5 +18,6 @@ func (_ *DepositInfoRes) FromDepositInfo(t *models.Deposit) *DepositInfoRes {
 		DepositNumber: t.DepositNumber,
 		InterestRate:  t.InterestRate,
 		Interest:      t.Interest,
+		Duration:      t.Duration,
 	}
 }

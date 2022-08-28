@@ -1,5 +1,6 @@
 package dto
 
 type DepositRes struct {
-	Amount float32 `json:"amount"`
+	Amount   float32 `json:"amount"`
+	Duration int     `json:"duration"`
 }
