@@ -12,6 +12,7 @@ type TransactionService interface {
 	Payment(req *dto.PaymentReq, id int) (*dto.PaymentRes, error)
 	RunCronJobs()
 	TopupDeposit(req *dto.TopupDepositReq, id int) (*dto.DepositRes, error)
+	TopUpQr(req *dto.TopUpQr, id int) (*dto.TopUpQr, error)
 }
 
 type transactionService struct {
@@ -101,8 +102,19 @@ func (a *transactionService) TopupDeposit(req *dto.TopupDepositReq, id int) (*dt
 	}
 
 	ret := &dto.DepositRes{
-		Amount:   deposit.Balance,
-		Duration: deposit.Duration,
+		Amount:      deposit.Balance,
+		Duration:    deposit.Duration,
+		AutoDeposit: deposit.AutoDeposit,
 	}
+	return ret, nil
+}
+
+func (a *transactionService) TopUpQr(req *dto.TopUpQr, id int) (*dto.TopUpQr, error) {
+
+	ret, err1 := a.transactionRepository.TopUpQr(req, id)
+	if err1 != nil || ret == nil {
+		return nil, error(httperror.BadRequestError("User Not Found", "401"))
+	}
+
 	return ret, nil
 }

@@ -20,6 +20,7 @@ type TransactionRepository interface {
 	RunCronJobs()
 
 	TopupDeposit(trans *dto.TopupDepositReq, id int) (*models.Deposit, error)
+	TopUpQr(trans *dto.TopUpQr, id int) (*dto.TopUpQr, error)
 }
 
 type transactionRepository struct {
@@ -239,6 +240,7 @@ func (w *transactionRepository) TopupDeposit(trans *dto.TopupDepositReq, id int)
 		Tax:           0.2,
 		DepositNumber: 3 + rand.Intn(99999-10000) + 10000 + id,
 		Duration:      trans.Duration,
+		AutoDeposit:   trans.AutoDeposit,
 	}
 	if trans.Amount < 10000000 {
 		addDeposit.InterestRate = 0.06
@@ -265,4 +267,26 @@ func (w *transactionRepository) TopupDeposit(trans *dto.TopupDepositReq, id int)
 	db.Get().Create(&addTransaction)
 
 	return addDeposit, nil
+}
+
+func (w *transactionRepository) TopUpQr(trans *dto.TopUpQr, id int) (*dto.TopUpQr, error) {
+	var sv *models.Savings
+	err := w.db.Where("savings_number = ?", id).First(&sv).Error
+	if err != nil {
+		return nil, err
+	}
+	newBalance := sv.Balance + trans.Amount
+	w.db.Model(&sv).Update("balance", newBalance)
+
+	addTransaction := &models.Transaction{
+		SenderWalletNumber:   trans.SenderWalletNumber,
+		ReceiverWalletNumber: sv.SavingsNumber,
+		Amount:               trans.Amount,
+		Type:                 "External Top Up",
+		Description:          trans.Description,
+		Status:               "Success",
+	}
+	db.Get().Create(&addTransaction)
+
+	return trans, err
 }

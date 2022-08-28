@@ -6,6 +6,7 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 func (a *Handler) TopupSavings(c *gin.Context) {
@@ -64,6 +65,23 @@ func (a *Handler) TopupDeposit(c *gin.Context) {
 	userid := user.Id
 
 	result, err := a.TransactionService.TopupDeposit(param, userid)
+
+	if err != nil {
+		e := c.Error(err)
+		c.JSON(http.StatusBadRequest, e)
+		return
+	}
+
+	successResponse := httpsuccess.CreatedSuccess("Created", result)
+	c.JSON(http.StatusCreated, successResponse)
+}
+
+func (a *Handler) TopUpQr(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	payload, _ := c.Get("payload")
+	param, _ := payload.(*dto.TopUpQr)
+
+	result, err := a.TransactionService.TopUpQr(param, id)
 
 	if err != nil {
 		e := c.Error(err)
