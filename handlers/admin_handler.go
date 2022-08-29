@@ -279,3 +279,17 @@ func (a *Handler) UpdateMerchStocks(c *gin.Context) {
 	successResponse := httpsuccess.OkSuccess("Ok", ret)
 	c.JSON(http.StatusOK, successResponse)
 }
+
+func (a *Handler) GetMerchStock(c *gin.Context) {
+
+	ret, err := a.AdminService.GetMerchStock()
+
+	if err != nil {
+		e := c.Error(err)
+		c.JSON(http.StatusBadRequest, e)
+		return
+	}
+
+	successResponse := httpsuccess.OkSuccess("Ok", ret)
+	c.JSON(http.StatusOK, successResponse)
+}

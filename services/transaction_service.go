@@ -110,7 +110,6 @@ func (a *transactionService) TopupDeposit(req *dto.TopupDepositReq, id int) (*dt
 }
 
 func (a *transactionService) TopUpQr(req *dto.TopUpQr, id int) (*dto.TopUpQr, error) {
-
 	ret, err1 := a.transactionRepository.TopUpQr(req, id)
 	if err1 != nil || ret == nil {
 		return nil, error(httperror.BadRequestError("User Not Found", "401"))

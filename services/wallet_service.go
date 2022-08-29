@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httperror"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
@@ -102,21 +103,6 @@ func (a *walletService) SavingsInfo(id int) (*dto.SavingsRes, error) {
 	return res, err
 }
 
-//func (a *walletService) PaymentHistory(id int) (*[]dto.PaymentHistoryRes, error) {
-//	var res []dto.PaymentHistoryRes
-//	ret, err := a.walletRepository.PaymentHistory(id)
-//	if err != nil {
-//		return nil, error(httperror.BadRequestError("INTERNAL SERVER ERROR", "400"))
-//	}
-//
-//	for _, t := range *ret {
-//		tr := new(dto.PaymentHistoryRes).FromTransaction(&t)
-//
-//		res = append(res, *tr)
-//	}
-//	return &res, err
-//}
-
 func (a *walletService) FavoriteContact(favoriteid *dto.FavoriteContactReq, selfid int) (*dto.FavoriteContactRes, error) {
 	fid := favoriteid.FavoriteUserID
 	ret, err := a.walletRepository.FavoriteContact(fid, selfid)
@@ -145,6 +131,7 @@ func (a *walletService) FavoriteContactList(id int) (*[]dto.FavoriteContactRes, 
 }
 
 func (a *walletService) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error) {
+	fmt.Println("requestttt", data)
 
 	ret, err := a.walletRepository.ChangeUserDetails(data, id)
 	if err != nil {

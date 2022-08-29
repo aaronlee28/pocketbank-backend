@@ -28,6 +28,7 @@ type AdminRepository interface {
 	EligibleMerchandiseList() (*[]models.Merchandise, error)
 	MerchandiseStatus(data *dto.MerchandiseStatus) (error, error, int)
 	UpdateMerchStocks(data *dto.UpdateMerchStocksReq) (*models.Merchstock, error)
+	GetMerchStock() (*[]models.Merchstock, error)
 }
 
 type adminRepository struct {
@@ -221,6 +222,13 @@ func (w *adminRepository) UpdateMerchStocks(data *dto.UpdateMerchStocksReq) (*mo
 	var m *models.Merchstock
 	err := w.db.Where("name = ?", data.Name).First(&m).Error
 	w.db.Model(&m).Update("stock_count", data.Stock)
+
+	return m, err
+}
+
+func (w *adminRepository) GetMerchStock() (*[]models.Merchstock, error) {
+	var m *[]models.Merchstock
+	err := w.db.Find(&m).Error
 
 	return m, err
 }

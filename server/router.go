@@ -18,11 +18,14 @@ type RouterConfig struct {
 
 func NewRouter(c *RouterConfig) *gin.Engine {
 	router := gin.Default()
-	//router.Use(cors.Default())
 	config := cors.DefaultConfig()
-	config.AllowAllOrigins = true
-	config.AllowCredentials = true
-	config.AddAllowHeaders("authorization")
+	config = cors.Config{
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
+		AllowCredentials: true,
+		AllowAllOrigins:  true,
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+	}
+
 	router.Use(cors.New(config))
 	h := handlers.New(&handlers.
 		HandlerConfig{
@@ -49,7 +52,6 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	router.POST("/topupdeposit", middlewares.RequestValidator(&dto.TopupDepositReq{}), h.TopupDeposit)
 	router.GET("/savingsinfo", h.SavingsInfo)
 	router.GET("/depositinfo", h.DepositInfo)
-	//router.GET("/paymenthistory", h.PaymentHistory)
 	router.POST("/favoritecontact", middlewares.RequestValidator(&dto.FavoriteContactReq{}), h.FavoriteContact)
 	router.GET("/favoritecontactlist", h.FavoriteContactList)
 	router.GET("/promotion", h.GetPromotion)
@@ -60,18 +62,17 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	router.GET("/usertransaction/:id", h.AdminUserTransaction)
 	router.GET("/userdetails/:id", h.AdminUserDetails)
 	router.GET("/userreferraldetails/:id", h.AdminUserReferralDetails)
-	router.PATCH("/ChangeUserDetailserstatus/:id", h.ChangeUserStatus)
+	router.PATCH("/changeuserstatus/:id", h.ChangeUserStatus)
 	router.GET("/merchandise/:id", h.Merchandise)
 	router.GET("/userdepositinfo/:id", h.UserDepositInfo)
 	router.PATCH("/userrate/:id", middlewares.RequestValidator(&dto.ChangeInterestRateReq{}), h.UserRate)
 	router.PATCH("/usersrate", middlewares.RequestValidator(&dto.ChangeInterestRateReq{}), h.UsersRate)
-
 	router.POST("/promotion", h.CreatePromotion)
 	router.PATCH("/promotion", h.UpdatePromotion)
 	router.DELETE("/promotion/:id", h.DeletePromotion)
-
 	router.GET("/eligiblemerchandiselist", h.EligibleMerchandiseList)
 	router.POST("/merchandisestatus", middlewares.RequestValidator(&dto.MerchandiseStatus{}), h.MerchandiseStatus)
 	router.PATCH("/updatemerchstocks", middlewares.RequestValidator(&dto.UpdateMerchStocksReq{}), h.UpdateMerchStocks)
+	router.GET("/getmerchstock", h.GetMerchStock)
 	return router
 }

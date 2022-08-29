@@ -78,6 +78,7 @@ func (a *Handler) TopupDeposit(c *gin.Context) {
 
 func (a *Handler) TopUpQr(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
+
 	payload, _ := c.Get("payload")
 	param, _ := payload.(*dto.TopUpQr)
 
