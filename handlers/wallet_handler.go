@@ -7,7 +7,6 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -141,17 +140,13 @@ func (a *Handler) ChangeUserDetails(c *gin.Context) {
 	name := c.PostForm("name")
 	email := c.PostForm("email")
 	contact := c.PostForm("contact")
-	var ph []byte
-	photo, _ := c.FormFile("photo")
-	if photo != nil {
-		photoContent, _ := photo.Open()
-		ph, _ = ioutil.ReadAll(photoContent)
-	}
+	photo := c.PostForm("photo")
+
 	param := &dto.ChangeUserDetailsReqRes{
 		Name:           name,
 		Email:          email,
 		Contact:        contact,
-		ProfilePicture: ph,
+		ProfilePicture: photo,
 	}
 	result, err := a.WalletService.ChangeUserDetails(param, userid)
 

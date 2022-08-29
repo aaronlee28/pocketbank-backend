@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
@@ -15,7 +16,6 @@ type WalletRepository interface {
 	UserDetails(id int) (*dto.UserDetailsRes, error)
 	DepositInfo(id int) (*[]models.Deposit, error)
 	SavingsInfo(id int) (*models.Savings, error)
-	//PaymentHistory(id int) (*[]models.Transaction, error)
 	FavoriteContact(favoriteid int, selfid int) (*models.Favoritecontact, error)
 	FavoriteContactList(id int) (*[]models.Favoritecontact, error)
 	ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error)
@@ -71,7 +71,6 @@ func (w *walletRepository) UserDetails(id int) (*dto.UserDetailsRes, error) {
 		ReferralNumber: *user.ReferralNumber,
 		AccountNumber:  sv.SavingsNumber,
 	}
-
 	return ret, err
 }
 
@@ -115,6 +114,7 @@ func (w *walletRepository) FavoriteContactList(id int) (*[]models.Favoritecontac
 
 func (w *walletRepository) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error) {
 	var user *models.User
+	fmt.Printf("data = %+v\n", data)
 	err := w.db.Where("id = ?", id).First(&user).Error
 	pho := user.ProfilePicture
 	v := reflect.ValueOf(*data)
@@ -126,9 +126,9 @@ func (w *walletRepository) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, 
 			w.db.Model(&user).Update(change, input)
 		}
 	}
-	if data.ProfilePicture == nil {
+	if data.ProfilePicture == "null" {
+		fmt.Println("hereeeeeeeeeee")
 		w.db.Model(&user).Update("profile_picture", pho)
-
 	}
 	return data, err
 }

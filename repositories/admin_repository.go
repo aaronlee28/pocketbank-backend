@@ -114,7 +114,7 @@ func (w *adminRepository) Merchandise(id int) (*models.Merchandise, error) {
 
 func (w *adminRepository) UserDepositInfo(id int) (*[]models.Deposit, error) {
 	var m *[]models.Deposit
-	err := w.db.Where("user_id = ?", id).Where("deleted_at is null").Order("updated_at").Find(&m).Error
+	err := w.db.Where("user_id = ?", id).Where("deleted_at is null").Order("created_at desc").Find(&m).Error
 	return m, err
 }
 
