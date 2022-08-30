@@ -3,6 +3,7 @@ package repositories
 import (
 	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"github.com/robfig/cron/v3"
 	"gorm.io/gorm"
@@ -18,7 +19,8 @@ type TransactionRepository interface {
 	UpdateInterestAndTaxSavings()
 	RunCronJobs()
 
-	TopupDeposit(trans *models.Transaction, id int) (*models.Transaction, error)
+	TopupDeposit(trans *dto.TopupDepositReq, id int) (*models.Deposit, error)
+	TopUpQr(trans *dto.TopUpQr, id int) (*dto.TopUpQr, error)
 }
 
 type transactionRepository struct {
@@ -67,12 +69,17 @@ func (w *transactionRepository) TopupSavings(trans *models.Transaction, id int) 
 
 func (w *transactionRepository) Payment(trans *models.Transaction, id int) (*models.Transaction, error) {
 	var senderSavings *models.Savings
+	var receiverName *models.User
+	var senderName *models.User
 	var receiverSavings *models.Savings
 	var checkBalance float32
 	var addBalance float32
 
 	w.db.Where("user_id = ?", id).First(&senderSavings)
 	err := w.db.Where("savings_number= ?", trans.ReceiverWalletNumber).First(&receiverSavings).Error
+	receiverId := receiverSavings.UserID
+	w.db.Where("id = ?", senderSavings.UserID).First(&senderName)
+	w.db.Where("id = ?", receiverId).First(&receiverName)
 
 	addFailedPayment := &models.Transaction{
 		SenderWalletNumber:   senderSavings.SavingsNumber,
@@ -80,6 +87,7 @@ func (w *transactionRepository) Payment(trans *models.Transaction, id int) (*mod
 		Amount:               trans.Amount,
 		Type:                 trans.Type,
 		Status:               "Failed",
+		Description:          "Failed Transaction",
 	}
 	checkBalance = senderSavings.Balance - trans.Amount
 	//check if sender has balance
@@ -98,13 +106,15 @@ func (w *transactionRepository) Payment(trans *models.Transaction, id int) (*mod
 
 		return addFailedPayment, nil
 	}
-
 	addSuccessfulPayment := &models.Transaction{
 		SenderWalletNumber:   senderSavings.SavingsNumber,
 		ReceiverWalletNumber: trans.ReceiverWalletNumber,
+		SenderName:           senderName.Name,
+		ReceiverName:         receiverName.Name,
 		Amount:               trans.Amount,
 		Type:                 trans.Type,
 		Status:               "Success",
+		Description:          trans.Description,
 	}
 	revertBalance := receiverSavings.Balance
 	addBalance = receiverSavings.Balance + trans.Amount
@@ -141,6 +151,7 @@ func (w *transactionRepository) UpdateInterestAndTaxSavings() {
 				SenderWalletNumber:   1,
 				ReceiverWalletNumber: s.SavingsNumber,
 				Amount:               addInterest,
+				Type:                 "Interest",
 				Description:          "Interest",
 			}
 			db.Get().Create(&addInterestTransaction)
@@ -149,6 +160,7 @@ func (w *transactionRepository) UpdateInterestAndTaxSavings() {
 				SenderWalletNumber:   s.SavingsNumber,
 				ReceiverWalletNumber: 2,
 				Amount:               addInterest,
+				Type:                 "Tax on Interest",
 				Description:          "Tax on Interest",
 			}
 			db.Get().Create(&addTaxTransaction)
@@ -167,13 +179,22 @@ func (w *transactionRepository) WithdrawDeposit() {
 		if s.AutoDeposit == true {
 
 			difference := time.Now().UTC().Sub(s.UpdatedAt)
-			isOneMonth := int64(difference.Hours() / 24 / 30)
+			isOneMonth := int(difference.Hours() / 24 / 30)
 
-			if isOneMonth == 1 {
+			if isOneMonth == s.Duration {
 				w.db.Where("user_id", s.UserID).First(&sv)
 				addInterest := sv.Balance + s.Interest
 				w.db.Model(&sv).Update("balance", addInterest)
 				w.db.Model(&s).Update("updated_at", time.Now().UTC())
+				addTransaction1 := &models.Transaction{
+					SenderWalletNumber:   3,
+					ReceiverWalletNumber: sv.SavingsNumber,
+					Amount:               addInterest,
+					Type:                 "Deposit Interest",
+					Description:          "Deposit Interest",
+				}
+				db.Get().Create(&addTransaction1)
+
 			}
 		}
 		if s.AutoDeposit == false {
@@ -184,6 +205,14 @@ func (w *transactionRepository) WithdrawDeposit() {
 				addInterest := sv.Balance + s.Interest + s.Balance
 				w.db.Model(&sv).Update("balance", addInterest)
 				w.db.Model(&s).Update("deleted_at", time.Now())
+				addTransaction2 := &models.Transaction{
+					SenderWalletNumber:   4,
+					ReceiverWalletNumber: sv.SavingsNumber,
+					Amount:               addInterest,
+					Type:                 "Deposit Withdrawal",
+					Description:          "Deposit Withdrawal",
+				}
+				db.Get().Create(&addTransaction2)
 			}
 		}
 	}
@@ -197,7 +226,7 @@ func (w *transactionRepository) RunCronJobs() {
 
 }
 
-func (w *transactionRepository) TopupDeposit(trans *models.Transaction, id int) (*models.Transaction, error) {
+func (w *transactionRepository) TopupDeposit(trans *dto.TopupDepositReq, id int) (*models.Deposit, error) {
 	var sv *models.Savings
 	err1 := new(error)
 	w.db.Where("user_id = ?", id).First(&sv)
@@ -210,6 +239,8 @@ func (w *transactionRepository) TopupDeposit(trans *models.Transaction, id int) 
 		Balance:       trans.Amount,
 		Tax:           0.2,
 		DepositNumber: 3 + rand.Intn(99999-10000) + 10000 + id,
+		Duration:      trans.Duration,
+		AutoDeposit:   trans.AutoDeposit,
 	}
 	if trans.Amount < 10000000 {
 		addDeposit.InterestRate = 0.06
@@ -231,8 +262,31 @@ func (w *transactionRepository) TopupDeposit(trans *models.Transaction, id int) 
 		Amount:               trans.Amount,
 		Type:                 "Deposit",
 		Status:               "Success",
+		Description:          "Deposit",
 	}
 	db.Get().Create(&addTransaction)
 
-	return addTransaction, nil
+	return addDeposit, nil
+}
+
+func (w *transactionRepository) TopUpQr(trans *dto.TopUpQr, id int) (*dto.TopUpQr, error) {
+	var sv *models.Savings
+	err := w.db.Where("savings_number = ?", id).First(&sv).Error
+	if err != nil {
+		return nil, err
+	}
+	newBalance := sv.Balance + trans.Amount
+	w.db.Model(&sv).Update("balance", newBalance)
+
+	addTransaction := &models.Transaction{
+		SenderWalletNumber:   trans.SenderWalletNumber,
+		ReceiverWalletNumber: sv.SavingsNumber,
+		Amount:               trans.Amount,
+		Type:                 "External Top Up",
+		Description:          trans.Description,
+		Status:               "Success",
+	}
+	db.Get().Create(&addTransaction)
+
+	return trans, err
 }

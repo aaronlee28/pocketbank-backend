@@ -7,7 +7,6 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -25,6 +24,7 @@ func (a *Handler) TransactionHistory(c *gin.Context) {
 		FilterTime: c.Query("filterTime"),
 		MinAmount:  c.Query("minAmount"),
 		MaxAmount:  c.Query("maxAmount"),
+		Type:       c.Query("type"),
 	}
 
 	result, err := a.WalletService.TransactionHistory(query, userid)
@@ -75,13 +75,13 @@ func (a *Handler) DepositInfo(c *gin.Context) {
 
 }
 
-func (a *Handler) PaymentHistory(c *gin.Context) {
+func (a *Handler) SavingsInfo(c *gin.Context) {
 
 	payload, _ := c.Get("user")
 	user, _ := payload.(models.User)
 	userid := user.Id
 
-	result, err := a.WalletService.PaymentHistory(userid)
+	result, err := a.WalletService.SavingsInfo(userid)
 
 	if err != nil {
 		e := c.Error(err)
@@ -100,8 +100,8 @@ func (a *Handler) FavoriteContact(c *gin.Context) {
 	param, _ := payload.(*dto.FavoriteContactReq)
 	user, _ := payload2.(models.User)
 	userid := user.Id
-	fmt.Println("user role", user.Role)
-
+	fmt.Println("param", param)
+	fmt.Println("id", userid)
 	result, err := a.WalletService.FavoriteContact(param, userid)
 
 	if err != nil {
@@ -140,17 +140,13 @@ func (a *Handler) ChangeUserDetails(c *gin.Context) {
 	name := c.PostForm("name")
 	email := c.PostForm("email")
 	contact := c.PostForm("contact")
-	var ph []byte
-	photo, _ := c.FormFile("photo")
-	if photo != nil {
-		photoContent, _ := photo.Open()
-		ph, _ = ioutil.ReadAll(photoContent)
-	}
+	photo := c.PostForm("photo")
+
 	param := &dto.ChangeUserDetailsReqRes{
 		Name:           name,
 		Email:          email,
 		Contact:        contact,
-		ProfilePicture: ph,
+		ProfilePicture: photo,
 	}
 	result, err := a.WalletService.ChangeUserDetails(param, userid)
 

@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"errors"
+	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
@@ -42,8 +43,12 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 	var referralBonus *models.Savings
 
 	if cr != 0 {
+		fmt.Println("cr", cr)
 		err := a.db.Where("referral_number = ?", cr).First(&checkUser).Error
+		fmt.Println("err", err)
+
 		if err != nil {
+			fmt.Println("im here")
 			return nil, err
 		}
 	}
@@ -52,11 +57,16 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 	user.Password = hash
 	user.Role = "user"
 	user.IsActive = true
+	user.ReferralNumber = nil
+	err := db.Get().Create(&user).Error
+
+	if err != nil {
+		return nil, err
+	}
 	makeNewReferralCode := true
 	for makeNewReferralCode == true {
 		checkReferralNumber := rand.Intn(99999-9999) + 9999
-		user.ReferralNumber = checkReferralNumber
-		er := db.Get().Create(&user).Error
+		er := a.db.Model(&user).Update("referral_number", checkReferralNumber).Error
 		if er == nil {
 			makeNewReferralCode = false
 		}
@@ -65,6 +75,8 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 	s := &models.Savings{
 		UserID:        user.Id,
 		SavingsNumber: 1 + rand.Intn(99999-10000) + 10000 + user.Id,
+		Tax:           0.05,
+		Interest:      0.2,
 	}
 	db.Get().Create(&s)
 
@@ -84,9 +96,10 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 		a.db.Model(&referralBonus).Update("balance", referralPrice)
 
 		addTransaction := &models.Transaction{
-			SenderWalletNumber:   3,
+			SenderWalletNumber:   5,
 			ReceiverWalletNumber: referralBonus.SavingsNumber,
 			Amount:               20000,
+			Type:                 "Referral Payment",
 			Description:          "Referral Payment",
 		}
 		db.Get().Create(&addTransaction)

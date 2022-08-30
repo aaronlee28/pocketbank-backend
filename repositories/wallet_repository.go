@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
@@ -14,7 +15,7 @@ type WalletRepository interface {
 	TransactionHistory(q *Query, id int) (*[]models.Transaction, error)
 	UserDetails(id int) (*dto.UserDetailsRes, error)
 	DepositInfo(id int) (*[]models.Deposit, error)
-	PaymentHistory(id int) (*[]models.Transaction, error)
+	SavingsInfo(id int) (*models.Savings, error)
 	FavoriteContact(favoriteid int, selfid int) (*models.Favoritecontact, error)
 	FavoriteContactList(id int) (*[]models.Favoritecontact, error)
 	ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error)
@@ -37,6 +38,7 @@ type Query struct {
 	FilterTime string
 	MinAmount  string
 	MaxAmount  string
+	Type       string
 }
 
 func NewWalletRepository(c *WRConfig) walletRepository {
@@ -49,10 +51,10 @@ func (w *walletRepository) TransactionHistory(q *Query, id int) (*[]models.Trans
 	limit, _ := strconv.Atoi(q.Limit)
 	page, _ := strconv.Atoi(q.Page)
 	search := "%" + q.Search + "%"
+	ty := "%" + q.Type + "%"
 	offset := (limit * page) - limit
 	w.db.Where("user_id = ?", id).First(&account)
-	err := w.db.Limit(limit).Offset(offset).Order(q.SortBy+" "+q.Sort).Where("sender_wallet_number = ? OR receiver_wallet_number = ? ", account.SavingsNumber, account.SavingsNumber).Where("UPPER(description) like UPPER(?)", search).Where("created_at >= ? at time zone 'UTC' - interval '"+q.FilterTime+"' day", time.Now()).Where("amount BETWEEN ? and ?", q.MinAmount, q.MaxAmount).Find(&trans).Error
-
+	err := w.db.Limit(limit).Offset(offset).Order(q.SortBy+" "+q.Sort).Where("sender_wallet_number = ? OR receiver_wallet_number = ? ", account.SavingsNumber, account.SavingsNumber).Where("UPPER(description) like UPPER(?)", search).Where("created_at >= ? at time zone 'UTC' - interval '"+q.FilterTime+"' day", time.Now()).Where("amount BETWEEN ? and ?", q.MinAmount, q.MaxAmount).Where("type like ?", ty).Find(&trans).Error
 	return trans, err
 }
 
@@ -63,41 +65,40 @@ func (w *walletRepository) UserDetails(id int) (*dto.UserDetailsRes, error) {
 	w.db.Where("user_id = ?", id).First(&sv)
 	res := &dto.UserDetailsRes{
 		Name:           user.Name,
-		Email:          user.Email,
+		Email:          *user.Email,
 		Contact:        user.Contact,
 		ProfilePicture: user.ProfilePicture,
-		ReferralNumber: user.ReferralNumber,
+		ReferralNumber: *user.ReferralNumber,
 		AccountNumber:  sv.SavingsNumber,
 	}
 
 	return res, err
+
 }
 
 func (w *walletRepository) DepositInfo(id int) (*[]models.Deposit, error) {
-	//var user *models.User
 	var ds *[]models.Deposit
-	err := w.db.Where("user_id = ? ", id).Where("deleted_at is null").Find(&ds).Error
+	err := w.db.Where("user_id = ? ", id).Where("deleted_at is null").Order("updated_at desc").Find(&ds).Error
 
 	return ds, err
 }
 
-func (w *walletRepository) PaymentHistory(id int) (*[]models.Transaction, error) {
-	var trans *[]models.Transaction
-	var account *models.Savings
-	w.db.Where("user_id = ?", id).First(&account)
-	err := w.db.Where("TYPE = 'Transfer'").Find(&trans).Error
+func (w *walletRepository) SavingsInfo(id int) (*models.Savings, error) {
+	//var user *models.User
+	var s *models.Savings
+	err := w.db.Where("user_id = ? ", id).First(&s).Error
 
-	return trans, err
+	return s, err
 }
 
 func (w *walletRepository) FavoriteContact(favoriteid int, selfid int) (*models.Favoritecontact, error) {
-	var user *models.User
-	err := w.db.Where("id = ?", favoriteid).First(&user).Error
+	var sv *models.Savings
+	err := w.db.Where("savings_number = ?", favoriteid).First(&sv).Error
 
 	if err == nil {
 		addFavoriteContact := &models.Favoritecontact{
-			UserID:         selfid,
-			FavoriteUserID: user.Id,
+			UserID:                selfid,
+			FavoriteAccountNumber: sv.SavingsNumber,
 		}
 		db.Get().Create(&addFavoriteContact)
 		return addFavoriteContact, err
@@ -115,6 +116,7 @@ func (w *walletRepository) FavoriteContactList(id int) (*[]models.Favoritecontac
 
 func (w *walletRepository) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error) {
 	var user *models.User
+	fmt.Printf("data = %+v\n", data)
 	err := w.db.Where("id = ?", id).First(&user).Error
 	pho := user.ProfilePicture
 	v := reflect.ValueOf(*data)
@@ -126,9 +128,9 @@ func (w *walletRepository) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, 
 			w.db.Model(&user).Update(change, input)
 		}
 	}
-	if data.ProfilePicture == nil {
+	if data.ProfilePicture == "null" {
+		fmt.Println("hereeeeeeeeeee")
 		w.db.Model(&user).Update("profile_picture", pho)
-
 	}
 	return data, err
 }

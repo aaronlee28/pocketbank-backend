@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httperror"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
@@ -10,7 +11,7 @@ type WalletService interface {
 	TransactionHistory(q *repositories.Query, id int) (*[]dto.TransRes, error)
 	UserDetails(id int) (*dto.UserDetailsRes, error)
 	DepositInfo(id int) (*[]dto.DepositInfoRes, error)
-	PaymentHistory(id int) (*[]dto.PaymentHistoryRes, error)
+	SavingsInfo(id int) (*dto.SavingsRes, error)
 	FavoriteContact(param *dto.FavoriteContactReq, favoriteid int) (*dto.FavoriteContactRes, error)
 	FavoriteContactList(id int) (*[]dto.FavoriteContactRes, error)
 	ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error)
@@ -57,7 +58,6 @@ func (a *walletService) TransactionHistory(q *repositories.Query, id int) (*[]dt
 	}
 	for _, transaction := range *t {
 		tr := new(dto.TransRes).FromTransaction(&transaction)
-
 		result = append(result, *tr)
 	}
 	return &result, err
@@ -88,23 +88,22 @@ func (a *walletService) DepositInfo(id int) (*[]dto.DepositInfoRes, error) {
 	return &res, err
 }
 
-func (a *walletService) PaymentHistory(id int) (*[]dto.PaymentHistoryRes, error) {
-	var res []dto.PaymentHistoryRes
-	ret, err := a.walletRepository.PaymentHistory(id)
+func (a *walletService) SavingsInfo(id int) (*dto.SavingsRes, error) {
+	ret, err := a.walletRepository.SavingsInfo(id)
 	if err != nil {
-		return nil, error(httperror.BadRequestError("INTERNAL SERVER ERROR", "400"))
+		return nil, error(httperror.BadRequestError("User not found", "400"))
 	}
-
-	for _, t := range *ret {
-		tr := new(dto.PaymentHistoryRes).FromTransaction(&t)
-
-		res = append(res, *tr)
+	res := &dto.SavingsRes{
+		UserID:   ret.UserID,
+		Balance:  ret.Balance,
+		Interest: ret.Interest,
+		Tax:      ret.Tax,
 	}
-	return &res, err
+	return res, err
 }
 
 func (a *walletService) FavoriteContact(favoriteid *dto.FavoriteContactReq, selfid int) (*dto.FavoriteContactRes, error) {
-	fid := favoriteid.FavoriteUserID
+	fid := favoriteid.FavoriteAccountNumber
 	ret, err := a.walletRepository.FavoriteContact(fid, selfid)
 
 	if err != nil || fid == selfid {
@@ -131,6 +130,7 @@ func (a *walletService) FavoriteContactList(id int) (*[]dto.FavoriteContactRes, 
 }
 
 func (a *walletService) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error) {
+	fmt.Println("requestttt", data)
 
 	ret, err := a.walletRepository.ChangeUserDetails(data, id)
 	if err != nil {

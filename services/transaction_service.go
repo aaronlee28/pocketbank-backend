@@ -12,6 +12,7 @@ type TransactionService interface {
 	Payment(req *dto.PaymentReq, id int) (*dto.PaymentRes, error)
 	RunCronJobs()
 	TopupDeposit(req *dto.TopupDepositReq, id int) (*dto.DepositRes, error)
+	TopUpQr(req *dto.TopUpQr, id int) (*dto.TopUpQr, error)
 }
 
 type transactionService struct {
@@ -69,12 +70,13 @@ func (a *transactionService) Payment(req *dto.PaymentReq, id int) (*dto.PaymentR
 		Description:          req.Description,
 		Type:                 "Transfer",
 	}
-
 	payment, err := a.transactionRepository.Payment(t, id)
 
 	ret := &dto.PaymentRes{
 		SenderAccount:   payment.SenderWalletNumber,
 		ReceiverAccount: payment.ReceiverWalletNumber,
+		SenderName:      payment.SenderName,
+		ReceiverName:    payment.ReceiverName,
 		Amount:          payment.Amount,
 		Status:          payment.Status,
 		Description:     payment.Description,
@@ -94,17 +96,24 @@ func (a *transactionService) TopupDeposit(req *dto.TopupDepositReq, id int) (*dt
 		return nil, error(httperror.BadRequestError("Minimum Amount is Rp.1000000", "400"))
 	}
 
-	t := &models.Transaction{
-		Amount: req.Amount,
-	}
-
-	transaction, err1 := a.transactionRepository.TopupDeposit(t, id)
-	if err1 != nil || transaction == nil {
+	deposit, err1 := a.transactionRepository.TopupDeposit(req, id)
+	if err1 != nil || deposit == nil {
 		return nil, error(httperror.BadRequestError("Insufficient Balance", "401"))
 	}
 
 	ret := &dto.DepositRes{
-		Amount: req.Amount,
+		Amount:      deposit.Balance,
+		Duration:    deposit.Duration,
+		AutoDeposit: deposit.AutoDeposit,
 	}
+	return ret, nil
+}
+
+func (a *transactionService) TopUpQr(req *dto.TopUpQr, id int) (*dto.TopUpQr, error) {
+	ret, err1 := a.transactionRepository.TopUpQr(req, id)
+	if err1 != nil || ret == nil {
+		return nil, error(httperror.BadRequestError("User Not Found", "401"))
+	}
+
 	return ret, nil
 }
