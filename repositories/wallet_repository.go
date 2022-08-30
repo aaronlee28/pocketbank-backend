@@ -92,16 +92,29 @@ func (w *walletRepository) SavingsInfo(id int) (*models.Savings, error) {
 
 func (w *walletRepository) FavoriteContact(favoriteid int, selfid int) (*models.Favoritecontact, error) {
 	var sv *models.Savings
+	var fc *models.Favoritecontact
 	err := w.db.Where("savings_number = ?", favoriteid).First(&sv).Error
+	err2 := w.db.Where("favorite_account_number = ?", favoriteid).First(&fc).Error
 
-	if err == nil {
+	if err == nil && err2 != nil {
 		addFavoriteContact := &models.Favoritecontact{
 			UserID:                selfid,
 			FavoriteAccountNumber: sv.SavingsNumber,
+			Favorite:              true,
 		}
+
 		db.Get().Create(&addFavoriteContact)
 		return addFavoriteContact, err
-
+	}
+	if err == nil && err2 == nil {
+		if fc.Favorite == true {
+			w.db.Model(&fc).Update("favorite", false)
+			return fc, nil
+		}
+		if fc.Favorite == false {
+			w.db.Model(&fc).Update("favorite", true)
+			return fc, nil
+		}
 	}
 	return nil, err
 }
