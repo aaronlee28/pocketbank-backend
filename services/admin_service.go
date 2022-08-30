@@ -24,6 +24,7 @@ type AdminService interface {
 	EligibleMerchandiseList() (*[]models.Merchandise, error)
 	MerchandiseStatus(data *dto.MerchandiseStatus) error
 	UpdateMerchStocks(data *dto.UpdateMerchStocksReq) (*models.Merchstock, error)
+	GetMerchStock() (*[]models.Merchstock, error)
 }
 
 type adminService struct {
@@ -64,9 +65,6 @@ func (a *adminService) AdminUserTransaction(q *repositories.Query, id int) (*[]d
 	}
 	if q.Sort == "" {
 		q.Sort = "desc"
-	}
-	if q.Limit == "" {
-		q.Limit = "10"
 	}
 	if q.FilterTime == "" {
 		q.FilterTime = "74000"
@@ -117,6 +115,7 @@ func (a *adminService) AdminUserReferralDetails(id int) (*dto.UserReferralDetail
 }
 
 func (a *adminService) ChangeUserStatus(id int) error {
+
 	err := a.adminRepository.ChangeUserStatus(id)
 	if err != nil {
 		return error(httperror.BadRequestError("User not found", "400"))
@@ -244,6 +243,16 @@ func (a *adminService) MerchandiseStatus(data *dto.MerchandiseStatus) error {
 func (a *adminService) UpdateMerchStocks(data *dto.UpdateMerchStocksReq) (*models.Merchstock, error) {
 
 	p, err := a.adminRepository.UpdateMerchStocks(data)
+	if err != nil {
+		return nil, error(httperror.BadRequestError("Merchandise could not be found", "400"))
+	}
+
+	return p, err
+}
+
+func (a *adminService) GetMerchStock() (*[]models.Merchstock, error) {
+
+	p, err := a.adminRepository.GetMerchStock()
 	if err != nil {
 		return nil, error(httperror.BadRequestError("Merchandise could not be found", "400"))
 	}

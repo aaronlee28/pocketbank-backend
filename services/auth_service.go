@@ -8,6 +8,7 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
 	"github.com/golang-jwt/jwt/v4"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -73,16 +74,24 @@ func (a *authService) generateJWTToken(user *models.User) (*dto.TokenRes, error)
 func (a *authService) Register(req *dto.RegReq) (*dto.RegRes, error) {
 
 	u := &models.User{
-		Name:           req.Name,
-		Email:          req.Email,
-		Password:       req.Password,
-		Contact:        req.Contact,
-		ProfilePicture: req.Photo,
+		Name:     req.Name,
+		Email:    &req.Email,
+		Password: req.Password,
+		Contact:  req.Contact,
 	}
 	checkReferral := req.ReferralNumber
 	_, err := a.authRepository.Register(u, checkReferral)
 	if err != nil {
-		return nil, error(httperror.BadRequestError("Failed to register account", ""))
+		if strings.Contains(err.Error(), "users_contact_uindex") {
+			return nil, error(httperror.BadRequestError("Contact is already registered", "401"))
+		}
+		if strings.Contains(err.Error(), "users_email_uindex") {
+			return nil, error(httperror.BadRequestError("Email is already registered", "401"))
+		}
+		if strings.Contains(err.Error(), "record not found") {
+			return nil, error(httperror.BadRequestError("Referral code not registered", "401"))
+		}
+
 	}
 	res := &dto.RegRes{Email: req.Email, Name: req.Name, Contact: req.Contact}
 	return res, nil
@@ -101,7 +110,7 @@ func (a *authService) SignIn(req *dto.AuthReq) (*dto.TokenRes, error) {
 		return nil, httperror.AppError{
 			StatusCode: http.StatusUnauthorized,
 			Code:       "UNAUTHORIZED",
-			Message:    "Unauthorized",
+			Message:    "Incorrect email or password",
 		}
 	}
 	token, err := a.generateJWTToken(user)

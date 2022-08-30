@@ -28,6 +28,7 @@ type AdminRepository interface {
 	EligibleMerchandiseList() (*[]models.Merchandise, error)
 	MerchandiseStatus(data *dto.MerchandiseStatus) (error, error, int)
 	UpdateMerchStocks(data *dto.UpdateMerchStocksReq) (*models.Merchstock, error)
+	GetMerchStock() (*[]models.Merchstock, error)
 }
 
 type adminRepository struct {
@@ -69,10 +70,10 @@ func (w *adminRepository) AdminUserDetails(id int) (*dto.UserDetailsRes, error) 
 	w.db.Where("user_id = ?", id).First(&sv)
 	ret := &dto.UserDetailsRes{
 		Name:           user.Name,
-		Email:          user.Email,
+		Email:          *user.Email,
 		Contact:        user.Contact,
 		ProfilePicture: user.ProfilePicture,
-		ReferralNumber: user.ReferralNumber,
+		ReferralNumber: *user.ReferralNumber,
 		AccountNumber:  sv.SavingsNumber,
 	}
 
@@ -113,7 +114,7 @@ func (w *adminRepository) Merchandise(id int) (*models.Merchandise, error) {
 
 func (w *adminRepository) UserDepositInfo(id int) (*[]models.Deposit, error) {
 	var m *[]models.Deposit
-	err := w.db.Where("user_id = ?", id).Where("deleted_at is null").Order("updated_at").Find(&m).Error
+	err := w.db.Where("user_id = ?", id).Where("deleted_at is null").Order("created_at desc").Find(&m).Error
 	return m, err
 }
 
@@ -170,9 +171,10 @@ func (w *adminRepository) UpdatePromotion(id int, data *dto.PatchPromotionReq) (
 			change := v.Type().Field(i).Name
 			input := v.Field(i).Interface()
 			w.db.Model(&p).Update(change, input)
+			fmt.Println("input", input)
 		}
 	}
-	if data.Photo == nil {
+	if data.Photo == "null" {
 
 		w.db.Model(&p).Update("photo", pho)
 
@@ -221,6 +223,13 @@ func (w *adminRepository) UpdateMerchStocks(data *dto.UpdateMerchStocksReq) (*mo
 	var m *models.Merchstock
 	err := w.db.Where("name = ?", data.Name).First(&m).Error
 	w.db.Model(&m).Update("stock_count", data.Stock)
+
+	return m, err
+}
+
+func (w *adminRepository) GetMerchStock() (*[]models.Merchstock, error) {
+	var m *[]models.Merchstock
+	err := w.db.Find(&m).Error
 
 	return m, err
 }
