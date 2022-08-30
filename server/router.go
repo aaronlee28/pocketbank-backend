@@ -68,7 +68,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	router.PATCH("/userrate/:id", middlewares.RequestValidator(&dto.ChangeInterestRateReq{}), h.UserRate)
 	router.PATCH("/usersrate", middlewares.RequestValidator(&dto.ChangeInterestRateReq{}), h.UsersRate)
 	router.POST("/promotion", h.CreatePromotion)
-	router.PATCH("/promotion", h.UpdatePromotion)
+	router.PATCH("/updatepromotion/:id", h.UpdatePromotion)
 	router.PATCH("/promotion/:id", h.DeletePromotion)
 	router.GET("/eligiblemerchandiselist", h.EligibleMerchandiseList)
 	router.POST("/merchandisestatus", middlewares.RequestValidator(&dto.MerchandiseStatus{}), h.MerchandiseStatus)

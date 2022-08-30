@@ -171,9 +171,10 @@ func (w *adminRepository) UpdatePromotion(id int, data *dto.PatchPromotionReq) (
 			change := v.Type().Field(i).Name
 			input := v.Field(i).Interface()
 			w.db.Model(&p).Update(change, input)
+			fmt.Println("input", input)
 		}
 	}
-	if data.Photo == nil {
+	if data.Photo == "null" {
 
 		w.db.Model(&p).Update("photo", pho)
 

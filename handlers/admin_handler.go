@@ -5,7 +5,6 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httpsuccess"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 )
@@ -154,12 +153,11 @@ func (a *Handler) UsersRate(c *gin.Context) {
 
 func (a *Handler) CreatePromotion(c *gin.Context) {
 	title := c.PostForm("title")
-	photo, err := c.FormFile("photo")
-	photoContent, _ := photo.Open()
-	readPhoto, _ := ioutil.ReadAll(photoContent)
+	photo := c.PostForm("photo")
+
 	data := &dto.PromotionReq{
 		Title: title,
-		Photo: readPhoto,
+		Photo: photo,
 	}
 	res, err := a.AdminService.CreatePromotion(data)
 
@@ -188,27 +186,24 @@ func (a *Handler) GetPromotion(c *gin.Context) {
 }
 
 func (a *Handler) UpdatePromotion(c *gin.Context) {
-
-	id := c.PostForm("id")
+	id, _ := strconv.Atoi(c.Param("id"))
 	title := c.PostForm("title")
-	var ph []byte
-	photo, _ := c.FormFile("photo")
+	photo := c.PostForm("photo")
 
-	if photo != nil {
-		photoContent, _ := photo.Open()
-		ph, _ = ioutil.ReadAll(photoContent)
-	}
+	//if photo != nil {
+	//	photoContent, _ := photo.Open()
+	//	ph, _ = ioutil.ReadAll(photoContent)
+	//}
 
 	var res *dto.PatchPromotionReq
 	var err error
 
 	param := &dto.PatchPromotionReq{
 		Title: title,
-		Photo: ph,
+		Photo: photo,
 	}
 
-	idInt, _ := strconv.Atoi(id)
-	res, err = a.AdminService.UpdatePromotion(idInt, param)
+	res, err = a.AdminService.UpdatePromotion(id, param)
 
 	if err != nil {
 		e := c.Error(err)
