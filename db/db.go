@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -9,13 +10,9 @@ import (
 	"os"
 )
 
-var db *gorm.DB
 var (
-	host   = "localhost"
-	port   = "5432"
-	user   = "postgres"
-	pwd    = "postgres"
-	dbName = "wallet_db_aaronlee"
+	c  = config.Config.DBConfig
+	db *gorm.DB
 )
 
 func getLogger() logger.Interface {
@@ -28,11 +25,11 @@ func getLogger() logger.Interface {
 }
 
 func Connect() (err error) {
-	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable TimeZone=Asia/Jakarta", host, user, pwd, dbName, port)
+	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable TimeZone=Asia/Jakarta", c.Host, c.User, c.Password, c.DBName, c.Port)
+	//dsn := fmt.Sprintf("host=#{c.Host} user=#{c.User} password=#{c.Password} dbname=#{c.DBName} port=#{c.Port} sslmode=disable TimeZone=Asia/Jakarta", c.Host, c.User, c.Password, c.DBName, c.Port)
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: getLogger(),
 	})
-
 	return err
 }
 
