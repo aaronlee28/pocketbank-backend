@@ -1,5 +1,5 @@
 module git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend
-
+// +heroku goVersion go1.18
 go 1.18
 
 require (

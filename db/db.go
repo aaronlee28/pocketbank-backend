@@ -25,7 +25,7 @@ func getLogger() logger.Interface {
 }
 
 func Connect() (err error) {
-	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable TimeZone=Asia/Jakarta", c.Host, c.User, c.Password, c.DBName, c.Port)
+	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=require TimeZone=Asia/Jakarta", c.Host, c.User, c.Password, c.DBName, c.Port)
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: getLogger(),
 	})
