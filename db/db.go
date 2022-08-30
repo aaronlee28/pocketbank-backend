@@ -32,6 +32,7 @@ func Connect() (err error) {
 	return err
 }
 
+//
 func Get() *gorm.DB {
 	return db
 }
