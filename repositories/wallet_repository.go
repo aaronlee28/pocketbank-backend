@@ -61,7 +61,7 @@ func (w *walletRepository) UserDetails(id int) (*dto.UserDetailsRes, error) {
 	var sv *models.Savings
 	err := w.db.Where("id = ?", id).First(&user).Error
 	w.db.Where("user_id = ?", id).First(&sv)
-	ret := &dto.UserDetailsRes{
+	res := &dto.UserDetailsRes{
 		Name:           user.Name,
 		Email:          user.Email,
 		Contact:        user.Contact,
@@ -70,7 +70,7 @@ func (w *walletRepository) UserDetails(id int) (*dto.UserDetailsRes, error) {
 		AccountNumber:  sv.SavingsNumber,
 	}
 
-	return ret, err
+	return res, err
 }
 
 func (w *walletRepository) DepositInfo(id int) (*[]models.Deposit, error) {
