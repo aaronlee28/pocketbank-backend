@@ -1,5 +1,5 @@
 package dto
 
 type FavoriteContactReq struct {
-	FavoriteUserID int `json:"favoriteUserID"`
+	FavoriteAccountNumber int `json:"favoriteAccountNumber"`
 }

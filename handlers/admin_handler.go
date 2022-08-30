@@ -190,11 +190,6 @@ func (a *Handler) UpdatePromotion(c *gin.Context) {
 	title := c.PostForm("title")
 	photo := c.PostForm("photo")
 
-	//if photo != nil {
-	//	photoContent, _ := photo.Open()
-	//	ph, _ = ioutil.ReadAll(photoContent)
-	//}
-
 	var res *dto.PatchPromotionReq
 	var err error
 

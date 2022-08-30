@@ -12,7 +12,6 @@ type WalletService interface {
 	UserDetails(id int) (*dto.UserDetailsRes, error)
 	DepositInfo(id int) (*[]dto.DepositInfoRes, error)
 	SavingsInfo(id int) (*dto.SavingsRes, error)
-	//PaymentHistory(id int) (*[]dto.PaymentHistoryRes, error)
 	FavoriteContact(param *dto.FavoriteContactReq, favoriteid int) (*dto.FavoriteContactRes, error)
 	FavoriteContactList(id int) (*[]dto.FavoriteContactRes, error)
 	ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error)
@@ -104,7 +103,7 @@ func (a *walletService) SavingsInfo(id int) (*dto.SavingsRes, error) {
 }
 
 func (a *walletService) FavoriteContact(favoriteid *dto.FavoriteContactReq, selfid int) (*dto.FavoriteContactRes, error) {
-	fid := favoriteid.FavoriteUserID
+	fid := favoriteid.FavoriteAccountNumber
 	ret, err := a.walletRepository.FavoriteContact(fid, selfid)
 
 	if err != nil || fid == selfid {

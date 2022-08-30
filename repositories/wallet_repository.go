@@ -90,13 +90,13 @@ func (w *walletRepository) SavingsInfo(id int) (*models.Savings, error) {
 }
 
 func (w *walletRepository) FavoriteContact(favoriteid int, selfid int) (*models.Favoritecontact, error) {
-	var user *models.User
-	err := w.db.Where("id = ?", favoriteid).First(&user).Error
+	var sv *models.Savings
+	err := w.db.Where("savings_number = ?", favoriteid).First(&sv).Error
 
 	if err == nil {
 		addFavoriteContact := &models.Favoritecontact{
-			UserID:         selfid,
-			FavoriteUserID: user.Id,
+			UserID:                selfid,
+			FavoriteAccountNumber: sv.SavingsNumber,
 		}
 		db.Get().Create(&addFavoriteContact)
 		return addFavoriteContact, err
