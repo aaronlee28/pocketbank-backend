@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
@@ -116,7 +115,6 @@ func (w *walletRepository) FavoriteContactList(id int) (*[]models.Favoritecontac
 
 func (w *walletRepository) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error) {
 	var user *models.User
-	fmt.Printf("data = %+v\n", data)
 	err := w.db.Where("id = ?", id).First(&user).Error
 	pho := user.ProfilePicture
 	v := reflect.ValueOf(*data)
@@ -129,7 +127,6 @@ func (w *walletRepository) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, 
 		}
 	}
 	if data.ProfilePicture == "null" {
-		fmt.Println("hereeeeeeeeeee")
 		w.db.Model(&user).Update("profile_picture", pho)
 	}
 	return data, err

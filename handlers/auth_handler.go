@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httperror"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httpsuccess"
@@ -53,7 +52,6 @@ func (a *Handler) SignIn(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, e2)
 		return
 	}
-	fmt.Println(result)
 	successResponse := httpsuccess.OkSuccess("Ok", result)
 	c.JSON(http.StatusOK, successResponse)
 }

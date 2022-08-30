@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/config"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
@@ -33,6 +32,5 @@ func Init() {
 
 	err := router.Run()
 	if err != nil {
-		fmt.Println("server error:", err)
 	}
 }

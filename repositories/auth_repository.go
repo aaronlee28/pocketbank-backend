@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"errors"
-	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
@@ -43,12 +42,8 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 	var referralBonus *models.Savings
 
 	if cr != 0 {
-		fmt.Println("cr", cr)
 		err := a.db.Where("referral_number = ?", cr).First(&checkUser).Error
-		fmt.Println("err", err)
-
 		if err != nil {
-			fmt.Println("im here")
 			return nil, err
 		}
 	}

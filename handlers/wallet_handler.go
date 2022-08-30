@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httpsuccess"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
@@ -100,8 +99,6 @@ func (a *Handler) FavoriteContact(c *gin.Context) {
 	param, _ := payload.(*dto.FavoriteContactReq)
 	user, _ := payload2.(models.User)
 	userid := user.Id
-	fmt.Println("param", param)
-	fmt.Println("id", userid)
 	result, err := a.WalletService.FavoriteContact(param, userid)
 
 	if err != nil {

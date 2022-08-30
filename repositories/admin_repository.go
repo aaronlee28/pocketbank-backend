@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
@@ -171,7 +170,6 @@ func (w *adminRepository) UpdatePromotion(id int, data *dto.PatchPromotionReq) (
 			change := v.Type().Field(i).Name
 			input := v.Field(i).Interface()
 			w.db.Model(&p).Update(change, input)
-			fmt.Println("input", input)
 		}
 	}
 	if data.Photo == "null" {
@@ -203,10 +201,8 @@ func (w *adminRepository) MerchandiseStatus(data *dto.MerchandiseStatus) (error,
 	err1 := w.db.Where("user_id = ?", data.UserID).First(&m).Error
 	send := "send_" + data.MerchToSend
 	err2 := w.db.Model(&m).Update(send, data.Status).Error
-	fmt.Println("status", data.Status)
 	if data.Status == "On process" {
 		w.db.Where("name = ?", data.MerchToSend).First(&s)
-		fmt.Println("name", data.MerchToSend)
 
 		if s.StockCount <= 0 {
 			return nil, nil, 1

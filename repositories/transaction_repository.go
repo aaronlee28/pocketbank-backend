@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
@@ -100,7 +99,6 @@ func (w *transactionRepository) Payment(trans *models.Transaction, id int) (*mod
 
 	//check if receiver wallet exist
 	if err != nil {
-		fmt.Println("here")
 		addFailedPayment.Description = "Destination Account Not Found"
 		db.Get().Create(&addFailedPayment)
 
@@ -230,7 +228,6 @@ func (w *transactionRepository) TopupDeposit(trans *dto.TopupDepositReq, id int)
 	var sv *models.Savings
 	err1 := new(error)
 	w.db.Where("user_id = ?", id).First(&sv)
-	fmt.Println(sv.Balance - trans.Amount)
 	if sv.Balance-trans.Amount < 0 {
 		return nil, *err1
 	}

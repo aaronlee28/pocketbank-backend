@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httperror"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
@@ -130,8 +129,6 @@ func (a *walletService) FavoriteContactList(id int) (*[]dto.FavoriteContactRes, 
 }
 
 func (a *walletService) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error) {
-	fmt.Println("requestttt", data)
-
 	ret, err := a.walletRepository.ChangeUserDetails(data, id)
 	if err != nil {
 		return nil, error(httperror.BadRequestError("INTERNAL SERVER ERROR", "400"))
