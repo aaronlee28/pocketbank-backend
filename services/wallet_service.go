@@ -4,6 +4,7 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httperror"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
+	"strings"
 )
 
 type WalletService interface {
@@ -128,7 +129,15 @@ func (a *walletService) FavoriteContactList(id int) (*[]dto.FavoriteContactRes, 
 func (a *walletService) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, id int) (*dto.ChangeUserDetailsReqRes, error) {
 	ret, err := a.walletRepository.ChangeUserDetails(data, id)
 	if err != nil {
-		return nil, error(httperror.BadRequestError("INTERNAL SERVER ERROR", "400"))
+		if strings.Contains(err.Error(), "users_contact_uindex") {
+			return nil, error(httperror.BadRequestError("Contact is already registered", "401"))
+		}
+		if strings.Contains(err.Error(), "users_email_uindex") {
+			return nil, error(httperror.BadRequestError("Email is already registered", "401"))
+		}
+		if strings.Contains(err.Error(), "record not found") {
+			return nil, error(httperror.BadRequestError("Referral code not registered", "401"))
+		}
 	}
 	return ret, err
 }

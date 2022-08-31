@@ -136,7 +136,10 @@ func (w *walletRepository) ChangeUserDetails(data *dto.ChangeUserDetailsReqRes, 
 		if val != "" && val != 0 {
 			change := v.Type().Field(i).Name
 			input := v.Field(i).Interface()
-			w.db.Model(&user).Update(change, input)
+			err2 := w.db.Model(&user).Update(change, input).Error
+			if err2 != nil {
+				return nil, err2
+			}
 		}
 	}
 	if data.ProfilePicture == "null" {

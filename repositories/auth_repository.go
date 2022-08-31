@@ -84,7 +84,6 @@ func (a *authRepository) Register(user *models.User, cr int) (*models.User, erro
 	}
 	db.Get().Create(&m)
 
-	//has to be last because referral code might be there but failed to create the account for other reasons
 	if cr != 0 {
 		a.db.Where("user_id = ?", checkUser.Id).First(&referralBonus)
 		referralPrice := referralBonus.Balance + 20000
