@@ -39,9 +39,6 @@ func (a *walletService) TransactionHistory(q *repositories.Query, id int) (*[]dt
 	if q.Sort == "" {
 		q.Sort = "desc"
 	}
-	if q.Limit == "" {
-		q.Limit = "10"
-	}
 	if q.FilterTime == "" {
 		q.FilterTime = "74000"
 	}
