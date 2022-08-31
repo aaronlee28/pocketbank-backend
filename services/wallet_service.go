@@ -43,10 +43,10 @@ func (a *walletService) TransactionHistory(q *repositories.Query, id int) (*[]dt
 		q.FilterTime = "74000"
 	}
 	if q.MinAmount == "" {
-		q.MinAmount = "0"
+		q.MinAmount = "-999999999999"
 	}
 	if q.MaxAmount == "" {
-		q.MaxAmount = "999999999"
+		q.MaxAmount = "999999999999"
 	}
 	t, err := a.walletRepository.TransactionHistory(q, id)
 	if err != nil {
