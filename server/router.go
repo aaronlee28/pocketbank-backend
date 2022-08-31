@@ -37,7 +37,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 	router.Static("/docs", "swaggerui")
 	router.NoRoute(middlewares.WrongEndpoint())
 	router.Use(h.RunCronJobs)
-	router.GET("/getcode", middlewares.RequestValidator(&dto.CodeReq{}), h.GetCode)
+	router.POST("/getcode", middlewares.RequestValidator(&dto.CodeReq{}), h.GetCode)
 	router.PATCH("/changepassword", middlewares.RequestValidator(&dto.ChangePReq{}), h.ChangePassword)
 	router.POST("/register", h.Register)
 	router.POST("/signin", middlewares.RequestValidator(&dto.AuthReq{}), h.SignIn)
