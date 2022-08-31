@@ -15,6 +15,5 @@ func main() {
 		fmt.Println("failed to connect to db")
 
 	}
-
 	server.Init()
 }
