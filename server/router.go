@@ -28,7 +28,7 @@ func NewRouter(c *RouterConfig) *gin.Engine {
 
 	router.Use(cors.New(config))
 	h := handlers.New(&handlers.
-		HandlerConfig{
+	HandlerConfig{
 		AuthService:        c.AuthService,
 		TransactionService: c.TransactionService,
 		WalletService:      c.WalletService,

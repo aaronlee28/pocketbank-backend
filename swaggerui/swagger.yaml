@@ -1,0 +1,557 @@
+openapi: 3.0.0
+info:
+  title: Final-Project
+  version: 1.0.0
+servers:
+  - url: https://pocket-bank-frontend.herokuapp.com
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+tags:
+  - name: Admin - Users Information
+  - name: Admin - Update User
+  - name: Admin - Promotion
+  - name: Admin - Merchandise
+  - name: Users Authentication
+  - name: User Payment
+  - name: User Details
+paths:
+  /userslist:
+    get:
+      tags:
+        - Admin - Users Information
+      summary: userslist
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /usertransaction/869821:
+    get:
+      tags:
+        - Admin - Users Information
+      summary: usertransaction/:id
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /userdetails/869821:
+    get:
+      tags:
+        - Admin - Users Information
+      summary: userdetails/:id
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /userreferraldetails/869821:
+    get:
+      tags:
+        - Admin - Users Information
+      summary: userreferraldetails/:id
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /userdepositinfo/869821:
+    get:
+      tags:
+        - Admin - Users Information
+      summary: userdepositinfo/:id
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /eligiblemerchandiselist:
+    get:
+      tags:
+        - Admin - Users Information
+      summary: eligiblemerchandiselist
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /userrate/869821:
+    patch:
+      tags:
+        - Admin - Update User
+      summary: userrate/:id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                interestRate: 0.2
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /usersrate:
+    patch:
+      tags:
+        - Admin - Update User
+      summary: usersrate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                interestRate: 0.3
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /merchandisestatus/:
+    post:
+      tags:
+        - Admin - Update User
+      summary: merchandisestatus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                userID: 869824
+                merchToSend: umbrella
+                status: On process
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /changeuserstatus/869821:
+    patch:
+      tags:
+        - Admin - Update User
+      summary: changeuserstatus/:id
+      requestBody:
+        content: {}
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /promotion:
+    post:
+      tags:
+        - Admin - Promotion
+      summary: promotion
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: promotion 3
+                photo:
+                  type: string
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - Admin - Promotion
+      summary: promotion
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /promotion/3:
+    patch:
+      tags:
+        - Admin - Promotion
+      summary: delete promotion/:id
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties: {}
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /updatepromotion/22:
+    patch:
+      tags:
+        - Admin - Promotion
+      summary: patch promotion/:id
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: p3
+                photo:
+                  type: string
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /merchandise/869821:
+    get:
+      tags:
+        - Admin - Merchandise
+      summary: merchandise/:id
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /updatemerchstocks:
+    patch:
+      tags:
+        - Admin - Merchandise
+      summary: updatemerchstocks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: pen
+                stock: 200
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /getmerchstock:
+    get:
+      tags:
+        - Admin - Merchandise
+      summary: getmerchstock
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /register:
+    post:
+      tags:
+        - Users Authentication
+      summary: register
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: swagger
+                email:
+                  type: string
+                  example: swagger@swagger.com
+                contact:
+                  type: integer
+                  example: '1234567890'
+                password:
+                  type: string
+                  example: swagger
+                referralNumber:
+                  type: integer
+                  example: '11846'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /signin:
+    post:
+      tags:
+        - Users Authentication
+      summary: signin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: aaronlee@gmail.com
+                password: password1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /getcode:
+    post:
+      tags:
+        - Users Authentication
+      summary: getcode
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: aaronlee@gmail.com
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /changepassword:
+    patch:
+      tags:
+        - Users Authentication
+      summary: changepassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: aaronlee@gmail.com
+                newPassword: password1
+                code: 72539
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /topupsavings:
+    post:
+      tags:
+        - User Payment
+      summary: topupsavings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                amount: 50000000
+                senderWalletNumber: 6
+                description: top up from ShopeePay
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /topupdeposit:
+    post:
+      tags:
+        - User Payment
+      summary: topupdeposit
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                amount: 1000000
+                duration: 1
+                autoDeposit: true
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /payment:
+    post:
+      tags:
+        - User Payment
+      summary: payment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                receiverAccount: 940149
+                amount: 1000000
+                description: Veried Checkmark please
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /topupqr/914325:
+    post:
+      tags:
+        - User Payment
+      summary: topupqr/:id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                amount: 100000
+                senderWalletNumber: 8
+                description: qr code
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /080/transactionhistory:
+    get:
+      tags:
+        - User Details
+      summary: transactionhistory
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /userdetails:
+    get:
+      tags:
+        - User Details
+      summary: userdetails
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    patch:
+      tags:
+        - User Details
+      summary: userdetails
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: integer
+                  example: '869837'
+                name:
+                  type: string
+                  example: swagger
+                email:
+                  type: string
+                  example: swagger@swaggertest.com
+                contact:
+                  type: integer
+                  example: '0987654321'
+                photo:
+                  type: string
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /savingsinfo:
+    get:
+      tags:
+        - User Details
+      summary: savingsinfo
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /depositinfo:
+    get:
+      tags:
+        - User Details
+      summary: depositinfo
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /favoritecontactlist:
+    get:
+      tags:
+        - User Details
+      summary: favoritecontactlist
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /favoritecontact:
+    post:
+      tags:
+        - User Details
+      summary: favoritecontact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                favoriteAccountNumber: 917544
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
