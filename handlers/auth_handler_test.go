@@ -162,4 +162,23 @@ func TestHandler_ChangePassword(t *testing.T) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, string(res), rec.Body.String())
 	})
+
+	t.Run("should return error when request is empty", func(t *testing.T) {
+		request := dto.ChangePReq{
+			Email:       "",
+			NewPassword: "",
+		}
+		response := error(httperror.BadRequestError("Code Invalid", "401"))
+		responseError := ("{\"error\":\"Code Invalid\"}")
+		mockService := new(mocks.AuthService)
+		router := &server.RouterConfig{AuthService: mockService}
+		mockService.On("ChangePassword", &request).Return(nil, response)
+
+		req, _ := http.NewRequest(http.MethodPatch, "/changepassword", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Equal(t, responseError, rec.Body.String())
+
+	})
 }
