@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"fmt"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/config"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httpsuccess"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
@@ -49,6 +51,10 @@ func (a *Handler) Payment(c *gin.Context) {
 }
 
 func (a *Handler) RunCronJobs(c *gin.Context) {
+	if config.Config.ENV == "testing" {
+		fmt.Println("disable cron")
+		return
+	}
 
 	a.TransactionService.RunCronJobs()
 
