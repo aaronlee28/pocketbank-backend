@@ -94,3 +94,26 @@ func TestHandler_SignIn(t *testing.T) {
 
 	})
 }
+
+func TestHandler_GetCode(t *testing.T) {
+	t.Run("should return code when email is given", func(t *testing.T) {
+		request := dto.CodeReq{Email: "test@test.com"}
+		response := dto.CodeRes{Code: 12345}
+		responseSuccess := httpsuccess.AppSuccess{
+			StatusCode: 201,
+			Message:    "Created",
+			Data:       response,
+		}
+
+		mockService := new(mocks.AuthService)
+		router := &server.RouterConfig{AuthService: mockService}
+		mockService.On("GetCode", &request).Return(&response, nil)
+
+		res, _ := json.Marshal(&responseSuccess)
+		req, _ := http.NewRequest(http.MethodPost, "/getcode", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		//assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+	})
+}
