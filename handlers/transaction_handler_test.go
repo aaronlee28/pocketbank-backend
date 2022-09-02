@@ -63,26 +63,6 @@ func TestHandler_TopupSavings(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, rec.Code)
 		assert.Equal(t, responseError, rec.Body.String())
 	})
-
-	t.Run("should return error when amount is more than 50000000", func(t *testing.T) {
-		request := dto.TopupSavingsReq{
-			Amount:             49999,
-			SenderWalletNumber: 1,
-			Description:        "",
-		}
-		response := httperror.AppError{
-			Message: "Maximum Amount is Rp.50000000",
-		}
-		responseError := ("{\"error\":\"Maximum Amount is Rp.50000000\"}")
-		mockService := new(mocks.TransactionService)
-		router := &server.RouterConfig{TransactionService: mockService}
-		mockService.On("TopupSavings", &request, 0).Return(nil, response)
-
-		req, _ := http.NewRequest(http.MethodPost, "/topupsavings", testutils.MakeRequestBody(request))
-		_, rec := testutils.ServeReq(router, req)
-		assert.Equal(t, http.StatusBadRequest, rec.Code)
-		assert.Equal(t, responseError, rec.Body.String())
-	})
 }
 
 func TestHandler_Payment(t *testing.T) {
@@ -121,23 +101,78 @@ func TestHandler_Payment(t *testing.T) {
 		assert.Equal(t, string(res), rec.Body.String())
 	})
 
-	t.Run("should return error when amount is less than 1000000", func(t *testing.T) {
-		request := dto.TopupDepositReq{
-			Amount:      999999,
-			Duration:    1,
-			AutoDeposit: false,
+	t.Run("should return error when amount is less than 1000", func(t *testing.T) {
+		request := dto.PaymentReq{
+			ReceiverAccount: 12345,
+			Amount:          999,
+			Description:     "",
 		}
 		response := httperror.AppError{
-			Message: "Minimum Amount is Rp.1000000",
+			Message: "Minimum Amount is Rp.1000",
 		}
-		responseError := ("{\"error\":\"Minimum Amount is Rp.1000000\"}")
+		responseError := ("{\"error\":\"Minimum Amount is Rp.1000\"}")
 		mockService := new(mocks.TransactionService)
 		router := &server.RouterConfig{TransactionService: mockService}
-		mockService.On("TopupDeposit", &request, 0).Return(nil, response)
+		mockService.On("Payment", &request, 0).Return(nil, response)
 
-		req, _ := http.NewRequest(http.MethodPost, "/topupdeposit", testutils.MakeRequestBody(request))
+		req, _ := http.NewRequest(http.MethodPost, "/payment", testutils.MakeRequestBody(request))
 		_, rec := testutils.ServeReq(router, req)
 		assert.Equal(t, http.StatusBadRequest, rec.Code)
 		assert.Equal(t, responseError, rec.Body.String())
 	})
+
+}
+
+func TestHandler_TopupDeposit(t *testing.T) {
+	t.Run("should return successful when payload given", func(t *testing.T) {
+		request := dto.TopupDepositReq{
+			Amount:      1000000,
+			Duration:    1,
+			AutoDeposit: false,
+		}
+		response := dto.DepositRes{
+			Amount:      1000000,
+			Duration:    1,
+			AutoDeposit: false,
+		}
+
+		responseSuccess := httpsuccess.AppSuccess{
+			StatusCode: 201,
+			Message:    "Created",
+			Data:       response,
+		}
+
+		mockService := new(mocks.TransactionService)
+		router := &server.RouterConfig{TransactionService: mockService}
+		mockService.On("TopupDeposit", &request, 0).Return(&response, nil)
+		res, _ := json.Marshal(&responseSuccess)
+
+		_, _ = json.Marshal(&responseSuccess)
+		req, _ := http.NewRequest(http.MethodPost, "/topupdeposit", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusCreated, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+	})
+
+	//t.Run("should return error when amount is less than 1000", func(t *testing.T) {
+	//	request := dto.PaymentReq{
+	//		ReceiverAccount: 12345,
+	//		Amount:          999,
+	//		Description:     "",
+	//	}
+	//	response := httperror.AppError{
+	//		Message: "Minimum Amount is Rp.1000",
+	//	}
+	//	responseError := ("{\"error\":\"Minimum Amount is Rp.1000\"}")
+	//	mockService := new(mocks.TransactionService)
+	//	router := &server.RouterConfig{TransactionService: mockService}
+	//	mockService.On("Payment", &request, 0).Return(nil, response)
+	//
+	//	req, _ := http.NewRequest(http.MethodPost, "/payment", testutils.MakeRequestBody(request))
+	//	_, rec := testutils.ServeReq(router, req)
+	//	assert.Equal(t, http.StatusBadRequest, rec.Code)
+	//	assert.Equal(t, responseError, rec.Body.String())
+	//})
+
 }
