@@ -135,5 +135,31 @@ func TestHandler_GetCode(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, rec.Code)
 		assert.Equal(t, string(res), rec.Body.String())
 	})
+}
 
+func TestHandler_ChangePassword(t *testing.T) {
+	t.Run("should return success when request exist", func(t *testing.T) {
+		request := dto.ChangePReq{
+			Email:       "test@test.com",
+			NewPassword: "test",
+			Code:        12345,
+		}
+		response := dto.ChangePRes{Success: "success"}
+		responseSuccess := httpsuccess.AppSuccess{
+			StatusCode: 200,
+			Message:    "Ok",
+			Data:       response,
+		}
+
+		mockService := new(mocks.AuthService)
+		router := &server.RouterConfig{AuthService: mockService}
+		mockService.On("ChangePassword", &request).Return(&response, nil)
+
+		res, _ := json.Marshal(&responseSuccess)
+		req, _ := http.NewRequest(http.MethodPatch, "/changepassword", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+	})
 }
