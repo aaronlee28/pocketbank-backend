@@ -2,6 +2,7 @@ package handlers_test
 
 import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httpsuccess"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/mocks"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/server"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/testutils"
@@ -50,16 +51,22 @@ func TestHandler_SignIn(t *testing.T) {
 		response := dto.TokenRes{
 			IDToken: "testing token",
 		}
+		responseSuccess := httpsuccess.AppSuccess{
+			StatusCode: 200,
+			Message:    "Ok",
+			Data:       response,
+		}
+
 		mockService := new(mocks.AuthService)
 		router := &server.RouterConfig{AuthService: mockService}
 		mockService.On("SignIn", &request).Return(&response, nil)
 
-		_, _ = json.Marshal(&response)
+		res, _ := json.Marshal(&responseSuccess)
 		req, _ := http.NewRequest(http.MethodPost, "/signin", testutils.MakeRequestBody(request))
 		_, rec := testutils.ServeReq(router, req)
 
 		assert.Equal(t, http.StatusOK, rec.Code)
-		//assert.Contains(t, string(res), rec.Body.String())
+		assert.Equal(t, string(res), rec.Body.String())
 
 	})
 }
