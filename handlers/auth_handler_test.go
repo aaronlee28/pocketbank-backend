@@ -2,6 +2,7 @@ package handlers_test
 
 import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httperror"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httpsuccess"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/mocks"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/server"
@@ -66,6 +67,29 @@ func TestHandler_SignIn(t *testing.T) {
 		_, rec := testutils.ServeReq(router, req)
 
 		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+	})
+
+	t.Run("should return error when signin request is invalid", func(t *testing.T) {
+		request := dto.AuthReq{
+			Email:    "",
+			Password: "",
+		}
+		response := httperror.AppError{
+			StatusCode: 400,
+			Code:       "BAD_REQUEST",
+			Message:    "Key: 'AuthReq.Email' Error:Field validation for 'Email' failed on the 'required' tag\nKey: 'AuthReq.Password' Error:Field validation for 'Password' failed on the 'required' tag",
+		}
+
+		mockService := new(mocks.AuthService)
+		router := &server.RouterConfig{AuthService: mockService}
+		mockService.On("SignIn", &request).Return(&response, nil)
+
+		res, _ := json.Marshal(&response)
+		req, _ := http.NewRequest(http.MethodPost, "/signin", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
 		assert.Equal(t, string(res), rec.Body.String())
 
 	})
