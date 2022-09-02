@@ -155,24 +155,24 @@ func TestHandler_TopupDeposit(t *testing.T) {
 		assert.Equal(t, string(res), rec.Body.String())
 	})
 
-	//t.Run("should return error when amount is less than 1000", func(t *testing.T) {
-	//	request := dto.PaymentReq{
-	//		ReceiverAccount: 12345,
-	//		Amount:          999,
-	//		Description:     "",
-	//	}
-	//	response := httperror.AppError{
-	//		Message: "Minimum Amount is Rp.1000",
-	//	}
-	//	responseError := ("{\"error\":\"Minimum Amount is Rp.1000\"}")
-	//	mockService := new(mocks.TransactionService)
-	//	router := &server.RouterConfig{TransactionService: mockService}
-	//	mockService.On("Payment", &request, 0).Return(nil, response)
-	//
-	//	req, _ := http.NewRequest(http.MethodPost, "/payment", testutils.MakeRequestBody(request))
-	//	_, rec := testutils.ServeReq(router, req)
-	//	assert.Equal(t, http.StatusBadRequest, rec.Code)
-	//	assert.Equal(t, responseError, rec.Body.String())
-	//})
+	t.Run("should return error when amount is less than 1000000", func(t *testing.T) {
+		request := dto.TopupDepositReq{
+			Amount:      1000000,
+			Duration:    1,
+			AutoDeposit: false,
+		}
+		response := httperror.AppError{
+			Message: "Minimum Amount is Rp.1000000",
+		}
+		responseError := ("{\"error\":\"Minimum Amount is Rp.1000000\"}")
+		mockService := new(mocks.TransactionService)
+		router := &server.RouterConfig{TransactionService: mockService}
+		mockService.On("TopupDeposit", &request, 0).Return(nil, response)
+
+		req, _ := http.NewRequest(http.MethodPost, "/topupdeposit", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Equal(t, responseError, rec.Body.String())
+	})
 
 }
