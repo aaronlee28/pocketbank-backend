@@ -84,3 +84,40 @@ func TestHandler_TopupSavings(t *testing.T) {
 		assert.Equal(t, responseError, rec.Body.String())
 	})
 }
+
+func TestHandler_Payment(t *testing.T) {
+	t.Run("should return successful when payload given", func(t *testing.T) {
+		request := dto.PaymentReq{
+			ReceiverAccount: 1,
+			Amount:          100000,
+			Description:     "",
+		}
+		response := dto.PaymentRes{
+			SenderAccount:   2,
+			ReceiverAccount: 1,
+			SenderName:      "test",
+			ReceiverName:    "test",
+			Amount:          100000,
+			Status:          "Success",
+			Description:     "",
+		}
+
+		responseSuccess := httpsuccess.AppSuccess{
+			StatusCode: 201,
+			Message:    "Created",
+			Data:       response,
+		}
+
+		mockService := new(mocks.TransactionService)
+		router := &server.RouterConfig{TransactionService: mockService}
+		mockService.On("Payment", &request, 0).Return(&response, nil)
+		res, _ := json.Marshal(&responseSuccess)
+
+		_, _ = json.Marshal(&responseSuccess)
+		req, _ := http.NewRequest(http.MethodPost, "/payment", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusCreated, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+	})
+}
