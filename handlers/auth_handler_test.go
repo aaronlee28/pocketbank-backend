@@ -198,6 +198,5 @@ func TestHandler_ChangePassword(t *testing.T) {
 
 		assert.Equal(t, http.StatusBadRequest, rec.Code)
 		assert.Equal(t, responseError, rec.Body.String())
-
 	})
 }

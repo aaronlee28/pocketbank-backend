@@ -1,0 +1,45 @@
+package handlers_test
+
+import (
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httpsuccess"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/mocks"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/server"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/testutils"
+	"github.com/goccy/go-json"
+	"github.com/stretchr/testify/assert"
+	"net/http"
+	"testing"
+)
+
+func TestHandler_TopupSavings(t *testing.T) {
+	t.Run("should return successful when payload given", func(t *testing.T) {
+		request := dto.TopupSavingsReq{
+			Amount:             100000,
+			SenderWalletNumber: 1,
+			Description:        "",
+		}
+		response := dto.TopupSavingsRes{
+			Amount:      100000,
+			Description: "",
+		}
+
+		responseSuccess := httpsuccess.AppSuccess{
+			StatusCode: 201,
+			Message:    "Created",
+			Data:       response,
+		}
+
+		mockService := new(mocks.TransactionService)
+		router := &server.RouterConfig{TransactionService: mockService}
+		mockService.On("TopupSavings", &request, 0).Return(&response, nil)
+		res, _ := json.Marshal(&responseSuccess)
+
+		_, _ = json.Marshal(&responseSuccess)
+		req, _ := http.NewRequest(http.MethodPost, "/topupsavings", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusCreated, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+	})
+}
