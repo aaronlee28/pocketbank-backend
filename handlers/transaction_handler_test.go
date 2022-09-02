@@ -176,3 +176,55 @@ func TestHandler_TopupDeposit(t *testing.T) {
 	})
 
 }
+
+func TestHandler_TopUpQr(t *testing.T) {
+	t.Run("should return response when proper payload is given", func(t *testing.T) {
+		request := dto.TopUpQr{
+			SenderWalletNumber: 12345,
+			Amount:             100000,
+			Description:        "",
+		}
+		response := dto.TopUpQr{
+			SenderWalletNumber: 12345,
+			Amount:             100000,
+			Description:        "",
+		}
+
+		responseSuccess := httpsuccess.AppSuccess{
+			StatusCode: 201,
+			Message:    "Created",
+			Data:       response,
+		}
+
+		mockService := new(mocks.TransactionService)
+		router := &server.RouterConfig{TransactionService: mockService}
+		mockService.On("TopUpQr", &request, 0).Return(&response, nil)
+		res, _ := json.Marshal(&responseSuccess)
+
+		_, _ = json.Marshal(&responseSuccess)
+		req, _ := http.NewRequest(http.MethodPost, "/topupqr/:id", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusCreated, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+	})
+
+	t.Run("should return error when user is not found", func(t *testing.T) {
+		request := dto.TopUpQr{
+			Amount:      100000,
+			Description: "",
+		}
+		response := httperror.AppError{
+			Message: "User Not Found",
+		}
+		responseError := ("{\"error\":\"User Not Found\"}")
+		mockService := new(mocks.TransactionService)
+		router := &server.RouterConfig{TransactionService: mockService}
+		mockService.On("TopUpQr", &request, 0).Return(nil, response)
+
+		req, _ := http.NewRequest(http.MethodPost, "/topupqr/:id", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Equal(t, responseError, rec.Body.String())
+	})
+}
