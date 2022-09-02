@@ -181,4 +181,23 @@ func TestHandler_ChangePassword(t *testing.T) {
 		assert.Equal(t, responseError, rec.Body.String())
 
 	})
+
+	t.Run("should return error when request is empty", func(t *testing.T) {
+		request := dto.ChangePReq{
+			NewPassword: "",
+			Code:        12345,
+		}
+		response := error(httperror.BadRequestError("Email is not found", "400"))
+		responseError := ("{\"error\":\"Email is not found\"}")
+		mockService := new(mocks.AuthService)
+		router := &server.RouterConfig{AuthService: mockService}
+		mockService.On("ChangePassword", &request).Return(nil, response)
+
+		req, _ := http.NewRequest(http.MethodPatch, "/changepassword", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Equal(t, responseError, rec.Body.String())
+
+	})
 }
