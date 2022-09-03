@@ -89,15 +89,12 @@ func (w *transactionRepository) Payment(trans *models.Transaction, id int) (*mod
 		Description:          "Failed Transaction",
 	}
 	checkBalance = senderSavings.Balance - trans.Amount
-	//check if sender has balance
 	if checkBalance < 0 {
 		addFailedPayment.Description = "Insufficient Balance"
 		db.Get().Create(&addFailedPayment)
 
 		return addFailedPayment, nil
 	}
-
-	//check if receiver wallet exist
 	if err != nil {
 		addFailedPayment.Description = "Destination Account Not Found"
 		db.Get().Create(&addFailedPayment)
