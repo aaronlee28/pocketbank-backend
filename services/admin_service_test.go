@@ -11,19 +11,6 @@ import (
 	"testing"
 )
 
-//t.Run("should return response body", func(t *testing.T) {
-//	serviceReq :=
-//	repoReq :=
-//	repoRes :=
-//
-//	mockRepo :=	new(mocks.AdminRepository)
-//	mockRepo.On("").Return()
-//	adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
-//
-//	_, err := adminService.Payment(&serviceReq, 0)
-//	assert.Nil(t, err)
-//
-//})
 func TestAdminService_AdminUsersList(t *testing.T) {
 	t.Run("should return response body", func(t *testing.T) {
 		var repoRes []models.User
@@ -119,6 +106,30 @@ func TestAdminService_AdminUserDetails(t *testing.T) {
 		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
 
 		_, err := adminService.AdminUserDetails(0)
+		assert.NotNil(t, err)
+	})
+}
+
+func TestAdminService_AdminUserReferralDetails(t *testing.T) {
+	t.Run("should return response body", func(t *testing.T) {
+		var repoRes []models.Referral
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("AdminUserReferralDetails", 0).Return(&repoRes, nil)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		_, err := adminService.AdminUserReferralDetails(0)
+		assert.Nil(t, err)
+	})
+
+	t.Run("should return error when repo returns error", func(t *testing.T) {
+		errorRepoRes := httperror.AppError{
+			Message: "User not found",
+		}
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("AdminUserReferralDetails", 0).Return(nil, &errorRepoRes)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		_, err := adminService.AdminUserReferralDetails(0)
 		assert.NotNil(t, err)
 	})
 }
