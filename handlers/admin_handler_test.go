@@ -628,3 +628,47 @@ func TestHandler_EligibleMerchandiseList(t *testing.T) {
 		assert.Equal(t, responseError, rec.Body.String())
 	})
 }
+
+func TestHandler_MerchandiseStatus(t *testing.T) {
+	t.Run("should return successful when payload is given", func(t *testing.T) {
+		request := &dto.MerchandiseStatus{
+			UserID:      0,
+			MerchToSend: "test",
+			Status:      "test",
+		}
+		responseSuccess := httpsuccess.AppSuccess{
+			StatusCode: 200,
+			Message:    "Ok",
+		}
+		mockService := new(mocks.AdminService)
+		router := &server.RouterConfig{AdminService: mockService}
+		mockService.On("MerchandiseStatus", request).Return(nil)
+
+		res, _ := json.Marshal(&responseSuccess)
+		req, _ := http.NewRequest(http.MethodPost, "/merchandisestatus", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+	})
+
+	t.Run("should return error when error is not nil", func(t *testing.T) {
+		request := &dto.MerchandiseStatus{
+			UserID:      0,
+			MerchToSend: "test",
+			Status:      "test",
+		}
+		response := httperror.AppError{
+			Message: "Test Error",
+		}
+		responseError := ("{\"error\":\"Test Error\"}")
+		mockService := new(mocks.AdminService)
+		router := &server.RouterConfig{AdminService: mockService}
+		mockService.On("MerchandiseStatus", request).Return(response)
+		req, _ := http.NewRequest(http.MethodPost, "/merchandisestatus", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Equal(t, responseError, rec.Body.String())
+	})
+}
