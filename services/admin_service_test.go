@@ -465,3 +465,27 @@ func TestAdminService_UpdateMerchStocks(t *testing.T) {
 	})
 
 }
+
+func TestAdminService_GetMerchStock(t *testing.T) {
+	t.Run("should return response body", func(t *testing.T) {
+		var response []models.Merchstock
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("GetMerchStock").Return(&response, nil)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		_, err := adminService.GetMerchStock()
+		assert.Nil(t, err)
+	})
+
+	t.Run("should return response body", func(t *testing.T) {
+		errorRepoRes := httperror.AppError{
+			Message: "error",
+		}
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("GetMerchStock").Return(nil, &errorRepoRes)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		_, err := adminService.GetMerchStock()
+		assert.NotNil(t, err)
+	})
+}
