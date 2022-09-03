@@ -124,7 +124,7 @@ func (a *adminService) ChangeUserStatus(id int) error {
 func (a *adminService) Merchandise(id int) (*models.Merchandise, error) {
 	m, err := a.adminRepository.Merchandise(id)
 	if err != nil {
-		return nil, error(httperror.BadRequestError("User not found", "400"))
+		return nil, error(httperror.BadRequestError("Merchandise not found", "400"))
 	}
 	return m, err
 }

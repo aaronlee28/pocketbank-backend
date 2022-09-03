@@ -157,3 +157,28 @@ func TestAdminService_ChangeUserStatus(t *testing.T) {
 	})
 
 }
+
+func TestAdminService_Merchandise(t *testing.T) {
+	t.Run("should return response body", func(t *testing.T) {
+		repoRes := models.Merchandise{}
+
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("Merchandise", 0).Return(&repoRes, nil)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		_, err := adminService.Merchandise(0)
+		assert.Nil(t, err)
+	})
+
+	t.Run("should return error when repo returns error", func(t *testing.T) {
+		errorRepoRes := httperror.AppError{
+			Message: "Merchandise not found",
+		}
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("Merchandise", 0).Return(nil, &errorRepoRes)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		_, err := adminService.Merchandise(0)
+		assert.NotNil(t, err)
+	})
+}
