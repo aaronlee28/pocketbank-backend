@@ -85,9 +85,7 @@ func (a *transactionService) Payment(req *dto.PaymentReq, id int) (*dto.PaymentR
 }
 
 func (a *transactionService) RunCronJobs() {
-
 	a.transactionRepository.RunCronJobs()
-
 }
 
 func (a *transactionService) TopupDeposit(req *dto.TopupDepositReq, id int) (*dto.DepositRes, error) {
@@ -95,12 +93,10 @@ func (a *transactionService) TopupDeposit(req *dto.TopupDepositReq, id int) (*dt
 	if req.Amount < 1000000 {
 		return nil, error(httperror.BadRequestError("Minimum Amount is Rp.1000000", "400"))
 	}
-
 	deposit, err1 := a.transactionRepository.TopupDeposit(req, id)
 	if err1 != nil || deposit == nil {
 		return nil, error(httperror.BadRequestError("Insufficient Balance", "401"))
 	}
-
 	ret := &dto.DepositRes{
 		Amount:      deposit.Balance,
 		Duration:    deposit.Duration,
@@ -108,12 +104,10 @@ func (a *transactionService) TopupDeposit(req *dto.TopupDepositReq, id int) (*dt
 	}
 	return ret, nil
 }
-
 func (a *transactionService) TopUpQr(req *dto.TopUpQr, id int) (*dto.TopUpQr, error) {
 	ret, err1 := a.transactionRepository.TopUpQr(req, id)
 	if err1 != nil || ret == nil {
 		return nil, error(httperror.BadRequestError("User Not Found", "401"))
 	}
-
 	return ret, nil
 }

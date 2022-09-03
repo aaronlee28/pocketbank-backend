@@ -50,7 +50,6 @@ func (a *adminService) AdminUsersList() (*[]dto.UsersListRes, error) {
 	}
 	for _, u := range *usersList {
 		usr := new(dto.UsersListRes).FromUser(&u)
-
 		result = append(result, *usr)
 	}
 
@@ -93,7 +92,6 @@ func (a *adminService) AdminUserDetails(id int) (*dto.UserDetailsRes, error) {
 	if err != nil {
 		return nil, error(httperror.BadRequestError("User not found", "400"))
 	}
-
 	return ret, err
 }
 
