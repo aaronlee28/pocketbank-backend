@@ -407,3 +407,50 @@ func TestHandler_UsersRate(t *testing.T) {
 		assert.Equal(t, responseError, rec.Body.String())
 	})
 }
+
+func TestHandler_CreatePromotion(t *testing.T) {
+	t.Run("should return successful when payload is given", func(t *testing.T) {
+		request := &dto.PromotionReq{
+			Title: "",
+			Photo: "",
+		}
+		response := &dto.PromotionReq{
+			Title: "",
+			Photo: "",
+		}
+		responseSuccess := httpsuccess.AppSuccess{
+			StatusCode: 200,
+			Message:    "Ok",
+			Data:       request,
+		}
+		mockService := new(mocks.AdminService)
+		router := &server.RouterConfig{AdminService: mockService}
+		mockService.On("CreatePromotion", request).Return(response, nil)
+
+		res, _ := json.Marshal(&responseSuccess)
+		req, _ := http.NewRequest(http.MethodPost, "/promotion", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+	})
+
+	t.Run("should return error when error is not nil", func(t *testing.T) {
+		request := &dto.PromotionReq{
+			Title: "",
+			Photo: "",
+		}
+		response := httperror.AppError{
+			Message: "Test Error",
+		}
+		responseError := ("{\"error\":\"Test Error\"}")
+		mockService := new(mocks.AdminService)
+		router := &server.RouterConfig{AdminService: mockService}
+		mockService.On("CreatePromotion", request).Return(nil, response)
+		req, _ := http.NewRequest(http.MethodPost, "/promotion", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Equal(t, responseError, rec.Body.String())
+	})
+}
