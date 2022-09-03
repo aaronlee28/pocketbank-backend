@@ -229,3 +229,58 @@ func TestWalletService_FavoriteContactList(t *testing.T) {
 		assert.NotNil(t, err)
 	})
 }
+
+func TestWalletService_ChangeUserDetails(t *testing.T) {
+	t.Run("Should return response body", func(t *testing.T) {
+		serviceRequest := dto.ChangeUserDetailsReqRes{}
+		mockRepo := new(mocks.WalletRepository)
+		mockRepo.On("ChangeUserDetails", &serviceRequest, 1).Return(&serviceRequest, nil)
+		walletService := services.NewWalletServices(&services.WSConfig{
+			WalletRepository: mockRepo,
+		})
+		_, err := walletService.ChangeUserDetails(&serviceRequest, 1)
+		assert.Nil(t, err)
+	})
+	t.Run("Should return error when repo returns error", func(t *testing.T) {
+		serviceRequest := dto.ChangeUserDetailsReqRes{}
+
+		errorRes := httperror.AppError{
+			Message: "users_contact_uindex",
+		}
+		mockRepo := new(mocks.WalletRepository)
+		mockRepo.On("ChangeUserDetails", &serviceRequest, 1).Return(nil, errorRes)
+		walletService := services.NewWalletServices(&services.WSConfig{
+			WalletRepository: mockRepo,
+		})
+		_, err := walletService.ChangeUserDetails(&serviceRequest, 1)
+		assert.NotNil(t, err)
+	})
+	t.Run("Should return error when repo returns error", func(t *testing.T) {
+		serviceRequest := dto.ChangeUserDetailsReqRes{}
+
+		errorRes := httperror.AppError{
+			Message: "users_email_uindex",
+		}
+		mockRepo := new(mocks.WalletRepository)
+		mockRepo.On("ChangeUserDetails", &serviceRequest, 1).Return(nil, errorRes)
+		walletService := services.NewWalletServices(&services.WSConfig{
+			WalletRepository: mockRepo,
+		})
+		_, err := walletService.ChangeUserDetails(&serviceRequest, 1)
+		assert.NotNil(t, err)
+	})
+	t.Run("Should return error when repo returns error", func(t *testing.T) {
+		serviceRequest := dto.ChangeUserDetailsReqRes{}
+
+		errorRes := httperror.AppError{
+			Message: "record not found",
+		}
+		mockRepo := new(mocks.WalletRepository)
+		mockRepo.On("ChangeUserDetails", &serviceRequest, 1).Return(nil, errorRes)
+		walletService := services.NewWalletServices(&services.WSConfig{
+			WalletRepository: mockRepo,
+		})
+		_, err := walletService.ChangeUserDetails(&serviceRequest, 1)
+		assert.NotNil(t, err)
+	})
+}

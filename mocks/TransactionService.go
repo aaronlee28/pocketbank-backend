@@ -109,6 +109,11 @@ func (_m *TransactionService) TopupSavings(req *dto.TopupSavingsReq, id int) (*d
 	return r0, r1
 }
 
+// UpdateInterestAndTaxSavings provides a mock function with given fields:
+func (_m *TransactionService) UpdateInterestAndTaxSavings() {
+	_m.Called()
+}
+
 type mockConstructorTestingTNewTransactionService interface {
 	mock.TestingT
 	Cleanup(func())
