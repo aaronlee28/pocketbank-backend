@@ -59,6 +59,12 @@ func AuthorizeJWT(c *gin.Context) {
 }
 
 func AuthorizeAdmin(c *gin.Context) {
+
+	if config.Config.ENV == "testing" {
+		fmt.Println("disable Admin authorization on dev env")
+		return
+	}
+
 	authHeader := c.GetHeader("Authorization")
 
 	s := strings.Split(authHeader, "Bearer ")
