@@ -147,4 +147,20 @@ func TestHandler_DepositInfo(t *testing.T) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, string(res), rec.Body.String())
 	})
+
+	t.Run("should return error when error is not nil", func(t *testing.T) {
+		response := httperror.AppError{
+			Message: "Test Error",
+		}
+
+		responseError := ("{\"error\":\"Test Error\"}")
+		mockService := new(mocks.WalletService)
+		router := &server.RouterConfig{WalletService: mockService}
+		mockService.On("DepositInfo", 0).Return(nil, response)
+		req, _ := http.NewRequest(http.MethodGet, "/depositinfo", testutils.MakeRequestBody(nil))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Equal(t, responseError, rec.Body.String())
+	})
 }
