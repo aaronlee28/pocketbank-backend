@@ -370,3 +370,40 @@ func TestHandler_Merchandise(t *testing.T) {
 		assert.Equal(t, responseError, rec.Body.String())
 	})
 }
+
+func TestHandler_UsersRate(t *testing.T) {
+	t.Run("should return successful when payload is given", func(t *testing.T) {
+		request := &dto.ChangeInterestRateReq{InterestRate: 0.2}
+		responseSuccess := httpsuccess.AppSuccess{
+			StatusCode: 200,
+			Message:    "Ok",
+		}
+		mockService := new(mocks.AdminService)
+		router := &server.RouterConfig{AdminService: mockService}
+		mockService.On("UsersRate", request).Return(nil)
+
+		res, _ := json.Marshal(&responseSuccess)
+		req, _ := http.NewRequest(http.MethodPatch, "/usersrate", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+	})
+
+	t.Run("should return error when error is not nil", func(t *testing.T) {
+		request := &dto.ChangeInterestRateReq{InterestRate: 0.2}
+
+		response := httperror.AppError{
+			Message: "Test Error",
+		}
+		responseError := ("{\"error\":\"Test Error\"}")
+		mockService := new(mocks.AdminService)
+		router := &server.RouterConfig{AdminService: mockService}
+		mockService.On("UsersRate", request).Return(response)
+		req, _ := http.NewRequest(http.MethodPatch, "/usersrate", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Equal(t, responseError, rec.Body.String())
+	})
+}
