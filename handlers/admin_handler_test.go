@@ -5,6 +5,7 @@ import (
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httperror"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httpsuccess"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/mocks"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/server"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/testutils"
@@ -317,6 +318,52 @@ func TestHandler_UserRate(t *testing.T) {
 		router := &server.RouterConfig{AdminService: mockService}
 		mockService.On("UserRate", 0, request).Return(response)
 		req, _ := http.NewRequest(http.MethodPatch, "/userrate/:id", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Equal(t, responseError, rec.Body.String())
+	})
+}
+
+func TestHandler_Merchandise(t *testing.T) {
+	t.Run("should return successful when payload is given", func(t *testing.T) {
+		response := models.Merchandise{
+			Id:             0,
+			UserID:         0,
+			TotalTransfer:  0,
+			Pen:            false,
+			Umbrella:       false,
+			CardHolder:     false,
+			SendPen:        "test",
+			SendUmbrella:   "test",
+			SendCardHolder: "test",
+		}
+		responseSuccess := httpsuccess.AppSuccess{
+			StatusCode: 200,
+			Message:    "Ok",
+			Data:       response,
+		}
+		mockService := new(mocks.AdminService)
+		router := &server.RouterConfig{AdminService: mockService}
+		mockService.On("Merchandise", 0).Return(&response, nil)
+
+		res, _ := json.Marshal(&responseSuccess)
+		req, _ := http.NewRequest(http.MethodGet, "/merchandise/:id", testutils.MakeRequestBody(nil))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+	})
+
+	t.Run("should return error when error is not nil", func(t *testing.T) {
+		response := httperror.AppError{
+			Message: "Test Error",
+		}
+		responseError := ("{\"error\":\"Test Error\"}")
+		mockService := new(mocks.AdminService)
+		router := &server.RouterConfig{AdminService: mockService}
+		mockService.On("Merchandise", 0).Return(nil, response)
+		req, _ := http.NewRequest(http.MethodGet, "/merchandise/:id", testutils.MakeRequestBody(nil))
 		_, rec := testutils.ServeReq(router, req)
 
 		assert.Equal(t, http.StatusBadRequest, rec.Code)
