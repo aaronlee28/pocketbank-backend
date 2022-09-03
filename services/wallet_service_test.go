@@ -133,9 +133,9 @@ func TestWalletService_DepositInfo(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("Should return error when repoo returns error", func(t *testing.T) {
+	t.Run("Should return error when repo returns error", func(t *testing.T) {
 		response := httperror.AppError{
-			Message: "users_contact_uindex",
+			Message: "error",
 		}
 		mockRepo := new(mocks.WalletRepository)
 		mockRepo.On("DepositInfo", 0).Return(nil, response)
@@ -143,6 +143,33 @@ func TestWalletService_DepositInfo(t *testing.T) {
 			WalletRepository: mockRepo,
 		})
 		_, err := walletService.DepositInfo(0)
+		assert.NotNil(t, err)
+	})
+}
+
+func TestWalletService_SavingsInfo(t *testing.T) {
+	t.Run("Should return response body", func(t *testing.T) {
+
+		repoResponse := models.Savings{}
+		mockRepo := new(mocks.WalletRepository)
+		mockRepo.On("SavingsInfo", 0).Return(&repoResponse, nil)
+		walletService := services.NewWalletServices(&services.WSConfig{
+			WalletRepository: mockRepo,
+		})
+		_, err := walletService.SavingsInfo(0)
+		assert.Nil(t, err)
+	})
+
+	t.Run("Should return error when repo returns error", func(t *testing.T) {
+		response := httperror.AppError{
+			Message: "error",
+		}
+		mockRepo := new(mocks.WalletRepository)
+		mockRepo.On("SavingsInfo", 0).Return(nil, response)
+		walletService := services.NewWalletServices(&services.WSConfig{
+			WalletRepository: mockRepo,
+		})
+		_, err := walletService.SavingsInfo(0)
 		assert.NotNil(t, err)
 	})
 }
