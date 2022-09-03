@@ -510,7 +510,7 @@ func TestHandler_UpdatePromotion(t *testing.T) {
 		responseSuccess := httpsuccess.AppSuccess{
 			StatusCode: 200,
 			Message:    "Ok",
-			Data:       request,
+			Data:       response,
 		}
 		mockService := new(mocks.AdminService)
 		router := &server.RouterConfig{AdminService: mockService}

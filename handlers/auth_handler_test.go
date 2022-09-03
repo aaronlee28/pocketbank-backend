@@ -13,34 +13,61 @@ import (
 	"testing"
 )
 
-//func TestHandler_Register(t *testing.T) {
-//	t.Run("should return user when user is registering", func(t *testing.T) {
-//		request := dto.RegReq{
-//			Name:           "test",
-//			Email:          "test@test.com",
-//			Contact:        "0123456789",
-//			Password:       "test",
-//			ReferralNumber: 12345,
-//			Photo:          []uint8(nil),
-//		}
-//		response := dto.RegRes{
-//			Name:    "test",
-//			Email:   "test@test.com",
-//			Contact: "0123456789",
-//		}
-//		mockService := new(mocks.AuthService)
-//		router := &server.RouterConfig{AuthService: mockService}
-//		mockService.On("Register", &request).Return(&response, nil)
-//
-//		res, _ := json.Marshal(&response)
-//		req, _ := http.NewRequest(http.MethodPost, "/register", testutils.MakeRequestBody(request))
-//		_, rec := testutils.ServeReq(router, req)
-//
-//		//assert.Equal(t, http.StatusOK, rec.Code)
-//		assert.Equal(t, string(res), rec.Body.String())
-//
-//	})
-//}
+func TestHandler_Register(t *testing.T) {
+	t.Run("should return user when user is registering", func(t *testing.T) {
+		request := dto.RegReq{
+			Name:           "",
+			Email:          "",
+			Contact:        "",
+			Password:       "",
+			ReferralNumber: 0,
+			Photo:          nil,
+		}
+		response := &dto.RegRes{
+			Name:    "test",
+			Email:   "test",
+			Contact: "test",
+		}
+		responseSuccess := httpsuccess.AppSuccess{
+			StatusCode: 201,
+			Message:    "Created",
+			Data:       response,
+		}
+		mockService := new(mocks.AuthService)
+		router := &server.RouterConfig{AuthService: mockService}
+		mockService.On("Register", &request).Return(response, nil)
+
+		res, _ := json.Marshal(&responseSuccess)
+		req, _ := http.NewRequest(http.MethodPost, "/register", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusCreated, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+	})
+	t.Run("should return error when error is not nil", func(t *testing.T) {
+		request := &dto.RegReq{
+			Name:           "",
+			Email:          "",
+			Contact:        "",
+			Password:       "",
+			ReferralNumber: 0,
+			Photo:          nil,
+		}
+		response := httperror.AppError{
+			Message: "Test Error",
+		}
+		responseError := ("{\"error\":\"Test Error\"}")
+		mockService := new(mocks.AuthService)
+		router := &server.RouterConfig{AuthService: mockService}
+		mockService.On("Register", request).Return(nil, response)
+		req, _ := http.NewRequest(http.MethodPost, "/register", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Equal(t, responseError, rec.Body.String())
+	})
+
+}
 
 func TestHandler_SignIn(t *testing.T) {
 	t.Run("should return token when sign in with id", func(t *testing.T) {
