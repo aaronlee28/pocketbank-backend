@@ -164,3 +164,44 @@ func TestHandler_DepositInfo(t *testing.T) {
 		assert.Equal(t, responseError, rec.Body.String())
 	})
 }
+
+func TestHandler_SavingsInfo(t *testing.T) {
+	t.Run("should return successful when payload is given", func(t *testing.T) {
+		response := dto.SavingsRes{
+			UserID:   0,
+			Balance:  0,
+			Interest: 0,
+			Tax:      0,
+		}
+
+		responseSuccess := httpsuccess.AppSuccess{
+			StatusCode: 200,
+			Message:    "Ok",
+			Data:       response,
+		}
+		mockService := new(mocks.WalletService)
+		router := &server.RouterConfig{WalletService: mockService}
+		mockService.On("SavingsInfo", 0).Return(&response, nil)
+		res, _ := json.Marshal(&responseSuccess)
+		req, _ := http.NewRequest(http.MethodGet, "/savingsinfo", testutils.MakeRequestBody(nil))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+	})
+	t.Run("should return error when error is not nil", func(t *testing.T) {
+		response := httperror.AppError{
+			Message: "Test Error",
+		}
+
+		responseError := ("{\"error\":\"Test Error\"}")
+		mockService := new(mocks.WalletService)
+		router := &server.RouterConfig{WalletService: mockService}
+		mockService.On("SavingsInfo", 0).Return(nil, response)
+		req, _ := http.NewRequest(http.MethodGet, "/savingsinfo", testutils.MakeRequestBody(nil))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Equal(t, responseError, rec.Body.String())
+	})
+}
