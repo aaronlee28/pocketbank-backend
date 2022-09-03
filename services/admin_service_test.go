@@ -182,3 +182,28 @@ func TestAdminService_Merchandise(t *testing.T) {
 		assert.NotNil(t, err)
 	})
 }
+
+func TestAdminService_UserDepositInfo(t *testing.T) {
+	t.Run("should return response body", func(t *testing.T) {
+		var repoRes []models.Deposit
+
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("UserDepositInfo", 0).Return(&repoRes, nil)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		_, err := adminService.UserDepositInfo(0)
+		assert.Nil(t, err)
+	})
+
+	t.Run("should return error when repo returns error", func(t *testing.T) {
+		errorRepoRes := httperror.AppError{
+			Message: "User not found",
+		}
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("UserDepositInfo", 0).Return(nil, &errorRepoRes)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		_, err := adminService.UserDepositInfo(0)
+		assert.NotNil(t, err)
+	})
+}
