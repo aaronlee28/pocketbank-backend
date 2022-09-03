@@ -378,11 +378,11 @@ paths:
             Date:
               schema:
                 type: string
-                example: Fri, 02 Sep 2022 07:43:38 GMT
+                example: Sat, 03 Sep 2022 03:01:10 GMT
             Content-Length:
               schema:
                 type: integer
-                example: '600'
+                example: '1889'
           content:
             application/json:
               schema:
@@ -391,33 +391,98 @@ paths:
                 statusCode: 200
                 message: Ok
                 data:
-                  - from: 946116
-                    to: 940149
-                    senderName: ''
-                    receiverName: ''
-                    amount: 1000000
-                    type: Transfer
-                    status: Failed
-                    description: Destination Account Not Found
-                    date: '2022-09-02T14:43:19.551028Z'
-                  - from: 946116
-                    to: 962352
-                    senderName: ''
-                    receiverName: ''
-                    amount: 1000000
-                    type: Deposit
-                    status: Success
-                    description: Deposit
-                    date: '2022-09-02T14:43:13.426265Z'
-                  - from: 6
-                    to: 946116
-                    senderName: ''
-                    receiverName: ''
-                    amount: 50000000
-                    type: Top Up
-                    status: Success
-                    description: top up from ShopeePay
-                    date: '2022-09-02T14:43:06.50251Z'
+                  totalLength: 65
+                  transactions:
+                    - from: 8
+                      to: 914325
+                      senderName: ''
+                      receiverName: ''
+                      amount: 100000
+                      type: External Top Up
+                      status: Success
+                      description: qr code
+                      date: '2022-09-02T14:43:30.953421Z'
+                    - from: 5
+                      to: 914325
+                      senderName: ''
+                      receiverName: ''
+                      amount: 20000
+                      type: Referral Payment
+                      status: ''
+                      description: Referral Payment
+                      date: '2022-09-02T14:33:31.426673Z'
+                    - from: 8
+                      to: 914325
+                      senderName: ''
+                      receiverName: ''
+                      amount: 100000
+                      type: External Top Up
+                      status: Success
+                      description: qr code
+                      date: '2022-09-01T22:49:05.830059Z'
+                    - from: 914325
+                      to: 940149
+                      senderName: ''
+                      receiverName: ''
+                      amount: 1000000
+                      type: Transfer
+                      status: Failed
+                      description: Destination Account Not Found
+                      date: '2022-09-01T22:48:47.623745Z'
+                    - from: 914325
+                      to: 952593
+                      senderName: ''
+                      receiverName: ''
+                      amount: 1000000
+                      type: Deposit
+                      status: Success
+                      description: Deposit
+                      date: '2022-09-01T22:48:23.84224Z'
+                    - from: 5
+                      to: 914325
+                      senderName: ''
+                      receiverName: ''
+                      amount: 20000
+                      type: Referral Payment
+                      status: ''
+                      description: Referral Payment
+                      date: '2022-09-01T22:46:02.091174Z'
+                    - from: 8
+                      to: 914325
+                      senderName: ''
+                      receiverName: ''
+                      amount: 200000
+                      type: External Top Up
+                      status: Success
+                      description: hello
+                      date: '2022-08-30T18:59:16.238307Z'
+                    - from: 8
+                      to: 914325
+                      senderName: ''
+                      receiverName: ''
+                      amount: 100000
+                      type: External Top Up
+                      status: Success
+                      description: hello
+                      date: '2022-08-30T18:58:57.36159Z'
+                    - from: 8
+                      to: 914325
+                      senderName: ''
+                      receiverName: ''
+                      amount: 100000
+                      type: External Top Up
+                      status: Success
+                      description: hello
+                      date: '2022-08-30T18:58:56.594488Z'
+                    - from: 914325
+                      to: 869834
+                      senderName: ''
+                      receiverName: ''
+                      amount: 100000
+                      type: Transfer
+                      status: Failed
+                      description: Destination Account Not Found
+                      date: '2022-08-30T12:36:26.428159Z'
   /userdetails:
     get:
       tags:
