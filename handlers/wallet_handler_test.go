@@ -291,3 +291,62 @@ func TestHandler_FavoriteContactList(t *testing.T) {
 		assert.Equal(t, responseError, rec.Body.String())
 	})
 }
+
+func TestHandler_ChangeUserDetails(t *testing.T) {
+	t.Run("should return successful when payload is given", func(t *testing.T) {
+		request := &dto.ChangeUserDetailsReqRes{
+			Name:           "",
+			Email:          "",
+			Contact:        "",
+			ProfilePicture: "",
+			ReferralNumber: 0,
+			AccountNumber:  0,
+		}
+		response := dto.ChangeUserDetailsReqRes{
+			Name:           "0",
+			Email:          "0",
+			Contact:        "0",
+			ProfilePicture: "0",
+			ReferralNumber: 0,
+			AccountNumber:  0,
+		}
+		responseSuccess := httpsuccess.AppSuccess{
+			StatusCode: 200,
+			Message:    "Ok",
+			Data:       response,
+		}
+		mockService := new(mocks.WalletService)
+		router := &server.RouterConfig{WalletService: mockService}
+		mockService.On("ChangeUserDetails", request, 0).Return(&response, nil)
+		res, _ := json.Marshal(&responseSuccess)
+		req, _ := http.NewRequest(http.MethodPatch, "/userdetails", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+	})
+
+	t.Run("should return error when error is not nil", func(t *testing.T) {
+		request := &dto.ChangeUserDetailsReqRes{
+			Name:           "",
+			Email:          "",
+			Contact:        "",
+			ProfilePicture: "",
+			ReferralNumber: 0,
+			AccountNumber:  0,
+		}
+		response := httperror.AppError{
+			Message: "Test Error",
+		}
+
+		responseError := ("{\"error\":\"Test Error\"}")
+		mockService := new(mocks.WalletService)
+		router := &server.RouterConfig{WalletService: mockService}
+		mockService.On("ChangeUserDetails", request, 0).Return(nil, response)
+		req, _ := http.NewRequest(http.MethodPatch, "/userdetails", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Equal(t, responseError, rec.Body.String())
+	})
+}
