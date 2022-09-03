@@ -65,21 +65,7 @@ func (w *adminRepository) AdminUserTransaction(q *Query, id int) (*[]models.Tran
 func (w *adminRepository) AdminUserDetails(id int) (*dto.UserDetailsRes, error) {
 	var user *models.User
 	var ret *dto.UserDetailsRes
-	//var sv *models.Savings
-	//err := w.db.Where("id = ?", id).First(&user).Error
-	//w.db.Where("user_id = ?", id).First(&sv)
-
 	err := w.db.Model(&user).Select("users.name, users.email, users.contact,users.profile_picture, users.referral_number, savings.savings_number").Joins("left join savings on savings.user_id = users.id").Where("users.id =?", id).First(&ret).Error
-
-	//ret := &dto.UserDetailsRes{
-	//	Name:           user.Name,
-	//	Email:          *user.Email,
-	//	Contact:        user.Contact,
-	//	ProfilePicture: user.ProfilePicture,
-	//	ReferralNumber: *user.ReferralNumber,
-	//	SavingsNumber:  sv.SavingsNumber,
-	//}
-
 	return ret, err
 }
 
