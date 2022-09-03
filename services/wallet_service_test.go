@@ -173,3 +173,59 @@ func TestWalletService_SavingsInfo(t *testing.T) {
 		assert.NotNil(t, err)
 	})
 }
+
+func TestWalletService_FavoriteContact(t *testing.T) {
+	t.Run("Should return response body", func(t *testing.T) {
+		serviceRequest := dto.FavoriteContactReq{}
+		repoResponse := models.Favoritecontact{}
+		mockRepo := new(mocks.WalletRepository)
+		mockRepo.On("FavoriteContact", 0, 1).Return(&repoResponse, nil)
+		walletService := services.NewWalletServices(&services.WSConfig{
+			WalletRepository: mockRepo,
+		})
+		_, err := walletService.FavoriteContact(&serviceRequest, 1)
+		assert.Nil(t, err)
+	})
+
+	t.Run("Should return error when repo returns error", func(t *testing.T) {
+		serviceRequest := dto.FavoriteContactReq{}
+
+		errorRes := httperror.AppError{
+			Message: "error",
+		}
+		mockRepo := new(mocks.WalletRepository)
+		mockRepo.On("FavoriteContact", 0, 0).Return(nil, errorRes)
+		walletService := services.NewWalletServices(&services.WSConfig{
+			WalletRepository: mockRepo,
+		})
+		_, err := walletService.FavoriteContact(&serviceRequest, 0)
+		assert.NotNil(t, err)
+	})
+}
+
+func TestWalletService_FavoriteContactList(t *testing.T) {
+	t.Run("Should return response body", func(t *testing.T) {
+		resp := models.Favoritecontact{}
+		var repoResponse []models.Favoritecontact
+		repoResponse = append(repoResponse, resp)
+		mockRepo := new(mocks.WalletRepository)
+		mockRepo.On("FavoriteContactList", 0).Return(&repoResponse, nil)
+		walletService := services.NewWalletServices(&services.WSConfig{
+			WalletRepository: mockRepo,
+		})
+		_, err := walletService.FavoriteContactList(0)
+		assert.Nil(t, err)
+	})
+	t.Run("Should return error when repo returns error", func(t *testing.T) {
+		errorRes := httperror.AppError{
+			Message: "error",
+		}
+		mockRepo := new(mocks.WalletRepository)
+		mockRepo.On("FavoriteContactList", 0).Return(nil, errorRes)
+		walletService := services.NewWalletServices(&services.WSConfig{
+			WalletRepository: mockRepo,
+		})
+		_, err := walletService.FavoriteContactList(0)
+		assert.NotNil(t, err)
+	})
+}
