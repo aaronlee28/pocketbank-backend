@@ -26,7 +26,7 @@ func getENV(key, defaultVal string) string {
 }
 
 var Config = AppConfig{
-	ENV:                getENV("ENV", "testing"),
+	ENV:                getENV("ENV", "deploy"),
 	AppName:            "apps",
 	JWTSecret:          []byte("very-secret"),
 	JWTExpireInMinutes: 10000,
