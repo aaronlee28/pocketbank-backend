@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
+	"time"
 )
 
 func TestHandler_TransactionHistory(t *testing.T) {
@@ -94,6 +95,53 @@ func TestHandler_UserDetails(t *testing.T) {
 		mockService.On("UserDetails", 0).Return(&response, nil)
 		res, _ := json.Marshal(&responseSuccess)
 		req, _ := http.NewRequest(http.MethodGet, "/userdetails", testutils.MakeRequestBody(nil))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+	})
+
+	t.Run("should return error when error is not nil", func(t *testing.T) {
+		response := httperror.AppError{
+			Message: "Test Error",
+		}
+
+		responseError := ("{\"error\":\"Test Error\"}")
+		mockService := new(mocks.WalletService)
+		router := &server.RouterConfig{WalletService: mockService}
+		mockService.On("UserDetails", 0).Return(nil, &response)
+		req, _ := http.NewRequest(http.MethodGet, "/userdetails", testutils.MakeRequestBody(nil))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Equal(t, responseError, rec.Body.String())
+	})
+}
+
+func TestHandler_DepositInfo(t *testing.T) {
+	t.Run("should return successful when payload is given", func(t *testing.T) {
+		response := dto.DepositInfoRes{
+			Balance:       0,
+			DepositNumber: 0,
+			InterestRate:  0,
+			Interest:      0,
+			Duration:      0,
+			UpdatedAt:     time.Time{},
+			DeletedAt:     time.Time{},
+			AutoDeposit:   false,
+		}
+		var responseArray []dto.DepositInfoRes
+		responseArray = append(responseArray, response)
+		responseSuccess := httpsuccess.AppSuccess{
+			StatusCode: 200,
+			Message:    "Ok",
+			Data:       responseArray,
+		}
+		mockService := new(mocks.WalletService)
+		router := &server.RouterConfig{WalletService: mockService}
+		mockService.On("DepositInfo", 0).Return(&responseArray, nil)
+		res, _ := json.Marshal(&responseSuccess)
+		req, _ := http.NewRequest(http.MethodGet, "/depositinfo", testutils.MakeRequestBody(nil))
 		_, rec := testutils.ServeReq(router, req)
 
 		assert.Equal(t, http.StatusOK, rec.Code)
