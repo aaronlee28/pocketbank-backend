@@ -319,3 +319,29 @@ func TestAdminService_GetPromotion(t *testing.T) {
 		assert.NotNil(t, err)
 	})
 }
+
+func TestAdminService_UpdatePromotion(t *testing.T) {
+	t.Run("should return response body", func(t *testing.T) {
+		serviceReq := dto.PatchPromotionReq{}
+		repoReq := dto.PatchPromotionReq{}
+		repoRes := dto.PatchPromotionReq{}
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("UpdatePromotion", 0, &repoReq).Return(&repoRes, nil)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+		_, err := adminService.UpdatePromotion(0, &serviceReq)
+		assert.Nil(t, err)
+	})
+	t.Run("should return error when repo returns error", func(t *testing.T) {
+		serviceReq := dto.PatchPromotionReq{}
+		repoReq := dto.PatchPromotionReq{}
+		errorRepoRes := httperror.AppError{
+			Message: "error",
+		}
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("UpdatePromotion", 0, &repoReq).Return(nil, &errorRepoRes)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+		_, err := adminService.UpdatePromotion(0, &serviceReq)
+		assert.NotNil(t, err)
+	})
+
+}
