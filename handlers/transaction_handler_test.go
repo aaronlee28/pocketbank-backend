@@ -36,7 +36,6 @@ func TestHandler_TopupSavings(t *testing.T) {
 		mockService.On("TopupSavings", &request, 0).Return(&response, nil)
 		res, _ := json.Marshal(&responseSuccess)
 
-		_, _ = json.Marshal(&responseSuccess)
 		req, _ := http.NewRequest(http.MethodPost, "/topupsavings", testutils.MakeRequestBody(request))
 		_, rec := testutils.ServeReq(router, req)
 

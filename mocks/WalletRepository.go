@@ -132,26 +132,33 @@ func (_m *WalletRepository) SavingsInfo(id int) (*models.Savings, error) {
 }
 
 // TransactionHistory provides a mock function with given fields: q, id
-func (_m *WalletRepository) TransactionHistory(q *repositories.Query, id int) (*[]models.Transaction, error) {
+func (_m *WalletRepository) TransactionHistory(q *repositories.Query, id int) (int, *[]models.Transaction, error) {
 	ret := _m.Called(q, id)
 
-	var r0 *[]models.Transaction
-	if rf, ok := ret.Get(0).(func(*repositories.Query, int) *[]models.Transaction); ok {
+	var r0 int
+	if rf, ok := ret.Get(0).(func(*repositories.Query, int) int); ok {
 		r0 = rf(q, id)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*[]models.Transaction)
+		r0 = ret.Get(0).(int)
+	}
+
+	var r1 *[]models.Transaction
+	if rf, ok := ret.Get(1).(func(*repositories.Query, int) *[]models.Transaction); ok {
+		r1 = rf(q, id)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(*[]models.Transaction)
 		}
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(*repositories.Query, int) error); ok {
-		r1 = rf(q, id)
+	var r2 error
+	if rf, ok := ret.Get(2).(func(*repositories.Query, int) error); ok {
+		r2 = rf(q, id)
 	} else {
-		r1 = ret.Error(1)
+		r2 = ret.Error(2)
 	}
 
-	return r0, r1
+	return r0, r1, r2
 }
 
 // UserDetails provides a mock function with given fields: id

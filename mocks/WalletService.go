@@ -130,15 +130,15 @@ func (_m *WalletService) SavingsInfo(id int) (*dto.SavingsRes, error) {
 }
 
 // TransactionHistory provides a mock function with given fields: q, id
-func (_m *WalletService) TransactionHistory(q *repositories.Query, id int) (*[]dto.TransRes, error) {
+func (_m *WalletService) TransactionHistory(q *repositories.Query, id int) (*dto.TransHistoryRes, error) {
 	ret := _m.Called(q, id)
 
-	var r0 *[]dto.TransRes
-	if rf, ok := ret.Get(0).(func(*repositories.Query, int) *[]dto.TransRes); ok {
+	var r0 *dto.TransHistoryRes
+	if rf, ok := ret.Get(0).(func(*repositories.Query, int) *dto.TransHistoryRes); ok {
 		r0 = rf(q, id)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*[]dto.TransRes)
+			r0 = ret.Get(0).(*dto.TransHistoryRes)
 		}
 	}
 

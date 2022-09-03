@@ -1,0 +1,102 @@
+package handlers_test
+
+import (
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httperror"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httpsuccess"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/mocks"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/server"
+	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/testutils"
+	"github.com/goccy/go-json"
+	"github.com/stretchr/testify/assert"
+	"net/http"
+	"testing"
+)
+
+func TestHandler_TransactionHistory(t *testing.T) {
+	t.Run("should return successful when payload is given", func(t *testing.T) {
+		request := &repositories.Query{
+			SortBy:     "",
+			Sort:       "",
+			Limit:      "",
+			Page:       "",
+			Search:     "",
+			FilterTime: "",
+			MinAmount:  "",
+			MaxAmount:  "",
+			Type:       "",
+		}
+		response := dto.TransHistoryRes{
+			TotalLength:  0,
+			Transactions: nil,
+		}
+		responseSuccess := httpsuccess.AppSuccess{
+			StatusCode: 200,
+			Message:    "Ok",
+			Data:       response,
+		}
+		mockService := new(mocks.WalletService)
+		router := &server.RouterConfig{WalletService: mockService}
+		mockService.On("TransactionHistory", request, 0).Return(&response, nil)
+		res, _ := json.Marshal(&responseSuccess)
+		req, _ := http.NewRequest(http.MethodGet, "/transactionhistory", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+	})
+	t.Run("should return error when error is not nil", func(t *testing.T) {
+		request := &repositories.Query{
+			SortBy:     "",
+			Sort:       "",
+			Limit:      "",
+			Page:       "",
+			Search:     "",
+			FilterTime: "",
+			MinAmount:  "",
+			MaxAmount:  "",
+			Type:       "",
+		}
+		response := httperror.AppError{
+			Message: "Bad Request",
+		}
+
+		responseError := ("{\"error\":\"Bad Request\"}")
+		mockService := new(mocks.WalletService)
+		router := &server.RouterConfig{WalletService: mockService}
+		mockService.On("TransactionHistory", request, 0).Return(nil, &response)
+		req, _ := http.NewRequest(http.MethodGet, "/transactionhistory", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Equal(t, responseError, rec.Body.String())
+	})
+}
+
+func TestHandler_UserDetails(t *testing.T) {
+	t.Run("should return successful when payload is given", func(t *testing.T) {
+		response := dto.UserDetailsRes{
+			Name:           "test",
+			Email:          "test",
+			Contact:        "test",
+			ProfilePicture: "test",
+			ReferralNumber: 0,
+			SavingsNumber:  0,
+		}
+		responseSuccess := httpsuccess.AppSuccess{
+			StatusCode: 200,
+			Message:    "Ok",
+			Data:       response,
+		}
+		mockService := new(mocks.WalletService)
+		router := &server.RouterConfig{WalletService: mockService}
+		mockService.On("UserDetails", 0).Return(&response, nil)
+		res, _ := json.Marshal(&responseSuccess)
+		req, _ := http.NewRequest(http.MethodGet, "/userdetails", testutils.MakeRequestBody(nil))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+	})
+}
