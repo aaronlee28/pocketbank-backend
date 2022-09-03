@@ -65,12 +65,12 @@ func (w *walletRepository) TransactionHistory(q *Query, id int) (int, *[]models.
 }
 
 func (w *walletRepository) UserDetails(id int) (*dto.UserDetailsRes, error) {
-	//var user *models.User
-	var sv *models.Savings
+	var user *models.User
+	//var sv *models.Savings
 	var res *dto.UserDetailsRes
 	//err := w.db.Where("id = ?", id).First(&user).Error
 	//w.db.Where("user_id = ?", id).First(&sv)
-	err := w.db.Model(&sv).Select("users.name, users.email, users.contact,users.profile_picture, users.referral_number, savings.savings_number").Joins("left join users on users.id = savings.user_id").Where("users.id =?", id).First(&res).Error
+	err := w.db.Model(&user).Select("users.name, users.email, users.contact,users.profile_picture, users.referral_number, savings.savings_number").Joins("left join savings on savings.user_id = users.id").Where("users.id =?", id).First(&res).Error
 	// SELECT users.name, emails.email FROM `users` left join emails on emails.user_id = users.id
 	//res := &dto.UserDetailsRes{
 	//	Name:           user.Name,
@@ -93,7 +93,6 @@ func (w *walletRepository) DepositInfo(id int) (*[]models.Deposit, error) {
 }
 
 func (w *walletRepository) SavingsInfo(id int) (*models.Savings, error) {
-	//var user *models.User
 	var s *models.Savings
 	err := w.db.Where("user_id = ? ", id).First(&s).Error
 

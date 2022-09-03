@@ -6,5 +6,5 @@ type UserDetailsRes struct {
 	Contact        string `json:"contact"`
 	ProfilePicture string `json:"profilePicture"`
 	ReferralNumber int    `json:"referralNumber"`
-	AccountNumber  int    `json:"accountNumber"`
+	SavingsNumber  int    `json:"accountNumber"`
 }

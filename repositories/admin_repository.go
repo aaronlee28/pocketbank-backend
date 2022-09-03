@@ -73,7 +73,7 @@ func (w *adminRepository) AdminUserDetails(id int) (*dto.UserDetailsRes, error) 
 		Contact:        user.Contact,
 		ProfilePicture: user.ProfilePicture,
 		ReferralNumber: *user.ReferralNumber,
-		AccountNumber:  sv.SavingsNumber,
+		SavingsNumber:  sv.SavingsNumber,
 	}
 
 	return ret, err
