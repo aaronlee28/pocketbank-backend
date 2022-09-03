@@ -236,3 +236,32 @@ func TestAdminService_UserRate(t *testing.T) {
 		assert.NotNil(t, err)
 	})
 }
+
+func TestAdminService_UsersRate(t *testing.T) {
+	t.Run("should return response body", func(t *testing.T) {
+		serviceReq := dto.ChangeInterestRateReq{}
+		repoReq := dto.ChangeInterestRateReq{}
+
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("UsersRate", &repoReq).Return(nil)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		err := adminService.UsersRate(&serviceReq)
+		assert.Nil(t, err)
+	})
+
+	t.Run("should return error when repo returns error", func(t *testing.T) {
+		serviceReq := dto.ChangeInterestRateReq{}
+		repoReq := dto.ChangeInterestRateReq{}
+		errorRepoRes := httperror.AppError{
+			Message: "User not found",
+		}
+
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("UsersRate", &repoReq).Return(errorRepoRes)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		err := adminService.UsersRate(&serviceReq)
+		assert.NotNil(t, err)
+	})
+}
