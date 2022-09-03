@@ -32,7 +32,6 @@ func (a *Handler) TransactionHistory(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, e)
 		return
 	}
-
 	successResponse := httpsuccess.OkSuccess("Ok", result)
 	c.JSON(http.StatusOK, successResponse)
 

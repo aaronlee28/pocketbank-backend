@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fmt"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
 	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
@@ -11,7 +12,7 @@ import (
 )
 
 type WalletRepository interface {
-	TransactionHistory(q *Query, id int) (*[]models.Transaction, error)
+	TransactionHistory(q *Query, id int) (int, *[]models.Transaction, error)
 	UserDetails(id int) (*dto.UserDetailsRes, error)
 	DepositInfo(id int) (*[]models.Deposit, error)
 	SavingsInfo(id int) (*models.Savings, error)
@@ -44,7 +45,7 @@ func NewWalletRepository(c *WRConfig) walletRepository {
 	return walletRepository{db: c.DB}
 }
 
-func (w *walletRepository) TransactionHistory(q *Query, id int) (*[]models.Transaction, error) {
+func (w *walletRepository) TransactionHistory(q *Query, id int) (int, *[]models.Transaction, error) {
 	var trans *[]models.Transaction
 	var account *models.Savings
 	limit, _ := strconv.Atoi(q.Limit)
@@ -53,8 +54,14 @@ func (w *walletRepository) TransactionHistory(q *Query, id int) (*[]models.Trans
 	ty := "%" + q.Type + "%"
 	offset := (limit * page) - limit
 	w.db.Where("user_id = ?", id).First(&account)
-	err := w.db.Limit(limit).Offset(offset).Order(q.SortBy+" "+q.Sort).Where("sender_wallet_number = ? OR receiver_wallet_number = ? ", account.SavingsNumber, account.SavingsNumber).Where("UPPER(description) like UPPER(?)", search).Where("created_at >= ? at time zone 'UTC' - interval '"+q.FilterTime+"' day", time.Now()).Where("amount BETWEEN ? and ?", q.MinAmount, q.MaxAmount).Where("type like ?", ty).Find(&trans).Error
-	return trans, err
+	query := w.db.Offset(offset).Order(q.SortBy+" "+q.Sort).Where("sender_wallet_number = ? OR receiver_wallet_number = ? ", account.SavingsNumber, account.SavingsNumber).Where("UPPER(description) like UPPER(?)", search).Where("created_at >= ? at time zone 'UTC' - interval '"+q.FilterTime+"' day", time.Now()).Where("amount BETWEEN ? and ?", q.MinAmount, q.MaxAmount).Where("type like ?", ty).Find(&trans)
+
+	totalLength := len(*trans)
+
+	w.db.Limit(limit).Offset(offset).Order(q.SortBy+" "+q.Sort).Where("sender_wallet_number = ? OR receiver_wallet_number = ? ", account.SavingsNumber, account.SavingsNumber).Where("UPPER(description) like UPPER(?)", search).Where("created_at >= ? at time zone 'UTC' - interval '"+q.FilterTime+"' day", time.Now()).Where("amount BETWEEN ? and ?", q.MinAmount, q.MaxAmount).Where("type like ?", ty).Find(&trans)
+	fmt.Println("length", len(*trans))
+
+	return totalLength, trans, query.Error
 }
 
 func (w *walletRepository) UserDetails(id int) (*dto.UserDetailsRes, error) {

@@ -8,7 +8,7 @@ import (
 )
 
 type WalletService interface {
-	TransactionHistory(q *repositories.Query, id int) (*[]dto.TransRes, error)
+	TransactionHistory(q *repositories.Query, id int) (*dto.TransHistoryRes, error)
 	UserDetails(id int) (*dto.UserDetailsRes, error)
 	DepositInfo(id int) (*[]dto.DepositInfoRes, error)
 	SavingsInfo(id int) (*dto.SavingsRes, error)
@@ -31,7 +31,7 @@ func NewWalletServices(c *WSConfig) *walletService {
 	}
 }
 
-func (a *walletService) TransactionHistory(q *repositories.Query, id int) (*[]dto.TransRes, error) {
+func (a *walletService) TransactionHistory(q *repositories.Query, id int) (*dto.TransHistoryRes, error) {
 
 	var result []dto.TransRes
 	if q.SortBy == "" {
@@ -49,7 +49,7 @@ func (a *walletService) TransactionHistory(q *repositories.Query, id int) (*[]dt
 	if q.MaxAmount == "" {
 		q.MaxAmount = "999999999999"
 	}
-	t, err := a.walletRepository.TransactionHistory(q, id)
+	l, t, err := a.walletRepository.TransactionHistory(q, id)
 	if err != nil {
 		return nil, error(httperror.BadRequestError("Bad Request", "400"))
 	}
@@ -57,7 +57,10 @@ func (a *walletService) TransactionHistory(q *repositories.Query, id int) (*[]dt
 		tr := new(dto.TransRes).FromTransaction(&transaction)
 		result = append(result, *tr)
 	}
-	return &result, err
+	var resp dto.TransHistoryRes
+	resp.TotalLength = l
+	resp.Transactions = result
+	return &resp, err
 }
 
 func (a *walletService) UserDetails(id int) (*dto.UserDetailsRes, error) {

@@ -13,35 +13,34 @@ import (
 	"testing"
 )
 
-//func TestHandler_Register(t *testing.T) {
-//	t.Run("should return user when user is registering", func(t *testing.T) {
-//		request := dto.RegReq{
-//			Name:           "test",
-//			Email:          "test@test.com",
-//			Contact:        "0123456789",
-//			Password:       "test",
-//			ReferralNumber: 12345,
-//			Photo:          []uint8(nil),
-//		}
-//		response := dto.RegRes{
-//			Name:    "test",
-//			Email:   "test@test.com",
-//			Contact: "0123456789",
-//		}
-//		mockService := new(mocks.AuthService)
-//		router := &server.RouterConfig{AuthService: mockService}
-//		mockService.On("Register", &request).Return(&response, nil)
-//
-//		res, _ := json.Marshal(&response)
-//		req, _ := http.NewRequest(http.MethodPost, "/register", testutils.MakeRequestBody(request))
-//		req.Form = request
-//		_, rec := testutils.ServeReq(router, req)
-//
-//		//assert.Equal(t, http.StatusOK, rec.Code)
-//		assert.Equal(t, string(res), rec.Body.String())
-//
-//	})
-//}
+func TestHandler_Register(t *testing.T) {
+	t.Run("should return user when user is registering", func(t *testing.T) {
+		request := dto.RegReq{
+			Name:           "test",
+			Email:          "test@test.com",
+			Contact:        "0123456789",
+			Password:       "test",
+			ReferralNumber: 12345,
+			Photo:          []uint8(nil),
+		}
+		response := dto.RegRes{
+			Name:    "test",
+			Email:   "test@test.com",
+			Contact: "0123456789",
+		}
+		mockService := new(mocks.AuthService)
+		router := &server.RouterConfig{AuthService: mockService}
+		mockService.On("Register", &request).Return(&response, nil)
+
+		res, _ := json.Marshal(&response)
+		req, _ := http.NewRequest(http.MethodPost, "/register", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		//assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+
+	})
+}
 
 func TestHandler_SignIn(t *testing.T) {
 	t.Run("should return token when sign in with id", func(t *testing.T) {
@@ -69,29 +68,52 @@ func TestHandler_SignIn(t *testing.T) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, string(res), rec.Body.String())
 	})
-
-	t.Run("should return error when signin request is invalid", func(t *testing.T) {
+	t.Run("should return error when signin with invalid credentials", func(t *testing.T) {
 		request := dto.AuthReq{
-			Email:    "",
-			Password: "",
+			Email:    "test@gmail.com",
+			Password: "testpassword",
 		}
 		response := httperror.AppError{
-			StatusCode: 400,
-			Code:       "BAD_REQUEST",
-			Message:    "Key: 'AuthReq.Email' Error:Field validation for 'Email' failed on the 'required' tag\nKey: 'AuthReq.Password' Error:Field validation for 'Password' failed on the 'required' tag",
+			Message: "User Account Inactive",
 		}
+		m := map[string]string{}
+		m["error"] = "User Account Inactive"
+
+		responseError := m
 
 		mockService := new(mocks.AuthService)
 		router := &server.RouterConfig{AuthService: mockService}
-		mockService.On("SignIn", &request).Return(&response, nil)
+		mockService.On("SignIn", &request).Return(nil, response)
 
-		res, _ := json.Marshal(&response)
+		res, _ := json.Marshal(&responseError)
 		req, _ := http.NewRequest(http.MethodPost, "/signin", testutils.MakeRequestBody(request))
 		_, rec := testutils.ServeReq(router, req)
 
 		assert.Equal(t, http.StatusBadRequest, rec.Code)
 		assert.Equal(t, string(res), rec.Body.String())
+	})
 
+	t.Run("should return error when result is nil", func(t *testing.T) {
+		request := dto.AuthReq{
+			Email:    "test@gmail.com",
+			Password: "testpassword",
+		}
+
+		m := map[string]string{}
+		m["error"] = "users not found"
+
+		responseError := m
+
+		mockService := new(mocks.AuthService)
+		router := &server.RouterConfig{AuthService: mockService}
+		mockService.On("SignIn", &request).Return(nil, nil)
+
+		res, _ := json.Marshal(&responseError)
+		req, _ := http.NewRequest(http.MethodPost, "/signin", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
 	})
 }
 
@@ -130,6 +152,28 @@ func TestHandler_GetCode(t *testing.T) {
 
 		res, _ := json.Marshal(&response)
 		req, _ := http.NewRequest(http.MethodPost, "/signin", testutils.MakeRequestBody(request))
+		_, rec := testutils.ServeReq(router, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Equal(t, string(res), rec.Body.String())
+	})
+
+	t.Run("should return error when error is not nil", func(t *testing.T) {
+		request := dto.CodeReq{Email: "test@test.com"}
+		response := httperror.AppError{
+			Message: "User Account Inactive",
+		}
+		m := map[string]string{}
+		m["error"] = "User Account Inactive"
+
+		responseError := m
+
+		mockService := new(mocks.AuthService)
+		router := &server.RouterConfig{AuthService: mockService}
+		mockService.On("GetCode", &request).Return(nil, response)
+
+		res, _ := json.Marshal(&responseError)
+		req, _ := http.NewRequest(http.MethodPost, "/getcode", testutils.MakeRequestBody(request))
 		_, rec := testutils.ServeReq(router, req)
 
 		assert.Equal(t, http.StatusBadRequest, rec.Code)
