@@ -254,7 +254,7 @@ func TestAdminService_UsersRate(t *testing.T) {
 		serviceReq := dto.ChangeInterestRateReq{}
 		repoReq := dto.ChangeInterestRateReq{}
 		errorRepoRes := httperror.AppError{
-			Message: "User not found",
+			Message: "error",
 		}
 
 		mockRepo := new(mocks.AdminRepository)
@@ -262,6 +262,35 @@ func TestAdminService_UsersRate(t *testing.T) {
 		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
 
 		err := adminService.UsersRate(&serviceReq)
+		assert.NotNil(t, err)
+	})
+}
+
+func TestAdminService_CreatePromotion(t *testing.T) {
+	t.Run("should return response body", func(t *testing.T) {
+		serviceReq := dto.PromotionReq{}
+		repoReq := dto.PromotionReq{}
+		repoRes := models.Promotion{}
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("CreatePromotion", &repoReq).Return(&repoRes, nil)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		_, err := adminService.CreatePromotion(&serviceReq)
+		assert.Nil(t, err)
+	})
+
+	t.Run("should return error when repo returns error", func(t *testing.T) {
+		serviceReq := dto.PromotionReq{}
+		repoReq := dto.PromotionReq{}
+		errorRepoRes := httperror.AppError{
+			Message: "error",
+		}
+
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("CreatePromotion", &repoReq).Return(nil, &errorRepoRes)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		_, err := adminService.CreatePromotion(&serviceReq)
 		assert.NotNil(t, err)
 	})
 }
