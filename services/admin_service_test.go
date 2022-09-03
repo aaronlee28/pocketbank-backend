@@ -345,3 +345,123 @@ func TestAdminService_UpdatePromotion(t *testing.T) {
 	})
 
 }
+
+func TestAdminService_DeletePromotion(t *testing.T) {
+	t.Run("should return response body", func(t *testing.T) {
+		var repoRes models.Promotion
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("DeletePromotion", 0).Return(&repoRes, nil)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		_, err := adminService.DeletePromotion(0)
+		assert.Nil(t, err)
+	})
+
+	t.Run("should return error when repo returns error", func(t *testing.T) {
+		errorRepoRes := httperror.AppError{
+			Message: "error",
+		}
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("DeletePromotion", 0).Return(nil, &errorRepoRes)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+		_, err := adminService.DeletePromotion(0)
+		assert.NotNil(t, err)
+	})
+}
+
+func TestAdminService_EligibleMerchandiseList(t *testing.T) {
+	t.Run("should return response body", func(t *testing.T) {
+		var repoRes []models.Merchandise
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("EligibleMerchandiseList").Return(&repoRes, nil)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		_, err := adminService.EligibleMerchandiseList()
+		assert.Nil(t, err)
+	})
+
+	t.Run("should return error when repo returns error", func(t *testing.T) {
+		errorRepoRes := httperror.AppError{
+			Message: "error",
+		}
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("EligibleMerchandiseList").Return(nil, &errorRepoRes)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+		_, err := adminService.EligibleMerchandiseList()
+		assert.NotNil(t, err)
+	})
+}
+
+func TestAdminService_MerchandiseStatus(t *testing.T) {
+	t.Run("should return response body", func(t *testing.T) {
+		serviceReq := dto.MerchandiseStatus{}
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("MerchandiseStatus", &serviceReq).Return(nil, nil, 0)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		err := adminService.MerchandiseStatus(&serviceReq)
+		assert.Nil(t, err)
+	})
+
+	t.Run("should return error if code == 1", func(t *testing.T) {
+		serviceReq := dto.MerchandiseStatus{}
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("MerchandiseStatus", &serviceReq).Return(nil, nil, 1)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		err := adminService.MerchandiseStatus(&serviceReq)
+		assert.NotNil(t, err)
+	})
+
+	t.Run("should return error if err1 != nil", func(t *testing.T) {
+		serviceReq := dto.MerchandiseStatus{}
+		errorRepoRes := httperror.AppError{
+			Message: "error",
+		}
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("MerchandiseStatus", &serviceReq).Return(&errorRepoRes, nil, 0)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		err := adminService.MerchandiseStatus(&serviceReq)
+		assert.NotNil(t, err)
+	})
+	t.Run("should return error if err2 != nil", func(t *testing.T) {
+		serviceReq := dto.MerchandiseStatus{}
+		errorRepoRes := httperror.AppError{
+			Message: "error",
+		}
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("MerchandiseStatus", &serviceReq).Return(nil, &errorRepoRes, 0)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		err := adminService.MerchandiseStatus(&serviceReq)
+		assert.NotNil(t, err)
+	})
+}
+
+func TestAdminService_UpdateMerchStocks(t *testing.T) {
+	t.Run("should return response body", func(t *testing.T) {
+		req := dto.UpdateMerchStocksReq{}
+		ret := models.Merchstock{}
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("UpdateMerchStocks", &req).Return(&ret, nil)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		_, err := adminService.UpdateMerchStocks(&req)
+		assert.Nil(t, err)
+	})
+
+	t.Run("should return response body", func(t *testing.T) {
+		req := dto.UpdateMerchStocksReq{}
+		errorRepoRes := httperror.AppError{
+			Message: "error",
+		}
+		mockRepo := new(mocks.AdminRepository)
+		mockRepo.On("UpdateMerchStocks", &req).Return(nil, &errorRepoRes)
+		adminService := services.NewAdminServices(&services.ADSConfig{AdminRepository: mockRepo})
+
+		_, err := adminService.UpdateMerchStocks(&req)
+		assert.NotNil(t, err)
+	})
+
+}
