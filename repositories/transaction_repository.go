@@ -1,9 +1,6 @@
 package repositories
 
 import (
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/db"
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
 	"github.com/robfig/cron/v3"
 	"gorm.io/gorm"
 	"math/rand"
