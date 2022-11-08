@@ -1,12 +1,6 @@
 package services_test
 
 import (
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/dto"
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/httperror"
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/mocks"
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/models"
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/repositories"
-	"git.garena.com/sea-labs-id/batch-01/aaron-lee/final-project-backend/services"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
